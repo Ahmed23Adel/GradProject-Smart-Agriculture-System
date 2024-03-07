@@ -53,6 +53,7 @@ header h3 {
     justify-content: center;
     margin: 40px;
 }
+
 // copied from: https://www.sliderrevolution.com/resources/css-button-hover-effects/
 .icon-button {
     position: relative;
@@ -93,6 +94,7 @@ header h3 {
     border: $bor;
     color: $col;
 }
+
 // Copied from https://www.sliderrevolution.com/resources/css-button-hover-effects/
 .button-container-2 {
     position: relative;
@@ -241,4 +243,46 @@ a {
             animation: ani 0.7s steps(70) forwards;
         }
     }
+}
+
+
+///Error
+.alert-container {
+    width: 100wh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.alert {
+    margin: 10px 0px;
+    padding: 12px;
+    border-radius: 5px;
+
+    font-family: 'Open Sans', sans-serif;
+    font-size: .9rem;
+    font-weight: 300;
+    letter-spacing: 1px;
+    width: 500px;
+}
+
+.alert:hover {
+    cursor: pointer;
+}
+
+
+.alert-error {
+    color: #D8000C;
+    background-color: #FFBABA;
+    border: 1px solid darken(#FFBABA, 15%);
+}
+
+.v-enter-active,
+.v-leave-active {
+    transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+    opacity: 0;
 }
