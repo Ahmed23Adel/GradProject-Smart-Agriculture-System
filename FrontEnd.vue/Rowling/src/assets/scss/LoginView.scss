@@ -1,0 +1,244 @@
+$bgColor: red;
+$loginPageUrl: "../assets/images/login/harry-potter-background.jpg";
+
+
+.div-background {
+    width: 98vw;
+    height: 98vh;
+    background-image: url($loginPageUrl);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: relative;
+    filter: blur(8px);
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.content {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-weight: bold;
+    border: 3px solid #f1f1f1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    width: 80%;
+    padding: 20px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 60px;
+    font-weight: 600;
+    color: #8b8697;
+
+}
+
+
+header h3 {
+    font-size: 30px;
+    font-weight: 600;
+    background-image: linear-gradient(to right, #9994a5 45%, #ee4b2b);
+    color: transparent;
+    background-clip: text;
+    -webkit-background-clip: text;
+}
+
+.usernamePassword-div {
+    display: flex;
+    justify-content: center;
+    margin: 40px;
+}
+
+.icon-button {
+    position: relative;
+    padding: 10px 20px;
+    background-color: #007bff;
+    /* Button background color */
+    color: white;
+    /* Button text color */
+    border: none;
+    /* Remove button border */
+    cursor: pointer;
+    /* Change cursor to pointer on hover */
+}
+
+.icon-button i {
+    position: absolute;
+    right: 10px;
+    /* Adjust icon position as needed */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+
+@import url('https://fonts.googleapis.com/css?family=Lato:100,300,400');
+@import url('https://fonts.googleapis.com/css?family=Roboto:100');
+
+@mixin button($bcolor,
+    $url,
+    $x1,
+    $y1,
+    $bor,
+    $col) {
+    background: $bcolor;
+    -webkit-mask: url($url);
+    mask: url($url);
+    -webkit-mask-size: $x1 $y1;
+    mask-size: $x1 $y1;
+    border: $bor;
+    color: $col;
+}
+// Copied from https://www.sliderrevolution.com/resources/css-button-hover-effects/
+.button-container-2 {
+    position: relative;
+    width: 200px;
+    height: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 7vh;
+    overflow: hidden;
+    border: 1px solid #000;
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    transition: 0.5s;
+    letter-spacing: 1px;
+    border-radius: 8px;
+
+    button {
+        width: 101%;
+        height: 100%;
+        font-family: 'Lato', sans-serif;
+        font-weight: 300;
+        font-size: 18px;
+        letter-spacing: 1px;
+        font-weight: bold;
+
+        @include button(#000, "https://raw.githubusercontent.com/robin-dela/css-mask-animation/master/img/urban-sprite.png",
+            3000%,
+            100%,
+            none,
+            #fff);
+        cursor: pointer;
+        -webkit-animation: ani2 0.7s steps(29) forwards;
+        animation: ani2 0.7s steps(29) forwards;
+
+        &:hover {
+            -webkit-animation: ani 0.7s steps(29) forwards;
+            animation: ani 0.7s steps(29) forwards;
+        }
+    }
+}
+
+
+.mas {
+    position: absolute;
+    color: #000;
+    text-align: center;
+    width: 101%;
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    position: absolute;
+    font-size: 18px;
+    margin-top: 17px;
+    overflow: hidden;
+    font-weight: bold;
+
+}
+
+@-webkit-keyframes ani {
+    from {
+        -webkit-mask-position: 0 0;
+        mask-position: 0 0;
+    }
+
+    to {
+        -webkit-mask-position: 100% 0;
+        mask-position: 100% 0;
+    }
+}
+
+@keyframes ani {
+    from {
+        -webkit-mask-position: 0 0;
+        mask-position: 0 0;
+    }
+
+    to {
+        -webkit-mask-position: 100% 0;
+        mask-position: 100% 0;
+    }
+}
+
+@-webkit-keyframes ani2 {
+    from {
+        -webkit-mask-position: 100% 0;
+        mask-position: 100% 0;
+    }
+
+    to {
+        -webkit-mask-position: 0 0;
+        mask-position: 0 0;
+    }
+}
+
+@keyframes ani2 {
+    from {
+        -webkit-mask-position: 100% 0;
+        mask-position: 100% 0;
+    }
+
+    to {
+        -webkit-mask-position: 0 0;
+        mask-position: 0 0;
+    }
+}
+
+a {
+    color: #00ff95;
+}
+
+.button-container-3 {
+    position: relative;
+    width: 100px;
+    height: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 8vh;
+    overflow: hidden;
+    border: 1px solid #000;
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    transition: 0.5s;
+    letter-spacing: 1px;
+    border-radius: 8px;
+
+    button {
+        width: 101%;
+        height: 100%;
+        font-family: 'Lato', sans-serif;
+        font-weight: 300;
+        font-size: 18px;
+        letter-spacing: 1px;
+        font-weight: bold;
+
+
+        @include button(#000, "https://raw.githubusercontent.com/pizza3/asset/master/natureSmaller.png",
+            7100%,
+            100%,
+            none,
+            #fff);
+        cursor: pointer;
+        -webkit-animation: ani2 0.7s steps(70) forwards;
+        animation: ani2 0.7s steps(70) forwards;
+
+        &:hover {
+            -webkit-animation: ani 0.7s steps(70) forwards;
+            animation: ani 0.7s steps(70) forwards;
+        }
+    }
+}
