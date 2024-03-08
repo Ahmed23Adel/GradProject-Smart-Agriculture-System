@@ -9,6 +9,9 @@ import PrimeVue from 'primevue/config';
 import InputText from 'primevue/inputtext'
 import FloatLabel from 'primevue/floatlabel';
 import Password from 'primevue/password';
+import CascadeSelect from 'primevue/cascadeselect';
+import Calendar from 'primevue/calendar';
+import Galleria from 'primevue/galleria';
 
 
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -22,5 +25,8 @@ app.use(PrimeVue);
 app.component('InputText', InputText)
 app.component('FloatLabel', FloatLabel)
 app.component('Password', Password)
+app.component('CascadeSelect', CascadeSelect)
+app.component('Calendar', Calendar)
+app.component('Galleria', Galleria)
 
 app.mount('#app')
