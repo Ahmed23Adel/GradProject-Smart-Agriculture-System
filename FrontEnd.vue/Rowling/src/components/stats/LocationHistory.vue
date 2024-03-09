@@ -35,7 +35,7 @@ const toDate = ref();
     <el-row>
         <el-col :span="22">
             <div clas="grid-content ep-bg-purple">
-                <h2 class="sub-header-gen-stats">History of certain location:</h2>
+                <h2 class="sub-header-gen-stats" style="color:white">History of certain location:</h2>
             </div>
         </el-col>
     </el-row>
@@ -107,5 +107,9 @@ const toDate = ref();
     display: flex;
     justify-content: center; /* Center items horizontally */
     align-items: center; /* Center items vertically */
+}
+
+.pre-date{
+    font-size: 28px;
 }
 </style>

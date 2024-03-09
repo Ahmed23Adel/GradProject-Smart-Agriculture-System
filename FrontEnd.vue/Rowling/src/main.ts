@@ -12,6 +12,7 @@ import Password from 'primevue/password';
 import CascadeSelect from 'primevue/cascadeselect';
 import Calendar from 'primevue/calendar';
 import Galleria from 'primevue/galleria';
+import Chart from 'primevue/chart';
 
 
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -28,5 +29,6 @@ app.component('Password', Password)
 app.component('CascadeSelect', CascadeSelect)
 app.component('Calendar', Calendar)
 app.component('Galleria', Galleria)
+app.component('Chart', Chart)
 
 app.mount('#app')

@@ -2,6 +2,10 @@
 import MathsIntro from '@/components/stats/MathsIntro.vue';
 import TwoFields from '@/components/stats/TwoFields.vue';
 import LocationHistory from '@/components/stats/LocationHistory.vue';
+import PercentageDate from '@/components/stats/PercentageDate.vue';
+import ChartDateDiseased from '@/components/stats/ChartDateDiseased.vue';
+import ChartDateDiseaseTypePie from '@/components/stats/ChartDateDiseaseTypePie.vue';
+
 </script>
 <template>
 
@@ -28,8 +32,15 @@ import LocationHistory from '@/components/stats/LocationHistory.vue';
                 
                 <TwoFields :firstField="'Percentage of diseased plants according to the model'" :secondField="'83%'"/>
                 <TwoFields :firstField="'Percentage of diseased plants after modification by an expert'" :secondField="'70%'"/>
+                <PercentageDate />
+                <hr class="header-line-white" style="color:white;">
                 <LocationHistory/>
+                <hr class="header-line-white" style="color:white;">
 
+                <hr class="header-line-white" style="color:white;">
+                <ChartDateDiseased/>
+                <hr class="header-line-white" style="color:white;">
+                <ChartDateDiseaseTypePie/>
                 <!-- <el-row>
                     <el-col :span="22">
                         <div clas="grid-content ep-bg-purple">
