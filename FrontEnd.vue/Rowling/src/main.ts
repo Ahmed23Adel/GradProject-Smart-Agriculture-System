@@ -10,6 +10,7 @@ import InputText from 'primevue/inputtext'
 import FloatLabel from 'primevue/floatlabel';
 import Password from 'primevue/password';
 
+import Message from 'primevue/message';
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -22,5 +23,6 @@ app.use(PrimeVue);
 app.component('InputText', InputText)
 app.component('FloatLabel', FloatLabel)
 app.component('Password', Password)
+app.component('Message', Message)
 
 app.mount('#app')

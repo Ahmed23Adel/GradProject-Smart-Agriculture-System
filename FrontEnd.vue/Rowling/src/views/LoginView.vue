@@ -59,7 +59,8 @@ function validateInput() {
         </div>
         <Transition>
             <div class="alert-container" v-if="!isUsernameValid" @click="isUsernameValid = true">
-                <div class="alert alert-error">❌ Username must be at least 4 characters..❌</div>
+                <!-- <div class="alert alert-error">❌ Username must be at least 4 characters..❌</div> -->
+                <Message severity="error">Username must be at least 4 characters</Message>
 
             </div>
         </Transition>
@@ -74,7 +75,8 @@ function validateInput() {
 
         <Transition>
             <div class="alert-container" v-if="!isPasswordValid" @click="isPasswordValid = true">
-                <div class="alert alert-error">❌Password must be at least 4 characters..❌</div>
+                <!-- <div class="alert alert-error">❌Password must be at least 4 characters..❌</div> -->
+                <Message severity="error">Password must be at least 4 characters</Message>
 
             </div>
         </Transition>
