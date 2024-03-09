@@ -12,16 +12,25 @@ class SingleOption(ABC):
     def perform_action(self):
         raise ValueError("Not implemented")
     
+    def append_char(self, c):
+        return False
+    
     
 class SingleOptionInput(ABC):
     def __init__(self):
         self.msg = ""
         self.is_mouse_allowed = True
         self.is_keyboard_allowed = True
+        self.last_char="D"
         
     def append_char(self, c):
+        print("char: ",c)
+        if c == self.last_char:
+            self.perform_action()
+            return False
         if not len(self.msg) == 14:
             self.msg += c
+        return True
         
     def perform_action(self):
         raise ValueError("Not implemented")
@@ -76,6 +85,9 @@ class PageOptions(ABC):
     def perform_action(self):
         self.cur_option.perform_action()
         
+    def append_char(self, c):
+        return self.options[self.cur_index].append_char(c)
+ 
                 
 class GlobalContextLcd():
     def __init__(self,display):
@@ -108,4 +120,8 @@ class GlobalContextLcd():
         self.show_page()
         
     def clear(self):
-        self.display.lcd_clear() 
+        self.display.lcd_clear()
+        
+    def append_char(self, c):
+        if self.cur_page.append_char(c):
+            self.refresh()
