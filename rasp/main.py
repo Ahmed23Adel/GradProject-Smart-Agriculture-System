@@ -4,6 +4,12 @@ from time import sleep
 from LcdModule.OptionAbstract import GlobalContextLcd
 from LcdModule.hello import HelloPage
 
+## Joystick
+import RPi.GPIO as GPIO
+import ADC0834
+import time
+
+
 display = drivers.Lcd()
 gcontext = GlobalContextLcd(display)
 
@@ -14,23 +20,32 @@ gcontext.show_page()
 # Load the driver and set it to "display"
 # If you use something from the driver library use the "display." prefix first
 
-
-# Main body of code
+##buttons
+GPIO.setwarnings(False) 
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(14, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+gcontext.show_page()
 try:
     while True:
-        gcontext.show_page()
-        sleep(2)
-        gcontext.clear()
-        sleep(1)
-        # Remember that your sentences can only be 16 characters long!
-        #print("Hello from Rowling")
-        #display.lcd_display_string("Hi from Rowling", 1)  # Write line of text to first line of display
-        #display.lcd_display_string("Plants Magic", 2)  # Write line of text to second line of display
-        #sleep(2)                                           # Give time for the message to be read
-        #display.lcd_display_string("I am a display!", 1)   # Refresh the first line of display with a different message
-        #sleep(2)                                           # Give time for the message to be read
-        #display.lcd_clear()                                # Clear the display of any data
-        #sleep(2)                                           # Give time for the message to be read
+        if GPIO.input(14)== GPIO.HIGH:
+            print("Up pushed")
+            gcontext.move_up()
+            time.sleep(.5)
+        if GPIO.input(23)== GPIO.HIGH:
+            print("Down pushed")
+            gcontext.move_down()
+            time.sleep(.5)
+        if GPIO.input(18)== GPIO.HIGH:
+            print("center pushed")
+            gcontext.perform_action()
+            time.sleep(1)
+        
+        #sleep(2)
+        #gcontext.clear()
+        #sleep(1)
+        
 except KeyboardInterrupt:
     # If there is a KeyboardInterrupt (when you press ctrl+c), exit the program and cleanup
     print("Cleaning up!")

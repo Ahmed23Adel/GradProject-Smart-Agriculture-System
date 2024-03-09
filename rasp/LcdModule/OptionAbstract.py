@@ -15,40 +15,62 @@ class SingleOption(ABC):
     
 class SingleOptionInput(ABC):
     def __init__(self):
-        self.input = ""
+        self.msg = ""
         self.is_mouse_allowed = True
         self.is_keyboard_allowed = True
         
     def append_char(self, c):
-        if not self.input == 14:
-            self.input += c
+        if not len(self.msg) == 14:
+            self.msg += c
         
     def perform_action(self):
         raise ValueError("Not implemented")
     
-    
+    def set_msg(self, msg):
+        if len(msg) > 14:
+            raise ValueError("Message must be less than 16 characters")
+        self.msg =msg
     
 class PageOptions(ABC):
-    def __init__(self):
+    def __init__(self, initial_index = 0):
         self.options = []
-        self.initial_indx = 0
+        self.intial_index = initial_index
         self.cur_option = None
-            
-    def show_options(self, display):
-        if len(self.options) <=2:
-            for indx, option in enumerate(self.options):
-                display.lcd_display_string(option.msg, indx+1)
-                
-    def move_down(self):
+        self.cur_index = self.intial_index
+        
+        
+    def mark_not_exist(self):
         self.options[self.cur_index].set_msg(self.options[self.cur_index].msg[1:])
-        self.cur_idx +=1
+        
+    def mark_exist(self):
         self.options[self.cur_index].set_msg("*"+self.options[self.cur_index].msg)
         self.cur_option = self.options[self.cur_index]
+            
+    def show_options(self, display):
+        if self.cur_index == len(self.options)-1:
+            print("in last", self.cur_index, len(self.options)-1)
+            display.lcd_display_string(self.options[self.cur_index-1].msg, 1)
+            display.lcd_display_string(self.options[self.cur_index].msg, 2)
+        else:
+            display.lcd_display_string(self.options[self.cur_index].msg, 1)
+            display.lcd_display_string(self.options[self.cur_index+1].msg, 2)
+                
+                    
+                
+    def move_down(self):
+        if self.cur_index == len(self.options)-1:
+            return
+        print("Moving down in page")
+        self.mark_not_exist()
+        self.cur_index +=1
+        self.mark_exist()
+        self.cur_option = self.options[self.cur_index]
+        print([x.msg for x in self.options])
         
     def move_up(self):
-        self.options[self.cur_index].set_msg(self.options[self.cur_index].msg[1:])
-        self.cur_idx -=1
-        self.options[self.cur_index].set_msg("*"+self.options[self.cur_index].msg)
+        self.mark_not_exist()
+        self.cur_index -=1
+        self.mark_exist()
         self.cur_option = self.options[self.cur_index]
         
     def perform_action(self):
@@ -63,12 +85,27 @@ class GlobalContextLcd():
     def change_page(self, new_page):
         self.cur_page = new_page
         self.display.lcd_clear()
-        self.cur_page.show_options(display)
+        self.cur_page.show_options(self.display)
         
         
         
     def show_page(self):
         self.cur_page.show_options(self.display)
+  
+    def move_up(self):
+        self.cur_page.move_up()
+        self.refresh()
+        
+    def move_down(self):
+        self.cur_page.move_down()
+        self.refresh()
+       
+    def perform_action(self):
+        self.cur_page.perform_action()
+       
+    def refresh(self):
+        self.clear()
+        self.show_page()
         
     def clear(self):
         self.display.lcd_clear() 
