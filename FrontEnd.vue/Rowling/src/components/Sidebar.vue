@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import "primeicons/primeicons.css";
 import { ref } from "vue";
+import { useRouter } from "vue-router";
+const router =useRouter()
 
 const selected = ref(0);
 const fullWidth =ref(true)
@@ -10,11 +12,11 @@ const fullWidth =ref(true)
   <div class="wrapper">
     <i class="pi pi-list" @click="fullWidth=!fullWidth" style="color: var(--accenta);cursor: pointer;"/>
     <div class="sidebar-container" :class="{small:!fullWidth}">
-      <div class="today-summary" :class="{ selected: selected == 0 }" @click="selected=0">
+      <div class="today-summary" :class="{ selected: selected == 0 }" @click="selected=0;  ">
         <i class="pi pi-calendar"></i>
         <p>summary</p>
       </div>
-      <div class="statistics" :class="{ selected: selected == 1 }" @click="selected=1">
+      <div class="statistics" :class="{ selected: selected == 1 }" @click="selected=1; router.push('stats')">
         <i class="pi pi-chart-bar"></i>
         <p>statistics</p>
       </div>

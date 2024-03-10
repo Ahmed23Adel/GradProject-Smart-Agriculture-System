@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Fliter from "../components/summary/Filter.vue";
-import Sidebar from "../components/summary/Sidebar.vue";
+import Sidebar from "../components/Sidebar.vue";
 import Results from "../components/summary/Results.vue";
 
 import { ref } from "vue";
@@ -66,3 +66,4 @@ const selectedDiseaseCategory = ref();
     top: 0;
 }
 </style>
+../components/Sidebar.vue
