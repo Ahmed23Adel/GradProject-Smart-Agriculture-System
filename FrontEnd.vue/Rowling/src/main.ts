@@ -11,6 +11,10 @@ import PrimeVue from 'primevue/config';
 import InputText from 'primevue/inputtext'
 import FloatLabel from 'primevue/floatlabel';
 import Password from 'primevue/password';
+import CascadeSelect from 'primevue/cascadeselect';
+import Calendar from 'primevue/calendar';
+import Galleria from 'primevue/galleria';
+import Chart from 'primevue/chart';
 
 import Message from 'primevue/message';
 
@@ -28,5 +32,9 @@ app.component('InputText', InputText)
 app.component('FloatLabel', FloatLabel)
 app.component('Password', Password)
 app.component('Message', Message)
+app.component('CascadeSelect', CascadeSelect)
+app.component('Calendar', Calendar)
+app.component('Galleria', Galleria)
+app.component('Chart', Chart)
 
 app.mount('#app')
