@@ -1,16 +1,19 @@
 <script setup>
 import InputText from 'primevue/inputtext';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
 
 const usernameValue = ref("")
 const passwordValue = ref("")
 const isUsernameValid = ref(true)
 const isPasswordValid = ref(true)
 
+const router =useRouter()
 
 function login() {
     if (validateInput()) {
-
+        router.push('/summary')
     }
 }
 
