@@ -6,7 +6,7 @@ import 'element-plus/dist/index.css'
 
 import { createPinia } from 'pinia'
 
-import 'primevue/resources/themes/lara-dark-teal/theme.css'
+import 'primevue/resources/themes/lara-light-teal/theme.css'
 import PrimeVue from 'primevue/config';
 import InputText from 'primevue/inputtext'
 import FloatLabel from 'primevue/floatlabel';

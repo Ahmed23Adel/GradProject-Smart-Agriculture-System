@@ -2,13 +2,13 @@ export const PhotoService = {
     getData() {
         return [
             {
-                itemImageSrc: 'https://primefaces.org/cdn/primevue/images/galleria/galleria1.jpg',
+                itemImageSrc: 'https://bitrefine.group/images/1920x870/damaged_leaves_1920x870.jpg',
                 thumbnailImageSrc: 'https://primefaces.org/cdn/primevue/images/galleria/galleria1s.jpg',
                 alt: '83%',
                 title: '22-Feb-2024'
             },
             {
-                itemImageSrc: 'https://primefaces.org/cdn/primevue/images/galleria/galleria2.jpg',
+                itemImageSrc: 'https://blog.roboflow.com/content/images/size/w1000/2020/03/plantdoc-tomato-early-blight.png',
                 thumbnailImageSrc: 'https://primefaces.org/cdn/primevue/images/galleria/galleria2s.jpg',
                 alt: '83% (Declined)',
                 title: '22-Feb-2024'

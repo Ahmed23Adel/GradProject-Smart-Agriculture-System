@@ -44,7 +44,8 @@ const setChartOptions = () => {
     <el-row>
         <el-col :span="8" :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
             <div class="grid-content ep-bg-purple">
-                <p class="pre-date" style="margin:20px"> At date: </p>
+                <!-- <p class="pre-date" style="margin:20px"> At date: </p> -->
+                <h1 class="h3">At date:</h1>
                 <div class="card flex justify-content-center" style="margin:20px">
                     <Calendar v-model="fromDate" />
                 </div>
@@ -78,6 +79,7 @@ const setChartOptions = () => {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%; /* Ensure the container fills the height of its parent */
+    height: 100%; 
+    background-color: #A4CE95;
 }
 </style>

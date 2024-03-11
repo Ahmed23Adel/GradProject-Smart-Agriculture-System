@@ -35,7 +35,8 @@ const toDate = ref();
     <el-row>
         <el-col :span="22">
             <div clas="grid-content ep-bg-purple">
-                <h2 class="sub-header-gen-stats" style="color:white">History of certain location:</h2>
+                <!-- <h2 class="sub-header-gen-stats" style="color:white">History of certain location:</h2> -->
+                <h1 class="h3">History of certain location:</h1>
             </div>
         </el-col>
     </el-row>
@@ -58,6 +59,7 @@ const toDate = ref();
                     <p class="pre-date" style="margin:20px"> From: </p>
                     <div class="card flex justify-content-center" style="margin:20px">
                         <Calendar v-model="fromDate" />
+                        
                     </div>
                 </div>
             </el-col>

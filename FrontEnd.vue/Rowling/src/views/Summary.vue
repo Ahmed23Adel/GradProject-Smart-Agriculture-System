@@ -14,7 +14,7 @@ const selectedDiseaseCategory = ref();
 
 <template>
   <div class="summary-container">
-    <Sidebar class="sidebar" />
+    <Sidebar class="sidebar" :selected="0"/>
     <div class="main-container">
       <Fliter
         @day="
@@ -66,4 +66,3 @@ const selectedDiseaseCategory = ref();
     top: 0;
 }
 </style>
-../components/Sidebar.vue

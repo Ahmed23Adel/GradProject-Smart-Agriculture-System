@@ -18,12 +18,12 @@
             </div>
         </el-col>
     </el-row>
-    <hr class="bet-items-sep"> 
+    <!-- <hr class="bet-items-sep">  -->
 </template>
 
 <style scoped>
     .stat-item{
-    color: #bc4b51;
+    color: #5F5D9C;
     font-size: x-large;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 20px;

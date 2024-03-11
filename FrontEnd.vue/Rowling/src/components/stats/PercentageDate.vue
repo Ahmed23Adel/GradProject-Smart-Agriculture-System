@@ -7,7 +7,8 @@ import TwoFields from '@/components/stats/TwoFields.vue';
     <el-row>
         <el-col :span="22">
             <div class="grid-content ep-bg-purple">
-                <h2 class="sub-header-gen-stats">At specific date:</h2>
+                <h2 class="sub-header-gen-stats"></h2>
+                <h1 class="h3">At specific date:</h1>
             </div>
         </el-col>
     </el-row>

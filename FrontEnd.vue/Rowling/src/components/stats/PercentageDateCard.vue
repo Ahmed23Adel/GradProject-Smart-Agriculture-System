@@ -1,0 +1,161 @@
+<script setup>
+import Calendar from 'primevue/calendar';
+// import { ref } from "vue";
+import { ref, onMounted } from "vue";
+
+onMounted(() => {
+    chartData.value = setChartData();
+    chartOptions.value = setChartOptions();
+});
+
+const chartData = ref();
+const chartOptions = ref();
+
+const setChartData = () => {
+    const documentStyle = getComputedStyle(document.documentElement);
+
+    return {
+        labels: ['Early blight', 'Late bligh'],
+        datasets: [
+            // {
+            //     label: 'My First dataset',
+            //     backgroundColor: documentStyle.getPropertyValue('--cyan-500'),
+            //     borderColor: documentStyle.getPropertyValue('--cyan-500'),
+            //     data: [65, 59, 80, 81, 56, 55, 40]
+            // },
+            {
+                label: "% of disease type",
+                backgroundColor: documentStyle.getPropertyValue('--gray-500'),
+                borderColor: documentStyle.getPropertyValue('--gray-500'),
+                data: [28, 48, 40, 19, 86, 27, 90]
+            }
+        ]
+    };
+};
+const setChartOptions = () => {
+    const documentStyle = getComputedStyle(document.documentElement);
+    const textColor = documentStyle.getPropertyValue('--text-color');
+    const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
+    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+
+    return {
+        maintainAspectRatio: false,
+        aspectRatio: 0.8,
+        plugins: {
+            legend: {
+                labels: {
+                    color: textColor
+                }
+            }
+        },
+        scales: {
+            x: {
+                ticks: {
+                    color: textColorSecondary,
+                    font: {
+                        weight: 500
+                    }
+                },
+                grid: {
+                    display: false,
+                    drawBorder: false
+                }
+            },
+            y: {
+                ticks: {
+                    color: textColorSecondary
+                },
+                grid: {
+                    color: surfaceBorder,
+                    drawBorder: false
+                }
+            }
+        }
+    };
+}
+
+const date = ref()
+</script>
+<template>
+    <div class="row" style="padding:30px">
+        <div class="col-6">
+            <h1 class="h3">At specific date:</h1>
+        </div>
+        <div class="col-6">
+            <!-- <Calendar v-model="date" /> -->
+            <FloatLabel>
+                <Calendar v-model="date" inputId="birth_date" />
+                <label for="birth_date">Date</label>
+            </FloatLabel>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-xl-8">
+
+            <div class="row">
+                <div class="row">
+                    <div class="col-3">
+                        <div class="card" style="width: 12rem; background-color:#F4EDCC; border-radius: 20%;">
+                            <img src='/src/assets/images/stats/stats1.png' class="card-img-top card-img" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title">Count</h5>
+                                <p class="card-text">1024 images</p>
+                                <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="card" style="width: 12rem; background-color:#5F5D9C; border-radius: 20%;">
+                            <img src='/src/assets/images/stats/stats2.png' class="card-img-top card-img" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title">% diseased</h5>
+                                <p class="card-text">80%</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="card" style="width: 12rem; background-color:#6196A6; border-radius: 20%;">
+                            <img src='/src/assets/images/stats/modify.png' class="card-img-top card-img" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title">% diseased after modification</h5>
+                                <p class="card-text">75%</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="card" style="width: 12rem; background-color:#A4CE95; border-radius: 20%;">
+                            <img src='/src/assets/images/stats/percentage.png' class="card-img-top card-img" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title">Modification rate</h5>
+                                <p class="card-text">20%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-4 disease-percen">
+            <Chart type="bar" :data="chartData" :options="chartOptions" class="h-30rem" />
+        </div>
+    </div>
+
+</template>
+
+<style scoped>
+.card-img {
+    max-width: 70px;
+    left: 0;
+    height: auto;
+    margin: 20px;
+}
+
+.disease-percen {
+    /* margin-top:100px; */
+    padding: 30px;
+    background-color: #A4CE95;
+    border-radius: 20%;
+    /* padding-right:50px; */
+    /* margin:20px; */
+}
+</style>

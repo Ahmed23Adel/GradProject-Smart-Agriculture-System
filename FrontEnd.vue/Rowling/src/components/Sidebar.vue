@@ -1,30 +1,30 @@
 <script lang="ts" setup>
 import "primeicons/primeicons.css";
-import { ref } from "vue";
+import { defineProps,ref } from "vue";
 import { useRouter } from "vue-router";
 const router =useRouter()
 
-const selected = ref(0);
+defineProps(['selected'])
 const fullWidth =ref(true)
 </script>
 
 <template>
   <div class="wrapper">
-    <i class="pi pi-list" @click="fullWidth=!fullWidth" style="color: var(--accenta);cursor: pointer;"/>
+    <i class="pi pi-list" @click="fullWidth=!fullWidth" style="color: var(--accenta);cursor: pointer;"></i>
     <div class="sidebar-container" :class="{small:!fullWidth}">
-      <div class="today-summary" :class="{ selected: selected == 0 }" @click="selected=0;  ">
+      <div class="today-summary"  :class="{ selected: selected == 0 }" @click="router.push('summary')">
         <i class="pi pi-calendar"></i>
         <p>summary</p>
       </div>
-      <div class="statistics" :class="{ selected: selected == 1 }" @click="selected=1; router.push('stats')">
+      <div class="statistics" :class="{ selected: selected == 1 }" @click="router.push('stats')">
         <i class="pi pi-chart-bar"></i>
         <p>statistics</p>
       </div>
-      <div class="treatment" :class="{ selected: selected == 2 }" @click="selected=2">
+      <div class="treatment" :class="{ selected: selected == 2 }" @click="">
         <i class="pi pi-briefcase"></i>
         <p>treatments</p>
       </div>
-      <div class="reports" :class="{ selected: selected == 3 }" @click="selected=3"> 
+      <div class="reports" :class="{ selected: selected == 3 }" @click=""> 
         <i class="pi pi-file"></i>
         <p>reports</p>
       </div>

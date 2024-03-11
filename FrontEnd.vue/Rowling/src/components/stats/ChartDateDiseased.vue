@@ -42,8 +42,8 @@ const setChartData = () => {
             {
                 label: 'Percentage of diseased plants',
                 data: [83, 75, 65, 50],
-                backgroundColor: ['rgba(249, 115, 22, 0.2)', 'rgba(6, 182, 212, 0.2)', 'rgb(107, 114, 128, 0.2)', 'rgba(139, 92, 246 0.2)'],
-                borderColor: ['rgb(249, 115, 22)', 'rgb(6, 182, 212)', 'rgb(107, 114, 128)', 'rgb(139, 92, 246)'],
+                backgroundColor: ['rgba(164, 206, 149, 1)', 'rgba(164, 206, 149, 1)', 'rgba(164, 206, 149, 1)', 'rgba(164, 206, 149, 1)'],
+                borderColor: ['rgb(164, 206, 149)', 'rgb(6, 182, 212)', 'rgb(107, 114, 128)', 'rgb(139, 92, 246)'],
                 borderWidth: 1
             }
         ]
@@ -110,23 +110,14 @@ const setChartOptions = () => {
 
         </el-col>
     </el-row>
-    <!-- <el-row>
-        <el-col :span="24">
-            <div clas="grid-content ep-bg-purple">
-                <div class="card">
-                    <Chart type="bar" :data="chartData" :options="chartOptions" />
-                </div>
-            </div>
-        </el-col>
-    </el-row> -->
+
 </template>
 
 <style scoped>
 .chart-parent {
     width: 500px;
-    /* Adjust width as needed */
     height: 500px;
-    /* Adjust height as needed */
+    background-color: var(--primary);
 }
 
 .chart-parent-center {
@@ -134,6 +125,6 @@ const setChartOptions = () => {
     justify-content: center;
     align-items: center;
     height: 100%;
-    /* Ensure the container fills the height of its parent */
+    
 }
 </style>
