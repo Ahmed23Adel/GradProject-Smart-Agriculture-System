@@ -18,6 +18,7 @@ import Chart from 'primevue/chart';
 import Message from 'primevue/message';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
+import InputNumber from 'primevue/inputnumber';
 
 
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -40,6 +41,7 @@ app.component('Galleria', Galleria)
 app.component('Chart', Chart)
 app.component('Textarea', Textarea)
 app.component('Button', Button)
+app.component('InputNumber', InputNumber)
 
 
 app.mount('#app')
