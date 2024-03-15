@@ -11,6 +11,7 @@ import DefaultTreatments from "../components/treatment/DefaultTreatments.vue";
         <div class="main-container">
             <UpperBar/>
             <DefaultTreatments />
+            <hr class="header-line">
 
         </div>
     </div>

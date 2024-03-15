@@ -3,6 +3,7 @@ import NotFound from "../views/NotFound.vue"
 import StatsView from "../views/StatsView.vue"
 import Summary from   '../views/Summary.vue'
 import Treatment from   '../views/Treatment.vue'
+import DiseaseDefaultTreatment from   '../views/DiseaseDefaultTreatment.vue'
 
 import { createRouter, createWebHistory } from "vue-router"
 
@@ -19,6 +20,11 @@ const router = createRouter({
             path:"/treatment",
             name:"treatment",
             component: Treatment
+        },
+        {
+            path:"/treatment/disease-default-treatment/:id",
+            name:"DiseaseTreatmentDefault",
+            component: DiseaseDefaultTreatment
         },
         {
             path:"/stats",

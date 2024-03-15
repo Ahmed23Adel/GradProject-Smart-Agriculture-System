@@ -15,8 +15,10 @@ import CascadeSelect from 'primevue/cascadeselect';
 import Calendar from 'primevue/calendar';
 import Galleria from 'primevue/galleria';
 import Chart from 'primevue/chart';
-
 import Message from 'primevue/message';
+import Textarea from 'primevue/textarea';
+import Button from 'primevue/button';
+
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -36,5 +38,8 @@ app.component('CascadeSelect', CascadeSelect)
 app.component('Calendar', Calendar)
 app.component('Galleria', Galleria)
 app.component('Chart', Chart)
+app.component('Textarea', Textarea)
+app.component('Button', Button)
+
 
 app.mount('#app')

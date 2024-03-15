@@ -2,46 +2,23 @@
 import {defineProps} from "vue"
 import { ref } from 'vue';
 
-const {diseaesName} = defineProps(['diseaesName','backColor'])
+const {diseaesName, backColor, diseaseId} = defineProps(['diseaesName','backColor', 'diseaseId'])
 console.log(diseaesName)
-// const diseaesName = ref("Early blight");
 
-// document.addEventListener('DOMContentLoaded', function () {
-//     var maxLength = 20;
-//     var default_text = document.getElementById('blight-text');
-//     var readMoreLink = document.getElementById('read-more-link');
-
-//     var content = default_text.textContent;
-//     if (content.length > maxLength) {
-//         default_text.textContent = content.slice(0, maxLength) + "...";
-//         readMoreLink.style.display = 'inline';
-//         readMoreLink.addEventListener('click', function (event) {
-//             event.preventDefault();
-//             if (default_text.textContent.length === maxLength) {
-//                 default_text.textContent = content;
-//                 readMoreLink.textContent = 'Read Less';
-//             } else {
-//                 default_text.textContent = content.slice(0, maxLength);
-//                 readMoreLink.textContent = 'Read More';
-//             }
-//         });
-//     }
-// });
+const toRef = ref("")
+toRef.value = "/treatment/disease-default-treatment/" + diseaseId;
 
 </script>
 
 <template>
-    <!-- Cover the soil under the plants with mulch, such as fabric, straw,
-    plastic mulch, or dried leaves. Water at the base of each plant, using drip irrigation, a soaker hose,
-    or careful hand watering. Pruning the bottom leaves can also prevent early blight spores from splashing
-    up from the soil onto leaves. -->
-    <div class="card card-border" style="width: 12rem; background-color:#F4EDCC; border-radius: 20%;">
+    <div class="card wobble-horizontal" style="width: 12rem; background-color:#F4EDCC; border-radius: 20%;">
         <img src='/src/assets/images/treatment/treatment.png' class="card-img-top card-img" alt="...">
         <div class="card-body">
             <!-- <h5 class="card-title">{{ diseaesName }} default treatment</h5> -->
             <h5 class="card-title">{{diseaesName}} default treatment</h5>
             <p class="card-text" id="blight-text" max-length="20">Cover the soil under...</p>
-            <a href="#" id="read-more-link" class="btn btn-primary read-more">Read More</a>
+			<router-link :to="toRef"><a href="#" id="read-more-link" class="btn btn-primary read-more">Read More</a></router-link>
+            
         </div>
     </div>
 </template>
@@ -61,5 +38,44 @@ console.log(diseaesName)
 .card-border:hover {
     transform: scale(110%);
     cursor: pointer;
+}
+@keyframes wobble-horizontal {
+	16.65% {
+		transform: translateX(8px);
+	}
+
+	33.3% {
+		transform: translateX(-6px);
+	}
+
+	49.95% {
+		transform: translateX(4px);
+	}
+
+	66.6% {
+		transform: translateX(-2px);
+	}
+
+	83.25% {
+		transform: translateX(1px);
+	}
+
+	100% {
+		transform: translateX(0);
+	}
+}
+.wobble-horizontal {
+	display: inline-block;
+
+	@include hideTapHighlightColor();
+	@include hardwareAccel();
+	@include improveAntiAlias();
+
+	&:hover {
+		animation-name: wobble-horizontal;
+		animation-duration: 1s;
+		animation-timing-function: ease-in-out;
+		animation-iteration-count: 1;
+	}
 }
 </style>
