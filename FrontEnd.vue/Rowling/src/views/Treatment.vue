@@ -4,6 +4,7 @@ import UpperBar from "../components/treatment/UpperBar.vue";
 import DefaultTreatments from "../components/treatment/DefaultTreatments.vue";
 import DiseasedLocations from "../components/treatment/DiseasedLocations.vue";
 import LocationHistory from '@/components/treatment/LocationHistory.vue';
+import AcceptLocationsTreated from '@/components/treatment/AcceptLocationsTreated.vue';
 
 
 </script>
@@ -16,6 +17,8 @@ import LocationHistory from '@/components/treatment/LocationHistory.vue';
             <hr class="header-line">
             <DiseasedLocations/>
             <LocationHistory/>
+            <hr class="header-line">
+            <AcceptLocationsTreated/>
 
         </div>
     </div>
