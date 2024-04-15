@@ -1,5 +1,6 @@
 const plants=[
 {
+    id:0,
     src:'/src//assets/images/plants/img1.jpeg',
     plant:'Tomato',
     confidence:90,
@@ -8,6 +9,7 @@ const plants=[
     disease:'early blight'
 },
 {
+    id:1,
     src:'/src/assets/images/plants/img2.jpeg',
     plant:'Potato',
     confidence:90,
@@ -16,6 +18,7 @@ const plants=[
     disease:'early blight'
 },
 {
+    id:2,
     src:'/src/assets/images/plants/img3.jpeg',
     plant:'Tomato',
     confidence:50,
@@ -24,6 +27,7 @@ const plants=[
     disease: ''
 },
 {
+    id:3,
     src:'/src/assets/images/plants/img3.jpeg',
     plant:'Carot',
     confidence:0,
@@ -32,6 +36,7 @@ const plants=[
     disease:'early blight'
 },
 {
+    id:4,
     src:'/src/assets/images/plants/img1.jpeg',
     plant:'Tomato',
     confidence:90,
@@ -40,6 +45,7 @@ const plants=[
     disease:'early blight'
 },
 {
+    id:5,
     src:'/src/assets/images/plants/img1.jpeg',
     plant:'Potato',
     confidence:90,
@@ -48,6 +54,7 @@ const plants=[
     disease:'early blight'
 },
 {
+    id:6,
     src:'/src/assets/images/plants/img3.jpeg',
     plant:'Tomato',
     confidence:60,
@@ -56,6 +63,7 @@ const plants=[
     disease:''
 },
 {
+    id:7,
     src:'/src/assets/images/plants/img1.jpeg',
     plant:'Tomato',
     confidence:90,

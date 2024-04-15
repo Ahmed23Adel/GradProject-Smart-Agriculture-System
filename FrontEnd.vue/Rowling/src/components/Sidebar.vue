@@ -24,7 +24,7 @@ const fullWidth =ref(true)
         <i class="pi pi-briefcase"></i>
         <p>treatments</p>
       </div>
-      <div class="reports" :class="{ selected: selected == 3 }" @click=""> 
+      <div class="reports" :class="{ selected: selected == 3 }" @click="router.push('reports')"> 
         <i class="pi pi-file"></i>
         <p>reports</p>
       </div>
@@ -36,10 +36,10 @@ const fullWidth =ref(true)
 * {
   margin: 0;
   padding: 0;
-  font-size: 12px;
+  font-size:12px;
 }
 .wrapper{
-    padding-left: 8px;
+    padding-left: 4px;
     background-color: var(--secondary);
     width: fit-content;
     height: 100vh;
@@ -47,7 +47,7 @@ const fullWidth =ref(true)
 }
 .sidebar-container {
   height: 100vh;
-  width: 120px;
+  width: 100px;
   background-color: var(--secondary);
   color: var(--accenta);
   display: flex;
@@ -65,14 +65,14 @@ const fullWidth =ref(true)
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 16px;
+  gap: 4px;
   margin: 0;
   padding: 0;
   cursor: pointer;
   text-transform: capitalize;
   width: 100%;
   padding-block: 8px;
-  padding-inline: 16px;
+  padding-inline: 8px;
   position: relative;
 }
 .selected {
@@ -110,6 +110,6 @@ const fullWidth =ref(true)
     border-radius: 100%;
 }
 i{
-    padding: 8px;
+    padding: 4px;
 }
 </style>

@@ -2,6 +2,7 @@ import LoginView from "../views/LoginView.vue"
 import NotFound from "../views/NotFound.vue"
 import StatsView from "../views/StatsView.vue"
 import Summary from   '../views/Summary.vue'
+import Reports from  '../views/Reports.vue'
 import { createRouter, createWebHistory } from "vue-router"
 
 
@@ -27,7 +28,13 @@ const router = createRouter({
             path:"/summary",
             name:"summary",
             component: Summary
+        },
+        {
+            path:"/reports",
+            name:"reports",
+            component: Reports
         }
+
     ]
 })
 

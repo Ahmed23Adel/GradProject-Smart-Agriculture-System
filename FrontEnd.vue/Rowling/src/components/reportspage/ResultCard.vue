@@ -19,17 +19,18 @@ defineProps(["plant"]);
 .card-container {
   color: #343434;
   text-transform: capitalize;
-  padding: 16px;
+  padding: 8px;
   border-radius: 8px;
   box-shadow: 2px 2px 4px 4px #343434;
-  line-height: 4px;
+  line-height: 0px;
   cursor: pointer;
-  margin: 12px;
+  margin: 8px;
+  font-size: 12px;
 }
 img {
-  width: 300px;
+  width: 100%;
   aspect-ratio: 1/0.8;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 strong{
     display: inline-block;

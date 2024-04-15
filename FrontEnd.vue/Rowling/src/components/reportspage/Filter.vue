@@ -77,8 +77,8 @@ function emitSelections() {
           v-model="option.var"
           :maxSelectedLabels="1"
           :pt="{
-            wrapper: { style: { backgroundColor: 'var(--secondary)' } },
-            input: { style: { color: 'var(--accenta)' } },
+            wrapper: { style: { backgroundColor: 'var(--secondary)'} },
+            input: { style: { color: 'var(--accenta)',fontSize:'12px',paddingBlock:'4px' } },
             item: { style: { color: 'var(--accenta)' } },
           }"
         />
@@ -89,11 +89,14 @@ function emitSelections() {
         <RadioButton
           v-model="option.var"
           :inputId="selection.name"
+          class="radiobutton"
           name="dynamic"
           :value="selection.name"
           :pt="{
             box: { style: { backgroundColor: 'var(--transparent)' } },
             icon: { style: { backgroundColor: 'var(--accenta)' } },
+            root: { style: { backgroundColor: 'white', borderRadius:'100%',border:'5px'} },
+            input: { style: { backgroundColor: 'var(--accenta)' } },
           }"
         />
         <label style="color: var(--accenta)" class="ml-2">{{
@@ -107,30 +110,33 @@ function emitSelections() {
 
 <style scoped>
 .filter-container {
-  padding-top: 32px;
-  width: 62.5%;
+  padding-top: 16px;
+  width: 90%;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
+  margin-inline: auto;
+  font-size: 12px;
 }
 .dropdown-container {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
 }
 .options-container {
-  width: 30%;
+  width: 100%;
 }
 .dropdown {
+  height: 25px;
   background-color: var(--secondary);
   color: var(--accenta);
-  width: 30%;
+  font-size: 12px;
 }
 .optin-container {
-  width: 80%;
+  width: 90%;
   margin-inline: auto;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
 }
 .optin-container > * {
   margin: 0px;
@@ -140,9 +146,10 @@ function emitSelections() {
   gap: 8px;
 }
 button {
-  width: 30%;
+  width: 80%;
   margin-inline: auto;
   background-color: var(--accentb);
+  height: 20px;
+  border-radius: 8px;
 }
-
 </style>
