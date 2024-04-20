@@ -20,7 +20,7 @@ const fullWidth =ref(true)
         <i class="pi pi-chart-bar"></i>
         <p>statistics</p>
       </div>
-      <div class="treatment" :class="{ selected: selected == 2 }" @click="">
+      <div class="treatment" :class="{ selected: selected == 2 }" @click="router.push('treatment')">
         <i class="pi pi-briefcase"></i>
         <p>treatments</p>
       </div>

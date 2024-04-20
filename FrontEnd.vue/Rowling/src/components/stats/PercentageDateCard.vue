@@ -1,33 +1,70 @@
 <script setup>
 import Calendar from 'primevue/calendar';
-// import { ref } from "vue";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch  } from "vue";
+import { HttpRequester } from './nets'; // Adjust the file path as necessary
 
-onMounted(() => {
+const bearer = 'hi';
+
+const today = new Date(); // Create a new Date object for today's date
+const date = ref(today);
+const count = ref(0);
+const percentage_diseased = ref(0);
+const percentage_diseased_after_mod = ref(0);
+const mod_rate = ref(0);
+const eb_per = ref(0);
+const lb_per = ref(0);
+
+
+function formatDate(date) {
+    const month = date.getMonth() + 1; // Months are 0-based, so add 1
+    const day = date.getDate();
+    const year = date.getFullYear();
+    // Pad month and  with leading zeros if necessary
+    const paddedMonth = month.toString().padStart(2, '0');
+    const paddedDay = day.toString().padStart(2, '0');
+    // Return the formatted date as a string
+    return `${paddedMonth}/${paddedDay}/${year}`;
+}
+
+const fetchRoundStatsAtDate = async () => {
+    const queryParams = {
+        date_str: formatDate(date.value),
+    };
+    const requester = new HttpRequester('http://127.0.0.1:8000/date_pics', bearer);
+    const requester_data = await requester.callApi(queryParams);
+    count.value = requester_data.count;
+    percentage_diseased.value = requester_data.percentage_diseased;
+    percentage_diseased_after_mod.value = requester_data.percentage_diseased_after_mod;
+    mod_rate.value = requester_data.mod_rate;
+    eb_per.value = requester_data.EB_per;
+    lb_per.value = requester_data.LB_per;
+};
+
+onMounted(async () => {
+    await fetchRoundStatsAtDate();
     chartData.value = setChartData();
     chartOptions.value = setChartOptions();
+    
 });
 
+watch(date, (newDate) => {
+    const formattedDate = formatDate(newDate);
+    fetchRoundStatsAtDate(formattedDate);
+});
 const chartData = ref();
 const chartOptions = ref();
 
 const setChartData = () => {
     const documentStyle = getComputedStyle(document.documentElement);
-
+    
     return {
         labels: ['Early blight', 'Late bligh'],
         datasets: [
-            // {
-            //     label: 'My First dataset',
-            //     backgroundColor: documentStyle.getPropertyValue('--cyan-500'),
-            //     borderColor: documentStyle.getPropertyValue('--cyan-500'),
-            //     data: [65, 59, 80, 81, 56, 55, 40]
-            // },
             {
                 label: "% of disease type",
                 backgroundColor: documentStyle.getPropertyValue('--gray-500'),
                 borderColor: documentStyle.getPropertyValue('--gray-500'),
-                data: [28, 48, 40, 19, 86, 27, 90]
+                data: [eb_per.value, lb_per.value]
             }
         ]
     };
@@ -74,7 +111,7 @@ const setChartOptions = () => {
     };
 }
 
-const date = ref()
+
 </script>
 <template>
     <div class="row" style="padding:30px">
@@ -82,7 +119,6 @@ const date = ref()
             <h1 class="h3">At specific date:</h1>
         </div>
         <div class="col-6">
-            <!-- <Calendar v-model="date" /> -->
             <FloatLabel>
                 <Calendar v-model="date" inputId="birth_date" />
                 <label for="birth_date">Date</label>
@@ -100,7 +136,7 @@ const date = ref()
                             <img src='/src/assets/images/stats/stats1.png' class="card-img-top card-img" alt="...">
                             <div class="card-body">
                                 <h5 class="card-title">Count</h5>
-                                <p class="card-text">1024 images</p>
+                                <p class="card-text">{{ count }} images</p>
                                 <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
                             </div>
                         </div>
@@ -110,7 +146,7 @@ const date = ref()
                             <img src='/src/assets/images/stats/stats2.png' class="card-img-top card-img" alt="...">
                             <div class="card-body">
                                 <h5 class="card-title">% diseased</h5>
-                                <p class="card-text">80%</p>
+                                <p class="card-text">{{ percentage_diseased }}%</p>
                             </div>
                         </div>
                     </div>
@@ -119,7 +155,7 @@ const date = ref()
                             <img src='/src/assets/images/stats/modify.png' class="card-img-top card-img" alt="...">
                             <div class="card-body">
                                 <h5 class="card-title">% diseased after modification</h5>
-                                <p class="card-text">75%</p>
+                                <p class="card-text">{{ percentage_diseased_after_mod }}%</p>
                             </div>
                         </div>
                     </div>
@@ -128,7 +164,7 @@ const date = ref()
                             <img src='/src/assets/images/stats/percentage.png' class="card-img-top card-img" alt="...">
                             <div class="card-body">
                                 <h5 class="card-title">Modification rate</h5>
-                                <p class="card-text">20%</p>
+                                <p class="card-text">{{ mod_rate }}%</p>
                             </div>
                         </div>
                     </div>

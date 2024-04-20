@@ -1,9 +1,45 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
+import { HttpRequester } from './nets'; // Adjust the file path as necessary
+const bearer = 'hi';
 
-onMounted(() => {
+const today = new Date(); // Create a new Date object for today's date
+const atDate = ref(today)
+const diseases = ref()
+const percentages = ref()
+
+async function fetchDiseasePercentages() {
+    const requester = new HttpRequester('http://127.0.0.1:8000/get_disease_statistics', bearer);
+    const queryParams = {
+        date: atDate.value
+    };
+    console.log("queryParams", queryParams)
+    const requester_data = await requester.callApi(queryParams);
+    diseases.value = requester_data.diseases;
+    percentages.value = requester_data.percentages;
+}
+
+onMounted(async () => {
+    await fetchDiseasePercentages();
     chartData.value = setChartData();
     chartOptions.value = setChartOptions();
+    
+});
+
+function formatDate(date) {
+    const month = date.getMonth() + 1; // Months are 0-based, so add 1
+    const day = date.getDate();
+    const year = date.getFullYear();
+    // Pad month and  with leading zeros if necessary
+    const paddedMonth = month.toString().padStart(2, '0');
+    const paddedDay = day.toString().padStart(2, '0');
+    // Return the formatted date as a string
+    return `${paddedMonth}/${paddedDay}/${year}`;
+}
+
+watch(atDate, (newDate) => {
+    const formattedDate = formatDate(newDate);
+    fetchDiseasePercentages(formattedDate);
 });
 
 const chartData = ref();
@@ -13,10 +49,10 @@ const setChartData = () => {
     const documentStyle = getComputedStyle(document.body);
 
     return {
-        labels: ['Early blight', 'LateBlight', 'others'],
+        labels: diseases.value,
         datasets: [
             {
-                data: [540, 325, 702],
+                data: percentages.value,
                 backgroundColor: [documentStyle.getPropertyValue('--cyan-500'), documentStyle.getPropertyValue('--orange-500'), documentStyle.getPropertyValue('--gray-500')],
                 hoverBackgroundColor: [documentStyle.getPropertyValue('--cyan-400'), documentStyle.getPropertyValue('--orange-400'), documentStyle.getPropertyValue('--gray-400')]
             }
@@ -47,7 +83,7 @@ const setChartOptions = () => {
                 <!-- <p class="pre-date" style="margin:20px"> At date: </p> -->
                 <h1 class="h3">At date:</h1>
                 <div class="card flex justify-content-center" style="margin:20px">
-                    <Calendar v-model="fromDate" />
+                    <Calendar v-model="atDate" />
                 </div>
             </div>
         </el-col>

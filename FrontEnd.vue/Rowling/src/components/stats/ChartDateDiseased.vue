@@ -1,49 +1,58 @@
 <script setup>
 import { ref, onMounted } from "vue";
+import { HttpRequester } from './nets'; // Adjust the file path as necessary
 
-
-const selectedLocation = ref();
+const bearer = 'hi';
 const locations = ref([
     {
         name: "LocationX",
-        subLocations: [
-            {
-                cname: "(LocX21) 41°24'12.2N 2°10'26.5 E",
-                cname: "(LocX22) 42°24'12.2N 2°10'26.5 E",
-                cname: "(LocX23) 43°24'12.2N 2°10'26.5 E",
-            }
-        ]
+        
     },
     {
         name: "LocationY",
-        subLocations: [
-            {
-                cname: "(LocY21) 41°24'12.2N 2°10'26.5 E",
-                cname: "(LocY22) 42°24'12.2N 2°10'26.5 E",
-                cname: "(LocY23) 43°24'12.2N 2°10'26.5 E",
-            }
-        ]
+        
     }
 ])
+const selectedLocation = ref(locations.value[0]);
 
+const dates = ref();
+const percentages = ref();
 
-onMounted(() => {
+async function fetchDatesDiseases() {
+    const requester = new HttpRequester('http://127.0.0.1:8000/get-date-per-diseased-plants', bearer);
+    const queryParams = {
+        location: selectedLocation.value,
+    };
+    const requester_data = await requester.callApi(queryParams);
+    dates.value = requester_data.dates;
+    percentages.value = requester_data.percentages;
+}
+
+onMounted(async () => {
+    await fetchDatesDiseases();
     chartData.value = setChartData();
     chartOptions.value = setChartOptions();
+    
 });
+
 
 const chartData = ref();
 const chartOptions = ref();
 
 const setChartData = () => {
+    const constantColorValue = 'rgba(164, 206, 149, 1)';
+    const colorsArray = new Array(percentages.length).fill(constantColorValue);
+
+    const constantBorderValue = 'rgb(139, 92, 246)';
+    const bordersArray = new Array(percentages.length).fill(constantBorderValue);
     return {
-        labels: ['22-4-2024', '23-4-2024', '22-4-2024', '24-4-2024'],
+        labels: dates.value,
         datasets: [
             {
                 label: 'Percentage of diseased plants',
-                data: [83, 75, 65, 50],
-                backgroundColor: ['rgba(164, 206, 149, 1)', 'rgba(164, 206, 149, 1)', 'rgba(164, 206, 149, 1)', 'rgba(164, 206, 149, 1)'],
-                borderColor: ['rgb(164, 206, 149)', 'rgb(6, 182, 212)', 'rgb(107, 114, 128)', 'rgb(139, 92, 246)'],
+                data: percentages.value,
+                backgroundColor: colorsArray,
+                borderColor: bordersArray,
                 borderWidth: 1
             }
         ]
@@ -91,7 +100,7 @@ const setChartOptions = () => {
             <div class="grid-content ep-bg-purple">
                 <p class="pre-date" style="margin:20px"> Location </p>
                 <div class="card flex justify-content-center" style="margin:20px">
-                    <CascadeSelect v-model="selectedLocation" :options="locations" optionLabel="cname"
+                    <CascadeSelect v-model="selectedLocation" :options="locations" optionLabel="name"
                         optionGroupLabel="name" :optionGroupChildren="['subLocations']" style="min-width: 14rem"
                         placeholder="Select a Location" />
                 </div>
@@ -125,6 +134,6 @@ const setChartOptions = () => {
     justify-content: center;
     align-items: center;
     height: 100%;
-    
+
 }
 </style>

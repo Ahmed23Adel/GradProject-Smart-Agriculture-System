@@ -2,10 +2,45 @@
 import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap"
 import { ref, onMounted } from "vue";
+import axios from 'axios';
+// import nets from '.nets'
+import { HttpRequester } from './nets'; // Adjust the file path as necessary
 
-onMounted(() => {
+const bearer = 'hi';
+
+//The four cards
+const count = ref(0);
+const percentage_diseased = ref(0);
+const percentage_diseased_after_mod = ref(0);
+const mod_rate = ref(0);
+
+const fetchTodayStats = async () => {
+    const requester = new HttpRequester('http://127.0.0.1:8000/today_pics', bearer);
+    const requester_data = await requester.callApi();
+    count.value = requester_data.count;
+    percentage_diseased.value = requester_data.percentage_diseased;
+    percentage_diseased_after_mod.value = requester_data.percentage_diseased_after_mod;
+    mod_rate.value = requester_data.mod_rate;
+};
+
+// Graph for months and percentage
+const mons = ref([]);
+const EB = ref([]);
+const LB = ref([]);
+const fetchMonsPercentages = async () => {
+    const requester = new HttpRequester('http://127.0.0.1:8000/disease_mons_percentage', bearer);
+    const requester_data = await requester.callApi();
+    mons.value = requester_data.mons;
+    EB.value = requester_data.EB;
+    LB.value = requester_data.LB;
+};
+
+onMounted(async () => {
+    await fetchMonsPercentages();
+    fetchTodayStats();
     chartData.value = setChartData();
     chartOptions.value = setChartOptions();
+    
 });
 
 const chartData = ref();
@@ -13,20 +48,20 @@ const chartOptions = ref();
         
 const setChartData = () => {
     const documentStyle = getComputedStyle(document.documentElement);
-
     return {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        labels: mons.value,
+        
         datasets: [
             {
                 label: 'Early blight',
-                data: [65, 59, 80, 81, 56, 55, 40],
+                data: EB.value,
                 fill: false,
                 borderColor: documentStyle.getPropertyValue('--cyan-500'),
                 tension: 0.4
             },
             {
                 label: 'Late blight',
-                data: [28, 48, 40, 19, 86, 27, 90],
+                data: LB.value,
                 fill: false,
                 borderColor: documentStyle.getPropertyValue('--gray-500'),
                 tension: 0.4
@@ -93,7 +128,7 @@ const setChartOptions = () => {
                             <img src='/src/assets/images/stats/stats1.png' class="card-img-top card-img" alt="...">
                             <div class="card-body">
                                 <h5 class="card-title">Count</h5>
-                                <p class="card-text">1024 images</p>
+                                <p class="card-text">{{ count }} images</p>
                                 <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
                             </div>
                         </div>
@@ -103,7 +138,7 @@ const setChartOptions = () => {
                             <img src='/src/assets/images/stats/stats2.png' class="card-img-top card-img" alt="...">
                             <div class="card-body">
                                 <h5 class="card-title">% diseased</h5>
-                                <p class="card-text">80%</p>
+                                <p class="card-text">{{ percentage_diseased }}%</p>
                             </div>
                         </div>
                     </div>
@@ -112,7 +147,7 @@ const setChartOptions = () => {
                             <img src='/src/assets/images/stats/modify.png' class="card-img-top card-img" alt="...">
                             <div class="card-body">
                                 <h5 class="card-title">% diseased after modification</h5>
-                                <p class="card-text">75%</p>
+                                <p class="card-text">{{ percentage_diseased_after_mod }}%</p>
                             </div>
                         </div>
                     </div>
@@ -121,7 +156,7 @@ const setChartOptions = () => {
                             <img src='/src/assets/images/stats/percentage.png' class="card-img-top card-img" alt="...">
                             <div class="card-body">
                                 <h5 class="card-title">Modification rate</h5>
-                                <p class="card-text">20%</p>
+                                <p class="card-text">{{ mod_rate }}%</p>
                             </div>
                         </div>
                     </div>

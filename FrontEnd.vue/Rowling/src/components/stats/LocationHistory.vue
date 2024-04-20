@@ -1,33 +1,79 @@
 <script setup>
-import { ref } from "vue";
+import { ref, watch, onMounted } from "vue";
 import GraphOfImages from "./GraphOfImages.vue"
+import { HttpRequester } from './nets'; // Adjust the file path as necessary
+const bearer = 'hi';
 
-const selectedLocation = ref();
+
 const locations = ref([
     {
         name: "LocationX",
-        subLocations: [
-            {
-                cname: "(LocX21) 41°24'12.2N 2°10'26.5 E",
-                cname: "(LocX22) 42°24'12.2N 2°10'26.5 E",
-                cname: "(LocX23) 43°24'12.2N 2°10'26.5 E",
-            }
-        ]
+        
     },
     {
         name: "LocationY",
-        subLocations: [
-            {
-                cname: "(LocY21) 41°24'12.2N 2°10'26.5 E",
-                cname: "(LocY22) 42°24'12.2N 2°10'26.5 E",
-                cname: "(LocY23) 43°24'12.2N 2°10'26.5 E",
-            }
-        ]
+        
     }
 ])
 
-const fromDate = ref();
-const toDate = ref();
+
+const selectedLocation = ref(locations.value[0]);
+
+const today = new Date(); // Create a new Date object for today's date
+const fromDate = ref(today);
+const toDate = ref(today);
+
+
+async function fetchLocationHistory(location, fromDate, toDate) {
+    const requester = new HttpRequester('http://127.0.0.1:8000/location-history', bearer);
+    const queryParams = {
+        location: selectedLocation.value.name,
+        from_date: fromDate,
+        to_date: toDate,
+    };
+    const requester_data = await requester.callApi(queryParams);
+    images.value = requester_data.allHistory;
+}
+
+function formatDate(date) {
+    const month = date.getMonth() + 1; // Months are 0-based, so add 1
+    const day = date.getDate();
+    const year = date.getFullYear();
+    // Pad month and  with leading zeros if necessary
+    const paddedMonth = month.toString().padStart(2, '0');
+    const paddedDay = day.toString().padStart(2, '0');
+    // Return the formatted date as a string
+    return `${paddedMonth}/${paddedDay}/${year}`;
+}
+
+const images = ref();
+const responsiveOptions = ref([
+    {
+        breakpoint: '1300px',
+        numVisible: 4
+    },
+    {
+        breakpoint: '575px',
+        numVisible: 1
+    }
+]);
+
+onMounted(() => {
+    const formattedFromDate = formatDate(fromDate.value);
+    const formattedToDate = formatDate(toDate.value);
+    fetchLocationHistory(location, formattedFromDate, formattedToDate);
+});
+
+watch([selectedLocation, fromDate, toDate], (newValues, oldValues) => {
+    const [newLocation, newFromDate, newToDate] = newValues;
+
+    // Format the new dates
+    const formattedFromDate = formatDate(newFromDate);
+    const formattedToDate = formatDate(newToDate);
+
+    // Call fetchLocationHistory with the new values
+    fetchLocationHistory(newLocation, formattedFromDate, formattedToDate);
+});
 </script>
 
 
@@ -47,7 +93,7 @@ const toDate = ref();
                 <div class="grid-content ep-bg-purple">
                     <p class="pre-date" style="margin:20px"> Location </p>
                     <div class="card flex justify-content-center" style="margin:20px">
-                        <CascadeSelect v-model="selectedLocation" :options="locations" optionLabel="cname"
+                        <CascadeSelect v-model="selectedLocation" :options="locations" optionLabel="name"
                             optionGroupLabel="name" :optionGroupChildren="['subLocations']" style="min-width: 14rem"
                             placeholder="Select a Location" />
                     </div>
@@ -66,7 +112,7 @@ const toDate = ref();
 
             <el-col :span="8" :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
                 <div class="grid-content ep-bg-purple">
-                    <p style="margin:20px"> To: </p>
+                    <p class="pre-date" style="margin:20px"> To: </p>
                     <div class="card flex justify-content-center" style="margin:20px">
                         <Calendar v-model="toDate" />
                     </div>
@@ -78,8 +124,20 @@ const toDate = ref();
         <el-row>
             <el-col :span="24">
                 <div class="grid-content ep-bg-purple graph-image-parent">
-                    <GraphOfImages />
-                    <!-- Hello world -->
+                    <div class="card">
+                        <Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5" containerStyle="max-width: 640px">
+                            <template #item="slotProps">
+                                <img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt" style="width: 100%; display: block" />
+                            </template>
+                            <template #thumbnail="slotProps">
+                                <img :src="slotProps.item.thumbnailImageSrc" :alt="slotProps.item.alt" style="display: block" />
+                            </template>
+                            <template #caption="slotProps">
+                                <div class="text-xl mb-2 font-bold">{{ slotProps.item.title }}</div>
+                                <p class="text-white">{{ slotProps.item.alt }}</p>
+                            </template>
+                        </Galleria>
+                    </div>
                 </div>
 
             </el-col>
