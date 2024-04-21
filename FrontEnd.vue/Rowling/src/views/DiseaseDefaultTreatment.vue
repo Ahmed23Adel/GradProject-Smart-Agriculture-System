@@ -2,19 +2,50 @@
 import { useRoute } from 'vue-router';
 import Sidebar from "../components/Sidebar.vue";
 import UpperBarDisesae from "../components/treatment/UpperBarDisesae.vue";
-import { ref } from "vue"
+import { ref, onMounted } from "vue"
+import { HttpRequester } from './nets'; // Adjust the file path as necessary
+const bearer = 'hi';
 
 const route = useRoute()
 const diseaseId = route.params['id']
 
 const treatmentValue = ref("")
 treatmentValue.value = "Cover the soil under the plants with mulch, such as fabric, straw, plastic mulch, or dried leaves. Water at the base of each plant, using drip irrigation, a soaker hose, or careful hand watering. Pruning the bottom leaves can also prevent early blight spores from splashing up from the soil onto leaves."
+
+
+
+
+function saveUpdates(){
+    const requester = new HttpRequester('http://127.0.0.1:8000/update-default-treatment', bearer);
+    let diseaseNameAbbreviation = ""
+    if (diseaseId == 1){
+        diseaseNameAbbreviation = "EB"
+    }
+    else{
+        diseaseNameAbbreviation = "Late blight"
+    }
+    const queryParams = {
+        diseaesName: diseaseNameAbbreviation,
+        treatment: treatmentValue.value,
+    };
+    const requester_data = requester.callApiPut(queryParams);
+}
+
+async function fetchDefaultTreatment(){
+    const requester = new HttpRequester('http://127.0.0.1:8000/get-default-treatment', bearer);
+    const requester_data = await requester.callApi();
+    treatmentValue.value =  requester_data.treatment
+}
+
+onMounted(() => {
+    fetchDefaultTreatment();
+});
 </script>
 <template>
     <div class="page-container">
         <Sidebar class="sidebar" :selected="2" />
         <div class="main-container">
-            <UpperBarDisesae :diseaseName="'Early blight'" />
+            <UpperBarDisesae :diseaseId=diseaseId />
             <div class="row">
                 <img src="/src/assets/images/diseaseDefaultTreatment/background.jpg" alt="Description of the image"
                     class="full-width-image">
@@ -27,7 +58,7 @@ treatmentValue.value = "Cover the soil under the plants with mulch, such as fabr
             </div>
             <div class="submit-parent">
                 <div class="card flex justify-content-center submit-sub-parent">
-                    <Button label="Save the updates" icon="pi pi-check" iconPos="right" class="submit-button" />
+                    <Button label="Save the updates" icon="pi pi-check" iconPos="right" class="submit-button" @click="saveUpdates"/>
                 </div>
             </div>
 

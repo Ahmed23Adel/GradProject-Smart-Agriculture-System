@@ -1,7 +1,9 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, defineProps } from "vue";
 import { PhotoService } from '@/services/PhotoService.ts';
 
+defineProps(["location"])
+console.log("location Graph", location)
 onMounted(() => {
     PhotoService.getImages().then((data) => (images.value = data));
 });

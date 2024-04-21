@@ -1,9 +1,19 @@
 <script setup>
 import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap"
-import {defineProps} from "vue"
+import {defineProps, ref} from "vue"
 
-defineProps(["diseaseName"])
+const {diseaseId}  = defineProps(["diseaseId"])
+const diseaseNameAbbreviation = ref()
+const diseaseName = ref()
+if (diseaseId == 1){
+    diseaseNameAbbreviation.value = "EB"
+    diseaseName.value = "Early blight"
+}
+else{
+    diseaseNameAbbreviation.value = "LB"
+    diseaseName.value = "Late blight"
+}
 </script>
 
 
