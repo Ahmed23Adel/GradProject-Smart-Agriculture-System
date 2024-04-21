@@ -5,19 +5,26 @@ import { HttpRequester } from './nets'; // Adjust the file path as necessary
 const bearer = 'hi';
 
 
-const locations = ref([
-    {
-        name: "LocationX",
-        
-    },
-    {
-        name: "LocationY",
-        
-    }
-])
+const locations = ref([])
+const selectedLocation = ref();
+const locs = ref()
+async function fetchAllLocs() {
 
+const requester = new HttpRequester('http://127.0.0.1:8000/get-diseased-locations', bearer);
+const requester_data = await requester.callApi();
+locs.value = requester_data.locations;
+console.log(locs.value);
+for (const loc of locs.value) {
+    locations.value.push({ name: loc });
+}
+selectedLocation.value = locations.value[0];
 
-const selectedLocation = ref(locations.value[0]);
+}
+
+// onMounted(async () => {
+   
+
+// });
 
 const today = new Date(); // Create a new Date object for today's date
 const fromDate = ref(today);
@@ -58,7 +65,8 @@ const responsiveOptions = ref([
     }
 ]);
 
-onMounted(() => {
+onMounted(async () => {
+    await fetchAllLocs();
     const formattedFromDate = formatDate(fromDate.value);
     const formattedToDate = formatDate(toDate.value);
     fetchLocationHistory(location, formattedFromDate, formattedToDate);
