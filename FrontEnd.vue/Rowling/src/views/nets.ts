@@ -1,13 +1,19 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 export class HttpRequester{
     private endpoint;
     private bearer;
 
-    constructor(endpoint: string, bearer: string) {
+    constructor(endpoint: string, bearer?: string) {
         this.endpoint = endpoint;
-        this.bearer = bearer;
+        this.bearer = this.get_cookie('token');
     } 
+
+    public get_cookie(key: string){
+        return Cookies.get(key);
+    }
+    
 
     public async callApi(queryParams?: Record<string, any>): Promise<any> {
         try {
@@ -32,12 +38,14 @@ export class HttpRequester{
                 return response.data.data;
             } else {
                 console.error('API response did not indicate success');
+                return false;
             }
         } catch (error) {
             console.error('Error calling API:', error);
         }
     }
 
+    
     public async callApiPut(queryParams?: Record<string, any>): Promise<any> {
         try {
             // Construct the URL with query parameters if provided

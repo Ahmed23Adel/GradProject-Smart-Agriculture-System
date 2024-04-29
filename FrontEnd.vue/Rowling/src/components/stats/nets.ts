@@ -1,13 +1,18 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 export class HttpRequester{
     private endpoint;
     private bearer;
 
-    constructor(endpoint: string, bearer: string) {
+    constructor(endpoint: string, bearer?: string) {
         this.endpoint = endpoint;
-        this.bearer = bearer;
+        this.bearer = this.get_cookie('token');
     } 
+
+    public get_cookie(key: string){
+        return Cookies.get(key);
+    }
 
     public async callApi(queryParams?: Record<string, any>): Promise<any> {
         try {

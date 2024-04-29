@@ -1,19 +1,33 @@
 <script setup>
 import InputText from 'primevue/inputtext';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { HttpRequester } from './nets'; // Adjust the file path as necessary
+import Cookies from 'js-cookie';
 
 
 const usernameValue = ref("")
 const passwordValue = ref("")
 const isUsernameValid = ref(true)
 const isPasswordValid = ref(true)
+const isCredentialValid = ref(true)
 
 const router =useRouter()
 
+
+onMounted(() => {
+    if (get_cookie('token')){
+        router.push('/summary')
+    }
+});
+
+
 function login() {
     if (validateInput()) {
-        router.push('/summary')
+        if (login_db()){
+            router.push('/summary')
+        }
+        
     }
 }
 
@@ -37,6 +51,53 @@ function validateInput() {
         return false;
     }
     return true;
+}
+
+
+const token = ref()
+const userType = ref()
+async function login_db(){
+    const requester = new HttpRequester('http://127.0.0.1:8000/login');
+    const queryParams = {
+        username: usernameValue.value,
+        password: passwordValue.value.trim(),
+    };
+    console.log(queryParams)
+    const requester_data = await requester.callApi(queryParams);
+    if (!requester_data){
+        console.log("Credential wrong")
+        isCredentialValid.value = false;
+        return false
+    } 
+    token.value = requester_data.token;
+    userType.value = requester_data.type
+    saveCookie('token',token.value)
+    saveCookie('type',userType.value)
+    console.log("token", token)
+    return true
+}
+
+function saveCookie(key, value) {
+    Cookies.set(key, value, { expires: 365 }); // Expires in 365 days
+}
+function is_token_valid() {
+    let key="token";
+    const cookieValue = Cookies.get(key); // Retrieve the cookie value
+    if (cookieValue !== undefined && cookieValue !== null) { // Check if cookie exists
+        const cookieExpiration = Cookies.getJSON(key + '_expires'); // Get expiration date
+        if (!cookieExpiration || new Date(cookieExpiration) > new Date()) { // Check expiration
+            return true; // Cookie is valid
+        } else {
+            // Cookie has expired
+            // You can remove the expired cookie if needed
+            Cookies.remove(key);
+            return false; // Or handle the expiration accordingly
+        }
+    }
+    return false; // Return null if cookie doesn't exist
+}
+function get_cookie(key){
+    return Cookies.get(key);
 }
 
 
@@ -80,6 +141,12 @@ function validateInput() {
             <div class="alert-container" v-if="!isPasswordValid" @click="isPasswordValid = true">
                 <!-- <div class="alert alert-error">❌Password must be at least 4 characters..❌</div> -->
                 <Message severity="error">Password must be at least 4 characters</Message>
+
+            </div>
+        </Transition>
+        <Transition>
+            <div class="alert-container" v-if="!isCredentialValid" @click="isCredentialValid = true">
+                <Message severity="error">Either username or password is not correct</Message>
 
             </div>
         </Transition>

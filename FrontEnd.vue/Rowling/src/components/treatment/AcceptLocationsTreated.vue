@@ -2,7 +2,10 @@
 import { ref, onMounted, watch } from "vue";
 import GraphOfImages from "../stats/GraphOfImages.vue"
 import { HttpRequester } from './nets'; // Adjust the file path as necessary
+import Cookies from 'js-cookie';
+
 const bearer = 'hi';
+const is_owner = ref(false);
 
 
 const locations = ref([])
@@ -41,6 +44,10 @@ watch(selectedLocation, async (newSelectedLocation, oldSelectedLocation) => {
 onMounted(async () => {
     await fetchAllLocs();
     fetchLocationHistory()
+    console.log(get_cookie("type"))
+    if (get_cookie("type")=="owner"){
+        is_owner.value=true
+    }
     
 });
 
@@ -52,6 +59,9 @@ async function accpetTreated(){
     };
     const requester_data = await requester.callApiPut(queryParams);
     console.log("Treated")
+}
+function get_cookie(key){
+    return Cookies.get(key);
 }
 </script>
 
@@ -97,7 +107,7 @@ async function accpetTreated(){
         <div class="col-6">
             <div class="submit-parent">
                 <div class="card flex justify-content-center submit-sub-parent">
-                    <Button label="Accept treated" icon="pi pi-check" iconPos="right" class="submit-button" @click="accpetTreated"/>
+                    <Button label="Accept treated" icon="pi pi-check" iconPos="right" class="submit-button" @click="accpetTreated" :disabled="is_owner"/>
                 </div>
             </div>
         </div>

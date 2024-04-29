@@ -4,6 +4,8 @@ import Sidebar from "../components/Sidebar.vue";
 import UpperBarDisesae from "../components/treatment/UpperBarDisesae.vue";
 import { ref, onMounted } from "vue"
 import { HttpRequester } from './nets'; // Adjust the file path as necessary
+import Cookies from 'js-cookie';
+
 const bearer = 'hi';
 
 const route = useRoute()
@@ -36,10 +38,21 @@ async function fetchDefaultTreatment(){
     const requester_data = await requester.callApi();
     treatmentValue.value =  requester_data.treatment
 }
+const is_owner = ref(false);
 
-onMounted(() => {
-    fetchDefaultTreatment();
+onMounted(async () => {
+    await fetchDefaultTreatment();
+    if (get_cookie("type")=="owner"){
+        is_owner.value=true
+    }
+
+    
 });
+
+
+function get_cookie(key){
+    return Cookies.get(key);
+}
 </script>
 <template>
     <div class="page-container">
@@ -58,7 +71,7 @@ onMounted(() => {
             </div>
             <div class="submit-parent">
                 <div class="card flex justify-content-center submit-sub-parent">
-                    <Button label="Save the updates" icon="pi pi-check" iconPos="right" class="submit-button" @click="saveUpdates"/>
+                    <Button label="Save the updates" icon="pi pi-check" iconPos="right" class="submit-button" @click="saveUpdates" :disabled="is_owner"/>
                 </div>
             </div>
 

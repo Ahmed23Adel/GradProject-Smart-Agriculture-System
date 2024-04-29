@@ -2,11 +2,15 @@
 import { ref, onMounted, watch } from "vue";
 import GraphOfImagesTreatment from "./GraphOfImagesTreatment.vue"
 import { HttpRequester } from './nets'; // Adjust the file path as necessary
+import Cookies from 'js-cookie';
+
 const bearer = 'hi';
 
 const locations = ref([])
 const selectedLocation = ref();
 const locs = ref()
+const is_owner = ref(false);
+
 async function fetchAllLocs() {
 
     const requester = new HttpRequester('http://127.0.0.1:8000/get-diseased-locations', bearer);
@@ -23,9 +27,16 @@ watch(selectedLocation, async (newSelectedLocation, oldSelectedLocation) => {
     // Call fetchLocationHistory when selectedLocation changes
     await fetchLocationHistory();
 });
+
 onMounted(async () => {
     await fetchAllLocs();
     fetchLocationHistory()
+    console.log("sync")
+    console.log(get_cookie("type"))
+    if (get_cookie("type")=="owner"){
+        is_owner.value=true
+    }
+
 
 });
 
@@ -42,9 +53,9 @@ async function fetchLocationHistory() {
     images.value = requester_data.allHistory;
 }
 
-onMounted(() => {
-    fetchLocationHistory();
-});
+// onMounted(() => {
+//     fetchLocationHistory();
+// });
 
 
 function update_treatment(){
@@ -100,6 +111,9 @@ treatmentValue.value = "Cover the soil under the plants with mulch, such as fabr
 function onChangeImage(){
     console.log('hi')
 }
+function get_cookie(key){
+    return Cookies.get(key);
+}
 </script>
 
 
@@ -154,7 +168,7 @@ function onChangeImage(){
                             <div class="submit-parent">
                                 <div class="card flex justify-content-center submit-sub-parent">
                                     <Button label="Save the updates" icon="pi pi-check" iconPos="right"
-                                        class="submit-button" @click="update_treatment" />
+                                        class="submit-button" @click="update_treatment" :disabled="is_owner" />
                                 </div>
                             </div>
                         </div>
@@ -162,7 +176,7 @@ function onChangeImage(){
                             <div class="submit-parent">
                                 <div class="card flex justify-content-center submit-sub-parent">
                                     <Button label="Declare this location healty" icon="pi pi-check" iconPos="right"
-                                        class="submit-button" @click="declare_location_treated"/>
+                                        class="submit-button" @click="declare_location_treated" :disabled="is_owner"/>
                                 </div>
                             </div>
                         </div>
@@ -189,7 +203,7 @@ function onChangeImage(){
                                 <div class="extend-parent">
                                     <div class="card flex justify-content-center submit-sub-parent">
                                         <Button label="Extend" icon="pi pi-check" iconPos="right"
-                                            class="submit-button" @click="extend_location_by_period"/>
+                                            class="submit-button" @click="extend_location_by_period" :disabled="is_owner" />
                                     </div>
                                 </div>
                             </div>
