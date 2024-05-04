@@ -1,68 +1,57 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
-import GraphOfImages from "../stats/GraphOfImages.vue"
-import { HttpRequester } from './nets'; // Adjust the file path as necessary
-import Cookies from 'js-cookie';
+import { HttpRequester } from '@/services/ApiCaller.ts';
+import { UserType } from '@/modules/Basic.ts';
 
-const bearer = 'hi';
-const is_owner = ref(false);
-
-
+const isOwner = ref(false);
 const locations = ref([])
 const selectedLocation = ref();
 const images = ref();
 
-async function fetchLocationHistory() {
-    const requester = new HttpRequester('http://127.0.0.1:8000/location-history', bearer);
-    const queryParams = {
-        location: selectedLocation.value.name,
-        from_date: "01/01/0001",
-        to_date: "01/01/0001",
-    };
-    const requester_data = await requester.callApi(queryParams);
-    images.value = requester_data.allHistory;
-}
 
-const locs = ref()
-async function fetchAllLocs(){
-    
-    const requester = new HttpRequester('http://127.0.0.1:8000/get-diseased-locations', bearer);
-    const requester_data = await requester.callApi();
-    locs.value = requester_data.locations;
-    console.log(locs.value);
-    for (const loc of locs.value) {
+
+async function fetchAllLocactions(){
+    const requester = new HttpRequester('get-diseased-locations');
+    const requester_data = await requester.callApi("GET");
+    for (const loc of requester_data.locations) {
         locations.value.push({ name: loc });
     }
     selectedLocation.value = locations.value[0];
 
 }
 
-watch(selectedLocation, async (newSelectedLocation, oldSelectedLocation) => {
-    // Call fetchLocationHistory when selectedLocation changes
-    await fetchLocationHistory();
-});
-onMounted(async () => {
-    await fetchAllLocs();
-    fetchLocationHistory()
-    console.log(get_cookie("type"))
-    if (get_cookie("type")=="owner"){
-        is_owner.value=true
-    }
-    
-});
-
+async function fetchLocationHistory() {
+    const requester = new HttpRequester('location-history',);
+    const queryParams = {
+        location: selectedLocation.value.name,
+        from_date: "01/01/0001",
+        to_date: "01/01/0001",
+    };
+    const requester_data = await requester.callApi("GET",queryParams);
+    images.value = requester_data.allHistory;
+}
 
 async function accpetTreated(){
-    const requester = new HttpRequester('http://127.0.0.1:8000/accept-treated', bearer);
+    const requester = new HttpRequester('accept-treated');
     const queryParams = {
         location: selectedLocation.value,
     };
-    const requester_data = await requester.callApiPut(queryParams);
-    console.log("Treated")
+    await requester.callApi("PUT",queryParams);
 }
-function get_cookie(key){
-    return Cookies.get(key);
-}
+
+
+watch(selectedLocation, async (newSelectedLocation, oldSelectedLocation) => {
+    await fetchLocationHistory();
+});
+
+
+onMounted(async () => {
+    await fetchAllLocactions();
+    fetchLocationHistory()
+    isOwner.value = UserType.getInstance().getUserType();
+});
+
+
 </script>
 
 <template>
@@ -107,7 +96,7 @@ function get_cookie(key){
         <div class="col-6">
             <div class="submit-parent">
                 <div class="card flex justify-content-center submit-sub-parent">
-                    <Button label="Accept treated" icon="pi pi-check" iconPos="right" class="submit-button" @click="accpetTreated" :disabled="is_owner"/>
+                    <Button label="Accept treated" icon="pi pi-check" iconPos="right" class="submit-button" @click="accpetTreated" :disabled="isOwner"/>
                 </div>
             </div>
         </div>

@@ -8,8 +8,16 @@ export class HttpRequester{
     constructor(endpoint: string, bearer?: string) {
         this.endpoint = endpoint;
         this.bearer = this.get_cookie('token');
+        console.log(this.isUserSignedIn());
     } 
-
+    public isUserSignedIn(): boolean {
+        if (this.get_cookie('token')){
+            console.log("Holla");
+            return true;
+        }
+        console.log("Holllllll");
+        return false;
+    }
     public get_cookie(key: string){
         return Cookies.get(key);
     }
