@@ -8,7 +8,9 @@ export function fetchAllLocations(locations: ref<any[]>, selectedLocation: ref<a
             locations.value.push({ name: loc });
         }
         selectedLocation.value = locations.value[0];
+        return locations.value[0];
     }).catch(error => {
         console.error("Error fetching locations:", error);
     });
+
 }

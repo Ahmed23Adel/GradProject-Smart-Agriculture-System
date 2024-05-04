@@ -67,7 +67,14 @@ function extendLocationByPeriod(){
     requester.callApi('PUT',queryParams);
 }
 
-
+async function fetchTreatmentValue(){
+    const requester = new HttpRequester('get_treatment_value');
+    const queryParams = {
+        location: selectedLocation.value,
+    };
+    const requester_data  =  await requester.callApi('GET',queryParams);
+    treatmentValue.value = requester_data.treatment;
+}
 function onChangeImage(){
     // console.log('hi')
 }
@@ -76,12 +83,16 @@ function onChangeImage(){
 watch(selectedLocation, async (newSelectedLocation, oldSelectedLocation) => {
     await fetchAllLocations(locations, selectedLocation);
     await fetchLocationHistory();
+    await fetchTreatmentValue();
 });
 
 onMounted(async () => {
-    await fetchAllLocations(locations, selectedLocation);
-    fetchLocationHistory()
-    isOwner.value = UserType.getInstance().getUserType();
+    selectedLocation.value = await fetchAllLocations(locations, selectedLocation);
+    
+    // await fetchLocationHistory()
+    // isOwner.value = UserType.getInstance().getUserType();
+    // console.log("fetch treatment")
+    // fetchTreatmentValue();
 });
 </script>
 
@@ -137,7 +148,7 @@ onMounted(async () => {
                             <div class="submit-parent">
                                 <div class="card flex justify-content-center submit-sub-parent">
                                     <Button label="Save the updates" icon="pi pi-check" iconPos="right"
-                                        class="submit-button" @click="updateTreatment" :disabled="is_owner" />
+                                        class="submit-button" @click="updateTreatment" :disabled="isOwner" />
                                 </div>
                             </div>
                         </div>
@@ -145,7 +156,7 @@ onMounted(async () => {
                             <div class="submit-parent">
                                 <div class="card flex justify-content-center submit-sub-parent">
                                     <Button label="Declare this location healty" icon="pi pi-check" iconPos="right"
-                                        class="submit-button" @click="declareLocationTreated" :disabled="is_owner"/>
+                                        class="submit-button" @click="declareLocationTreated" :disabled="isOwner"/>
                                 </div>
                             </div>
                         </div>
@@ -172,7 +183,7 @@ onMounted(async () => {
                                 <div class="extend-parent">
                                     <div class="card flex justify-content-center submit-sub-parent">
                                         <Button label="Extend" icon="pi pi-check" iconPos="right"
-                                            class="submit-button" @click="extendLocationByPeriod" :disabled="is_owner" />
+                                            class="submit-button" @click="extendLocationByPeriod" :disabled="isOwner" />
                                     </div>
                                 </div>
                             </div>
