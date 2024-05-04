@@ -118,9 +118,6 @@ const setChartOptions = () => {
                     <h1 class="h3">Today's Pictures</h1>
 
                 </div>
-                <div class="col-4">
-                    <button type="button" class="btn btn-primary">Go to Today's section</button>
-                </div>
             </div>
             <div class="row">
                 <div class="row">
