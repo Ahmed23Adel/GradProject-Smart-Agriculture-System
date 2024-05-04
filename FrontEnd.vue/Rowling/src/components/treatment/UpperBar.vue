@@ -15,7 +15,6 @@ import "bootstrap"
         </div>
         <div class="col-4 col-md-4 log-in d-flex justify-content-center">
             
-            <router-link to="/login"><h1 class="display-6 login-text">Login</h1></router-link>
         </div>
     </div>
 </template>
