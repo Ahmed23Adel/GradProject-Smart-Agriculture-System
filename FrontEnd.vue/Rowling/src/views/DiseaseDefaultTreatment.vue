@@ -3,22 +3,25 @@ import { useRoute } from 'vue-router';
 import Sidebar from "../components/Sidebar.vue";
 import UpperBarDisesae from "../components/treatment/UpperBarDisesae.vue";
 import { ref, onMounted } from "vue"
-import { HttpRequester } from './nets'; // Adjust the file path as necessary
+import { HttpRequester } from '@/services/ApiCaller.ts';
 import Cookies from 'js-cookie';
+import { UserType } from '@/modules/Basic.ts';
 
-const bearer = 'hi';
 
 const route = useRoute()
 const diseaseId = route.params['id']
-
 const treatmentValue = ref("")
-treatmentValue.value = "Cover the soil under the plants with mulch, such as fabric, straw, plastic mulch, or dried leaves. Water at the base of each plant, using drip irrigation, a soaker hose, or careful hand watering. Pruning the bottom leaves can also prevent early blight spores from splashing up from the soil onto leaves."
+treatmentValue.value = ""
+const isOwner = ref(false);
 
-
-
+async function fetchDefaultTreatment(){
+    const requester = new HttpRequester('get-default-treatment');
+    const requester_data = await requester.callApi('GET');
+    treatmentValue.value =  requester_data.treatment
+}
 
 function saveUpdates(){
-    const requester = new HttpRequester('http://127.0.0.1:8000/update-default-treatment', bearer);
+    const requester = new HttpRequester('update-default-treatment');
     let diseaseNameAbbreviation = ""
     if (diseaseId == 1){
         diseaseNameAbbreviation = "EB"
@@ -30,29 +33,16 @@ function saveUpdates(){
         diseaesName: diseaseNameAbbreviation,
         treatment: treatmentValue.value,
     };
-    const requester_data = requester.callApiPut(queryParams);
+    requester.callApi('PUTq', queryParams);
 }
 
-async function fetchDefaultTreatment(){
-    const requester = new HttpRequester('http://127.0.0.1:8000/get-default-treatment', bearer);
-    const requester_data = await requester.callApi();
-    treatmentValue.value =  requester_data.treatment
-}
-const is_owner = ref(false);
 
 onMounted(async () => {
     await fetchDefaultTreatment();
-    if (get_cookie("type")=="owner"){
-        is_owner.value=true
-    }
-
-    
+    isOwner.value = UserType.getInstance().getUserType();    
 });
 
 
-function get_cookie(key){
-    return Cookies.get(key);
-}
 </script>
 <template>
     <div class="page-container">
