@@ -2,23 +2,13 @@
 import { ref, onMounted, watch } from "vue";
 import { HttpRequester } from '@/services/ApiCaller.ts';
 import { UserType } from '@/modules/Basic.ts';
+import { fetchAllLocations } from '@/modules/CommonRequests.ts';
 
 const isOwner = ref(false);
 const locations = ref([])
 const selectedLocation = ref();
 const images = ref();
 
-
-
-async function fetchAllLocactions(){
-    const requester = new HttpRequester('get-diseased-locations');
-    const requester_data = await requester.callApi("GET");
-    for (const loc of requester_data.locations) {
-        locations.value.push({ name: loc });
-    }
-    selectedLocation.value = locations.value[0];
-
-}
 
 async function fetchLocationHistory() {
     const requester = new HttpRequester('location-history',);
@@ -46,7 +36,7 @@ watch(selectedLocation, async (newSelectedLocation, oldSelectedLocation) => {
 
 
 onMounted(async () => {
-    await fetchAllLocactions();
+    await fetchAllLocations(locations, selectedLocation);
     fetchLocationHistory()
     isOwner.value = UserType.getInstance().getUserType();
 });

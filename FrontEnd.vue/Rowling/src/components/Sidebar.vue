@@ -2,10 +2,18 @@
 import "primeicons/primeicons.css";
 import { defineProps,ref } from "vue";
 import { useRouter } from "vue-router";
+import { deleteCookie } from '@/modules/Basic.ts';
+
 const router =useRouter()
 
 defineProps(['selected'])
 const fullWidth =ref(true)
+
+function signOut(){
+    deleteCookie("token");
+    deleteCookie("type");
+    router.push('/login')
+}
 </script>
 
 <template>
@@ -27,6 +35,10 @@ const fullWidth =ref(true)
       <div class="reports" :class="{ selected: selected == 3 }" @click="router.push('reports')"> 
         <i class="pi pi-file"></i>
         <p>reports</p>
+      </div>
+      <div class="signout" :class="{ selected: selected == 4 }" @click="signOut"> 
+        <i class="pi pi-file"></i>
+        <p>Sign out</p>
       </div>
     </div>
   </div>

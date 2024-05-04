@@ -1,97 +1,20 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
-import GraphOfImagesTreatment from "./GraphOfImagesTreatment.vue"
-import { HttpRequester } from './nets'; // Adjust the file path as necessary
-import Cookies from 'js-cookie';
+import { HttpRequester } from '@/services/ApiCaller.ts';
+import { UserType } from '@/modules/Basic.ts';
+import { fetchAllLocations } from '@/modules/CommonRequests.ts';
 
-const bearer = 'hi';
 
 const locations = ref([])
 const selectedLocation = ref();
-const locs = ref()
-const is_owner = ref(false);
-
-async function fetchAllLocs() {
-
-    const requester = new HttpRequester('http://127.0.0.1:8000/get-diseased-locations', bearer);
-    const requester_data = await requester.callApi();
-    locs.value = requester_data.locations;
-    console.log(locs.value);
-    for (const loc of locs.value) {
-        locations.value.push({ name: loc });
-    }
-    selectedLocation.value = locations.value[0];
-
-}
-watch(selectedLocation, async (newSelectedLocation, oldSelectedLocation) => {
-    // Call fetchLocationHistory when selectedLocation changes
-    await fetchLocationHistory();
-});
-
-onMounted(async () => {
-    await fetchAllLocs();
-    fetchLocationHistory()
-    console.log("sync")
-    console.log(get_cookie("type"))
-    if (get_cookie("type")=="owner"){
-        is_owner.value=true
-    }
-
-
-});
-
+const isOwner = ref(false);
 const images = ref();
+const periodExtension = ref()
+const treatmentValue = ref("")
+treatmentValue.value = ""
 
-async function fetchLocationHistory() {
-    const requester = new HttpRequester('http://127.0.0.1:8000/location-history', bearer);
-    const queryParams = {
-        location: selectedLocation.value,
-        from_date: "01/01/0001",
-        to_date: "01/01/0001",
-    };
-    const requester_data = await requester.callApi(queryParams);
-    images.value = requester_data.allHistory;
-}
-
-// onMounted(() => {
-//     fetchLocationHistory();
-// });
-
-
-function update_treatment(){
-    const requester = new HttpRequester('http://127.0.0.1:8000/update_treatment', bearer);
-    const queryParams = {
-        location: selectedLocation.value,
-        treatment: treatmentValue.value,
-    };
-    const requester_data = requester.callApiPut(queryParams);
-    console.log("update_treatment")
-}
-
-
-function declare_location_treated(){
-    const requester = new HttpRequester('http://127.0.0.1:8000/declare_location_healthy', bearer);
-    const queryParams = {
-        location: selectedLocation.value,
-    };
-    const requester_data = requester.callApiPut(queryParams);
-    console.log("declare treated")
-}
-
-const period_extension = ref()
-function extend_location_by_period(){
-    const requester = new HttpRequester('http://127.0.0.1:8000/extend_location_by_days', bearer);
-    const queryParams = {
-        location: selectedLocation.value,
-        period: period_extension.value,
-    };
-    const requester_data = requester.callApiPut(queryParams);
-    console.log("extend_location_by_period")
-}
-
-// graph of images
 defineProps(["location"])
-console.log("location Graph", location)
+
 
 const responsiveOptions = ref([
     {
@@ -104,16 +27,62 @@ const responsiveOptions = ref([
     }
 ]);
 
+async function fetchLocationHistory() {
+    const requester = new HttpRequester('location-history');
+    const queryParams = {
+        location: selectedLocation.value,
+        from_date: "01/01/0001",
+        to_date: "01/01/0001",
+    };
+    const requester_data = await requester.callApi('GET', queryParams);
+    images.value = requester_data.allHistory;
+}
 
-const treatmentValue = ref("")
-treatmentValue.value = "Cover the soil under the plants with mulch, such as fabric, straw, plastic mulch, or dried leaves. Water at the base of each plant, using drip irrigation, a soaker hose, or careful hand watering. Pruning the bottom leaves can also prevent early blight spores from splashing up from the soil onto leaves."
+
+
+function updateTreatment(){
+    const requester = new HttpRequester('update_treatment');
+    const queryParams = {
+        location: selectedLocation.value,
+        treatment: treatmentValue.value,
+    };
+    requester.callApi('PUT', queryParams);
+}
+
+function declareLocationTreated(){
+    const requester = new HttpRequester('declare_location_healthy');
+    const queryParams = {
+        location: selectedLocation.value,
+    };
+    requester.callApi('PUT',queryParams);
+}
+
+
+function extendLocationByPeriod(){
+    const requester = new HttpRequester('extend_location_by_days');
+    const queryParams = {
+        location: selectedLocation.value,
+        period: periodExtension.value,
+    };
+    requester.callApi('PUT',queryParams);
+}
+
 
 function onChangeImage(){
-    console.log('hi')
+    // console.log('hi')
 }
-function get_cookie(key){
-    return Cookies.get(key);
-}
+
+
+watch(selectedLocation, async (newSelectedLocation, oldSelectedLocation) => {
+    await fetchAllLocations(locations, selectedLocation);
+    await fetchLocationHistory();
+});
+
+onMounted(async () => {
+    await fetchAllLocations(locations, selectedLocation);
+    fetchLocationHistory()
+    isOwner.value = UserType.getInstance().getUserType();
+});
 </script>
 
 
@@ -168,7 +137,7 @@ function get_cookie(key){
                             <div class="submit-parent">
                                 <div class="card flex justify-content-center submit-sub-parent">
                                     <Button label="Save the updates" icon="pi pi-check" iconPos="right"
-                                        class="submit-button" @click="update_treatment" :disabled="is_owner" />
+                                        class="submit-button" @click="updateTreatment" :disabled="is_owner" />
                                 </div>
                             </div>
                         </div>
@@ -176,7 +145,7 @@ function get_cookie(key){
                             <div class="submit-parent">
                                 <div class="card flex justify-content-center submit-sub-parent">
                                     <Button label="Declare this location healty" icon="pi pi-check" iconPos="right"
-                                        class="submit-button" @click="declare_location_treated" :disabled="is_owner"/>
+                                        class="submit-button" @click="declareLocationTreated" :disabled="is_owner"/>
                                 </div>
                             </div>
                         </div>
@@ -196,14 +165,14 @@ function get_cookie(key){
                             </div>
                             <div class="col-3">
                                 <div class="flex-auto">
-                                    <InputNumber v-model="period_extension" inputId="minmax" :min="0" :max="100" />
+                                    <InputNumber v-model="periodExtension" inputId="minmax" :min="0" :max="100" />
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="extend-parent">
                                     <div class="card flex justify-content-center submit-sub-parent">
                                         <Button label="Extend" icon="pi pi-check" iconPos="right"
-                                            class="submit-button" @click="extend_location_by_period" :disabled="is_owner" />
+                                            class="submit-button" @click="extendLocationByPeriod" :disabled="is_owner" />
                                     </div>
                                 </div>
                             </div>

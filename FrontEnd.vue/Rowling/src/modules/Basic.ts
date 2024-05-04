@@ -27,3 +27,8 @@ export class UserType {
         return this.is_owner;
     }
 }
+
+
+export function deleteCookie (key: string){
+    Cookies.remove(key);
+}
