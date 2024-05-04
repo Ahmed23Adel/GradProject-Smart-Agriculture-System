@@ -1,13 +1,11 @@
 <script setup>
-import MathsIntro from '@/components/stats/MathsIntro.vue';
-import TwoFields from '@/components/stats/TwoFields.vue';
+
 import LocationHistory from '@/components/stats/LocationHistory.vue';
-import PercentageDate from '@/components/stats/PercentageDate.vue';
 import ChartDateDiseased from '@/components/stats/ChartDateDiseased.vue';
 import ChartDateDiseaseTypePie from '@/components/stats/ChartDateDiseaseTypePie.vue';
 import Sidebar from "../components/Sidebar.vue";
 import TodaysSummary from '@/components/stats/TodaysSummary.vue';
-import UpperBar from '@/components/UpperBar.vue';
+import UpperBar from '@/components/stats/UpperBar.vue';
 import PercentageDateCard from '@/components//stats/PercentageDateCard.vue';
 
 </script>

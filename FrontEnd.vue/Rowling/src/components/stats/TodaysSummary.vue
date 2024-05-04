@@ -2,50 +2,41 @@
 import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap"
 import { ref, onMounted } from "vue";
-import axios from 'axios';
-// import nets from '.nets'
-import { HttpRequester } from './nets'; // Adjust the file path as necessary
+import { HttpRequester } from '@/services/ApiCaller.ts';
 
-const bearer = 'hi';
 
 //The four cards
 const count = ref(0);
-const percentage_diseased = ref(0);
-const percentage_diseased_after_mod = ref(0);
-const mod_rate = ref(0);
-
-const fetchTodayStats = async () => {
-    const requester = new HttpRequester('http://127.0.0.1:8000/today_pics', bearer);
-    const requester_data = await requester.callApi();
-    count.value = requester_data.count;
-    percentage_diseased.value = requester_data.percentage_diseased;
-    percentage_diseased_after_mod.value = requester_data.percentage_diseased_after_mod;
-    mod_rate.value = requester_data.mod_rate;
-};
-
+const percentageDiseased = ref(0);
+const percentageDiseasedAfterMod = ref(0);
+const modRate = ref(0);
 // Graph for months and percentage
 const mons = ref([]);
 const EB = ref([]);
 const LB = ref([]);
+const chartData = ref();
+const chartOptions = ref();
+
+
+const fetchTodayStats = async () => {
+    const requester = new HttpRequester('today_pics');
+    const requester_data = await requester.callApi('GET');
+    count.value = requester_data.count;
+    percentageDiseased.value = requester_data.percentage_diseased;
+    percentageDiseasedAfterMod.value = requester_data.percentage_diseased_after_mod;
+    modRate.value = requester_data.mod_rate;
+};
+
+
 const fetchMonsPercentages = async () => {
-    const requester = new HttpRequester('http://127.0.0.1:8000/disease_mons_percentage', bearer);
-    const requester_data = await requester.callApi();
+    const requester = new HttpRequester('disease_mons_percentage');
+    const requester_data = await requester.callApi('GET');
     mons.value = requester_data.mons;
     EB.value = requester_data.EB;
     LB.value = requester_data.LB;
 };
 
-onMounted(async () => {
-    await fetchMonsPercentages();
-    fetchTodayStats();
-    chartData.value = setChartData();
-    chartOptions.value = setChartOptions();
-    
-});
 
-const chartData = ref();
-const chartOptions = ref();
-        
 const setChartData = () => {
     const documentStyle = getComputedStyle(document.documentElement);
     return {
@@ -69,6 +60,16 @@ const setChartData = () => {
         ]
     };
 };
+
+onMounted(async () => {
+    await fetchMonsPercentages();
+    fetchTodayStats();
+    chartData.value = setChartData();
+    chartOptions.value = setChartOptions();
+    
+});
+
+
 const setChartOptions = () => {
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue('--text-color');
@@ -138,7 +139,7 @@ const setChartOptions = () => {
                             <img src='/src/assets/images/stats/stats2.png' class="card-img-top card-img" alt="...">
                             <div class="card-body">
                                 <h5 class="card-title">% diseased</h5>
-                                <p class="card-text">{{ percentage_diseased }}%</p>
+                                <p class="card-text">{{ percentageDiseased }}%</p>
                             </div>
                         </div>
                     </div>
@@ -147,7 +148,7 @@ const setChartOptions = () => {
                             <img src='/src/assets/images/stats/modify.png' class="card-img-top card-img" alt="...">
                             <div class="card-body">
                                 <h5 class="card-title">% diseased after modification</h5>
-                                <p class="card-text">{{ percentage_diseased_after_mod }}%</p>
+                                <p class="card-text">{{ percentageDiseasedAfterMod }}%</p>
                             </div>
                         </div>
                     </div>
@@ -156,7 +157,7 @@ const setChartOptions = () => {
                             <img src='/src/assets/images/stats/percentage.png' class="card-img-top card-img" alt="...">
                             <div class="card-body">
                                 <h5 class="card-title">Modification rate</h5>
-                                <p class="card-text">{{ mod_rate }}%</p>
+                                <p class="card-text">{{ modRate }}%</p>
                             </div>
                         </div>
                     </div>

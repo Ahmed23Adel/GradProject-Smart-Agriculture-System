@@ -1,58 +1,40 @@
 <script setup>
 import Calendar from 'primevue/calendar';
 import { ref, onMounted, watch  } from "vue";
-import { HttpRequester } from './nets'; // Adjust the file path as necessary
+import { HttpRequester } from '@/services/ApiCaller.ts';
+import { formatDate } from '@/modules/Basic.ts';
 
-const bearer = 'hi';
 
 const today = new Date(); // Create a new Date object for today's date
 const date = ref(today);
 const count = ref(0);
-const percentage_diseased = ref(0);
-const percentage_diseased_after_mod = ref(0);
+const percentageDiseased = ref(0);
+const percentageDiseasedAfterMod = ref(0);
 const mod_rate = ref(0);
 const eb_per = ref(0);
 const lb_per = ref(0);
+const chartData = ref();
+const chartOptions = ref();
 
 
-function formatDate(date) {
-    const month = date.getMonth() + 1; // Months are 0-based, so add 1
-    const day = date.getDate();
-    const year = date.getFullYear();
-    // Pad month and  with leading zeros if necessary
-    const paddedMonth = month.toString().padStart(2, '0');
-    const paddedDay = day.toString().padStart(2, '0');
-    // Return the formatted date as a string
-    return `${paddedMonth}/${paddedDay}/${year}`;
-}
 
 const fetchRoundStatsAtDate = async () => {
+    console.log(formatDate(date.value))
     const queryParams = {
         date_str: formatDate(date.value),
     };
-    const requester = new HttpRequester('http://127.0.0.1:8000/date_pics', bearer);
-    const requester_data = await requester.callApi(queryParams);
+    const requester = new HttpRequester('date_pics');
+    const requester_data = await requester.callApi('GET', queryParams);
     count.value = requester_data.count;
-    percentage_diseased.value = requester_data.percentage_diseased;
-    percentage_diseased_after_mod.value = requester_data.percentage_diseased_after_mod;
+    percentageDiseased.value = requester_data.percentage_diseased;
+    percentageDiseasedAfterMod.value = requester_data.percentage_diseased_after_mod;
     mod_rate.value = requester_data.mod_rate;
     eb_per.value = requester_data.EB_per;
     lb_per.value = requester_data.LB_per;
 };
 
-onMounted(async () => {
-    await fetchRoundStatsAtDate();
-    chartData.value = setChartData();
-    chartOptions.value = setChartOptions();
-    
-});
 
-watch(date, (newDate) => {
-    const formattedDate = formatDate(newDate);
-    fetchRoundStatsAtDate(formattedDate);
-});
-const chartData = ref();
-const chartOptions = ref();
+
 
 const setChartData = () => {
     const documentStyle = getComputedStyle(document.documentElement);
@@ -111,7 +93,17 @@ const setChartOptions = () => {
     };
 }
 
+onMounted(async () => {
+    await fetchRoundStatsAtDate();
+    chartData.value = setChartData();
+    chartOptions.value = setChartOptions();
+    
+});
 
+watch(date, (newDate) => {
+    const formattedDate = formatDate(newDate);
+    fetchRoundStatsAtDate(formattedDate);
+});
 </script>
 <template>
     <div class="row" style="padding:30px">
@@ -146,7 +138,7 @@ const setChartOptions = () => {
                             <img src='/src/assets/images/stats/stats2.png' class="card-img-top card-img" alt="...">
                             <div class="card-body">
                                 <h5 class="card-title">% diseased</h5>
-                                <p class="card-text">{{ percentage_diseased }}%</p>
+                                <p class="card-text">{{ percentageDiseased }}%</p>
                             </div>
                         </div>
                     </div>
@@ -155,7 +147,7 @@ const setChartOptions = () => {
                             <img src='/src/assets/images/stats/modify.png' class="card-img-top card-img" alt="...">
                             <div class="card-body">
                                 <h5 class="card-title">% diseased after modification</h5>
-                                <p class="card-text">{{ percentage_diseased_after_mod }}%</p>
+                                <p class="card-text">{{ percentageDiseasedAfterMod }}%</p>
                             </div>
                         </div>
                     </div>

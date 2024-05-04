@@ -1,43 +1,28 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import { HttpRequester } from './nets'; // Adjust the file path as necessary
+import { HttpRequester } from '@/services/ApiCaller.ts';
+import { fetchAllLocations } from '@/modules/CommonRequests.ts';
 
-const bearer = 'hi';
-const locations = ref([
-    {
-        name: "LocationX",
-        
-    },
-    {
-        name: "LocationY",
-        
-    }
-])
-const selectedLocation = ref(locations.value[0]);
 
 const dates = ref();
 const percentages = ref();
+const chartData = ref();
+const chartOptions = ref();
+const locations = ref([])
+const selectedLocation = ref();
 
 async function fetchDatesDiseases() {
-    const requester = new HttpRequester('http://127.0.0.1:8000/get-date-per-diseased-plants', bearer);
+    const requester = new HttpRequester('get-date-per-diseased-plants');
     const queryParams = {
         location: selectedLocation.value,
     };
-    const requester_data = await requester.callApi(queryParams);
+    console.log("queryParamssss", queryParams)
+    const requester_data = await requester.callApi('GET', queryParams);
     dates.value = requester_data.dates;
     percentages.value = requester_data.percentages;
 }
 
-onMounted(async () => {
-    await fetchDatesDiseases();
-    chartData.value = setChartData();
-    chartOptions.value = setChartOptions();
-    
-});
 
-
-const chartData = ref();
-const chartOptions = ref();
 
 const setChartData = () => {
     const constantColorValue = 'rgba(164, 206, 149, 1)';
@@ -93,6 +78,16 @@ const setChartOptions = () => {
         }
     };
 }
+
+onMounted(async () => {
+    await fetchAllLocations(locations, selectedLocation);
+    selectedLocation.value = ref(locations.value[0]);
+    await fetchDatesDiseases();
+    console.log(locations.value, selectedLocation.value)
+    chartData.value = setChartData();
+    chartOptions.value = setChartOptions();
+    
+});
 </script>
 <template>
     <el-row>

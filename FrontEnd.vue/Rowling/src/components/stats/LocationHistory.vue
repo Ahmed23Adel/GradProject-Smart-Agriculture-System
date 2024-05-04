@@ -1,58 +1,15 @@
 <script setup>
 import { ref, watch, onMounted } from "vue";
-import GraphOfImages from "./GraphOfImages.vue"
-import { HttpRequester } from './nets'; // Adjust the file path as necessary
-const bearer = 'hi';
+import { HttpRequester } from '@/services/ApiCaller.ts';
+import { fetchAllLocations } from '@/modules/CommonRequests.ts';
+import { formatDate } from '@/modules/Basic.ts';
 
 
 const locations = ref([])
 const selectedLocation = ref();
-const locs = ref()
-async function fetchAllLocs() {
-
-const requester = new HttpRequester('http://127.0.0.1:8000/get-diseased-locations', bearer);
-const requester_data = await requester.callApi();
-locs.value = requester_data.locations;
-console.log(locs.value);
-for (const loc of locs.value) {
-    locations.value.push({ name: loc });
-}
-selectedLocation.value = locations.value[0];
-
-}
-
-// onMounted(async () => {
-   
-
-// });
-
 const today = new Date(); // Create a new Date object for today's date
 const fromDate = ref(today);
 const toDate = ref(today);
-
-
-async function fetchLocationHistory(location, fromDate, toDate) {
-    const requester = new HttpRequester('http://127.0.0.1:8000/location-history', bearer);
-    const queryParams = {
-        location: selectedLocation.value.name,
-        from_date: fromDate,
-        to_date: toDate,
-    };
-    const requester_data = await requester.callApi(queryParams);
-    images.value = requester_data.allHistory;
-}
-
-function formatDate(date) {
-    const month = date.getMonth() + 1; // Months are 0-based, so add 1
-    const day = date.getDate();
-    const year = date.getFullYear();
-    // Pad month and  with leading zeros if necessary
-    const paddedMonth = month.toString().padStart(2, '0');
-    const paddedDay = day.toString().padStart(2, '0');
-    // Return the formatted date as a string
-    return `${paddedMonth}/${paddedDay}/${year}`;
-}
-
 const images = ref();
 const responsiveOptions = ref([
     {
@@ -65,10 +22,25 @@ const responsiveOptions = ref([
     }
 ]);
 
+async function fetchLocationHistory(location, fromDate, toDate) {
+    const requester = new HttpRequester('location-history');
+    const queryParams = {
+        location: selectedLocation.value,
+        from_date: fromDate,
+        to_date: toDate,
+    };
+    console.log("queryParams", queryParams)
+    const requester_data = await requester.callApi('GET',queryParams);
+    images.value = requester_data.allHistory;
+}
+
+
+
 onMounted(async () => {
-    await fetchAllLocs();
+    await fetchAllLocations(locations, selectedLocation);
     const formattedFromDate = formatDate(fromDate.value);
     const formattedToDate = formatDate(toDate.value);
+    console.log("selectedLocation", selectedLocation.value)
     fetchLocationHistory(location, formattedFromDate, formattedToDate);
 });
 

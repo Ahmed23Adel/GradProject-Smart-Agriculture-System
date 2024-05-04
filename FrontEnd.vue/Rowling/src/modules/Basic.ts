@@ -32,3 +32,15 @@ export class UserType {
 export function deleteCookie (key: string){
     Cookies.remove(key);
 }
+
+
+export function formatDate(date) {
+    const month = date.getMonth() + 1; // Months are 0-based, so add 1
+    const day = date.getDate();
+    const year = date.getFullYear();
+    // Pad month and  with leading zeros if necessary
+    const paddedMonth = month.toString().padStart(2, '0');
+    const paddedDay = day.toString().padStart(2, '0');
+    // Return the formatted date as a string
+    return `${paddedMonth}/${paddedDay}/${year}`;
+}

@@ -1,49 +1,26 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
-import { HttpRequester } from './nets'; // Adjust the file path as necessary
-const bearer = 'hi';
+import { HttpRequester } from '@/services/ApiCaller.ts';
+import { formatDate } from '@/modules/Basic.ts';
 
 const today = new Date(); // Create a new Date object for today's date
 const atDate = ref(today)
 const diseases = ref()
 const percentages = ref()
+const chartData = ref();
+const chartOptions = ref();
+
 
 async function fetchDiseasePercentages() {
-    const requester = new HttpRequester('http://127.0.0.1:8000/get_disease_statistics', bearer);
+    const requester = new HttpRequester('get_disease_statistics');
     const queryParams = {
         date: atDate.value
     };
     console.log("queryParams", queryParams)
-    const requester_data = await requester.callApi(queryParams);
+    const requester_data = await requester.callApi('GET', queryParams);
     diseases.value = requester_data.diseases;
     percentages.value = requester_data.percentages;
 }
-
-onMounted(async () => {
-    await fetchDiseasePercentages();
-    chartData.value = setChartData();
-    chartOptions.value = setChartOptions();
-    
-});
-
-function formatDate(date) {
-    const month = date.getMonth() + 1; // Months are 0-based, so add 1
-    const day = date.getDate();
-    const year = date.getFullYear();
-    // Pad month and  with leading zeros if necessary
-    const paddedMonth = month.toString().padStart(2, '0');
-    const paddedDay = day.toString().padStart(2, '0');
-    // Return the formatted date as a string
-    return `${paddedMonth}/${paddedDay}/${year}`;
-}
-
-watch(atDate, (newDate) => {
-    const formattedDate = formatDate(newDate);
-    fetchDiseasePercentages(formattedDate);
-});
-
-const chartData = ref();
-const chartOptions = ref();
 
 const setChartData = () => {
     const documentStyle = getComputedStyle(document.body);
@@ -75,6 +52,22 @@ const setChartOptions = () => {
         }
     };
 };
+
+onMounted(async () => {
+    await fetchDiseasePercentages();
+    chartData.value = setChartData();
+    chartOptions.value = setChartOptions();
+    
+});
+
+watch(atDate, (newDate) => {
+    const formattedDate = formatDate(newDate);
+    fetchDiseasePercentages(formattedDate);
+});
+
+
+
+
 </script>
 <template>
     <el-row>
