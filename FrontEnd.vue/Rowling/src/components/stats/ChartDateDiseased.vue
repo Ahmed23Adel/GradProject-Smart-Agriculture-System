@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { HttpRequester } from '@/services/ApiCaller.ts';
 import { fetchAllLocations } from '@/modules/CommonRequests.ts';
 
@@ -12,12 +12,14 @@ const locations = ref([])
 const selectedLocation = ref();
 
 async function fetchDatesDiseases() {
+    console.log("fetchDatesDiseases")
     const requester = new HttpRequester('get-date-per-diseased-plants');
     const queryParams = {
-        location: selectedLocation.value,
+        location: selectedLocation.value.name,
     };
     console.log("queryParamssss", queryParams)
     const requester_data = await requester.callApi('GET', queryParams);
+    console.log("requester_datarequester_data", requester_data)
     dates.value = requester_data.dates;
     percentages.value = requester_data.percentages;
 }
@@ -79,13 +81,22 @@ const setChartOptions = () => {
     };
 }
 
-onMounted(async () => {
-    await fetchAllLocations(locations, selectedLocation);
-    selectedLocation.value = ref(locations.value[0]);
+watch(selectedLocation, async (newSelectedLocation, oldSelectedLocation) => {
     await fetchDatesDiseases();
-    console.log(locations.value, selectedLocation.value)
     chartData.value = setChartData();
     chartOptions.value = setChartOptions();
+});
+
+onMounted(async () => {
+    console.log("mounting")
+    await fetchAllLocations(locations, selectedLocation);
+    selectedLocation.value = locations.value[0].name;
+    console.log("mountinglocations", locations)
+    console.log("mountingselectedLocation.value", selectedLocation.value)
+    // await fetchDatesDiseases();
+    // console.log(locations.value, selectedLocation.value)
+    // chartData.value = setChartData();
+    // chartOptions.value = setChartOptions();
     
 });
 </script>

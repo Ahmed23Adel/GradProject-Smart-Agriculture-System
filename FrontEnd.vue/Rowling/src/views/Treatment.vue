@@ -18,7 +18,7 @@ import AcceptLocationsTreated from '@/components/treatment/AcceptLocationsTreate
             <DiseasedLocations/>
             <LocationHistory/>
             <hr class="header-line">
-            <AcceptLocationsTreated/>
+            <!-- <AcceptLocationsTreated/> -->
 
         </div>
     </div>

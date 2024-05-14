@@ -2,7 +2,7 @@
 import InputText from 'primevue/inputtext';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { HttpRequester } from './nets'; // Adjust the file path as necessary
+import { HttpRequester } from '@/services/ApiCaller.ts';
 import Cookies from 'js-cookie';
 
 
@@ -22,9 +22,10 @@ onMounted(() => {
 });
 
 
-function login() {
+async function login() {
     if (validateInput()) {
-        if (login_db()){
+        let is_logged = await login_db();
+        if (is_logged){
             router.push('/summary')
         }
         
@@ -57,20 +58,22 @@ function validateInput() {
 const token = ref()
 const userType = ref()
 async function login_db(){
-    const requester = new HttpRequester('http://127.0.0.1:8000/login');
+    const requester = new HttpRequester('login', true);
     const queryParams = {
-        username: usernameValue.value,
+        user_name: usernameValue.value,
         password: passwordValue.value.trim(),
     };
     console.log(queryParams)
-    const requester_data = await requester.callApi(queryParams);
-    if (!requester_data){
+    const requester_data = await requester.callApi('GET', queryParams);
+    console.log("requester_data", requester_data)
+    if (! requester_data){
         console.log("Credential wrong")
         isCredentialValid.value = false;
         return false
     } 
+
     token.value = requester_data.token;
-    userType.value = requester_data.type
+    userType.value = requester_data.user_type
     saveCookie('token',token.value)
     saveCookie('type',userType.value)
     console.log("token", token)

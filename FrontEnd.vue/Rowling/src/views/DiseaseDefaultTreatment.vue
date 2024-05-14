@@ -17,7 +17,13 @@ const isOwner = ref(false);
 async function fetchDefaultTreatment(){
     const requester = new HttpRequester('get-default-treatment');
     const requester_data = await requester.callApi('GET');
-    treatmentValue.value =  requester_data.treatment
+    if (diseaseId==1){
+        treatmentValue.value = requester_data.Early_Blight
+    }
+    else{
+        treatmentValue.value = requester_data.Late_Blight
+    }
+    // TODO Make sure that this is its treatemtn
 }
 
 function saveUpdates(){

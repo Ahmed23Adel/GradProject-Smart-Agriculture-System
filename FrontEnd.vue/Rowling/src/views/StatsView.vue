@@ -22,7 +22,7 @@ import PercentageDateCard from '@/components//stats/PercentageDateCard.vue';
             <hr class="header-line">
             <ChartDateDiseased/>
             <hr class="header-line-white" style="color:white;">
-            <ChartDateDiseaseTypePie/>
+            <ChartDateDiseaseTypePie/> 
 
 
         </div>

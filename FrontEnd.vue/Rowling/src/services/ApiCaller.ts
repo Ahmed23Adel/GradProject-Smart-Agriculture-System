@@ -8,7 +8,7 @@ export class HttpRequester{
     private base_endpoint;
     private router;
 
-    constructor(endpoint: string) {
+    constructor(endpoint: string, disableLogin: boolean = false) {
         this.endpoint = endpoint;
         this.base_endpoint = "http://127.0.0.1:8000/";
 
@@ -16,8 +16,11 @@ export class HttpRequester{
             this.bearer = this.get_cookie('token');
         }
         else{
-            this.router =useRouter()
-            this.router.push('/login')
+            if (!disableLogin){
+                this.router =useRouter()
+                this.router.push('/login')
+            }
+            
         }
         
     } 

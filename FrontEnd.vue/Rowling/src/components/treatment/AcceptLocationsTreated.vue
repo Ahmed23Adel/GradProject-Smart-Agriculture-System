@@ -24,8 +24,9 @@ async function fetchLocationHistory() {
 async function accpetTreated(){
     const requester = new HttpRequester('accept-treated');
     const queryParams = {
-        location: selectedLocation.value,
+        location: selectedLocation.value.name,
     };
+    console.log("selectedLocation.value", queryParams)
     await requester.callApi("PUT",queryParams);
 }
 

@@ -13,10 +13,16 @@ const chartOptions = ref();
 
 async function fetchDiseasePercentages() {
     const requester = new HttpRequester('get_disease_statistics');
+    const atDateFormatted = atDate.value.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
+    console.log("Formatted date:", atDateFormatted);
+
     const queryParams = {
-        date: atDate.value
+        date: atDateFormatted
     };
-    console.log("queryParams", queryParams)
     const requester_data = await requester.callApi('GET', queryParams);
     diseases.value = requester_data.diseases;
     percentages.value = requester_data.percentages;
@@ -63,6 +69,8 @@ onMounted(async () => {
 watch(atDate, (newDate) => {
     const formattedDate = formatDate(newDate);
     fetchDiseasePercentages(formattedDate);
+    chartData.value = setChartData();
+    chartOptions.value = setChartOptions();
 });
 
 

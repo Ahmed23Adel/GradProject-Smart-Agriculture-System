@@ -2,7 +2,7 @@
 import "primeicons/primeicons.css";
 import { defineProps,ref } from "vue";
 import { useRouter } from "vue-router";
-import { deleteCookie } from '@/modules/Basic.ts';
+import { deleteCookie, UserType } from '@/modules/Basic.ts';
 
 const router =useRouter()
 
@@ -13,6 +13,14 @@ function signOut(){
     deleteCookie("token");
     deleteCookie("type");
     router.push('/login')
+}
+
+function registerOwner(): void {
+    const is_owner: boolean = UserType.getInstance().getUserType(); 
+    
+    if (is_owner) {
+        router.push('register');
+    }
 }
 </script>
 
@@ -36,10 +44,15 @@ function signOut(){
         <i class="pi pi-file"></i>
         <p>reports</p>
       </div>
-      <div class="signout" :class="{ selected: selected == 4 }" @click="signOut"> 
+      <div class="Register" :class="{ selected: selected == 4 }" @click="registerOwner"> 
+        <i class="pi pi-user-plus"></i>
+        <p>Register</p>
+      </div>
+      <div class="signout" :class="{ selected: selected == 5 }" @click="signOut"> 
         <i class="pi pi-file"></i>
         <p>Sign out</p>
       </div>
+      
     </div>
   </div>
 </template>

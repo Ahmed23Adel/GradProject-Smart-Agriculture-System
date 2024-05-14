@@ -13,7 +13,7 @@ const periodExtension = ref()
 const treatmentValue = ref("")
 treatmentValue.value = ""
 
-defineProps(["location"])
+// defineProps(["location"])
 
 
 const responsiveOptions = ref([
@@ -28,49 +28,61 @@ const responsiveOptions = ref([
 ]);
 
 async function fetchLocationHistory() {
+    console.log("fetchLocationHistory")
     const requester = new HttpRequester('location-history');
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+    const yyyy = today.getFullYear();
+    const formattedDate = `${dd}/${mm}/${yyyy}`;
     const queryParams = {
-        location: selectedLocation.value,
+        location: selectedLocation.value.name,
         from_date: "01/01/0001",
-        to_date: "01/01/0001",
+        to_date: formattedDate,
     };
+    console.log("queryParams", queryParams)
     const requester_data = await requester.callApi('GET', queryParams);
+    console.log("requester_data", requester_data)
     images.value = requester_data.allHistory;
 }
 
 
 
 function updateTreatment(){
+    console.log("updateTreatment")
     const requester = new HttpRequester('update_treatment');
     const queryParams = {
-        location: selectedLocation.value,
+        location: selectedLocation.value.name,
         treatment: treatmentValue.value,
     };
     requester.callApi('PUT', queryParams);
 }
 
 function declareLocationTreated(){
+    console.log("declareLocationTreated")
     const requester = new HttpRequester('declare_location_healthy');
     const queryParams = {
-        location: selectedLocation.value,
+        location: selectedLocation.value.name,
     };
     requester.callApi('PUT',queryParams);
 }
 
 
 function extendLocationByPeriod(){
+    console.log("extendLocationByPeriod")
     const requester = new HttpRequester('extend_location_by_days');
     const queryParams = {
-        location: selectedLocation.value,
+        location: selectedLocation.value.name,
         period: periodExtension.value,
     };
     requester.callApi('PUT',queryParams);
 }
 
 async function fetchTreatmentValue(){
+    console.log("fetchTreatmentValue")
     const requester = new HttpRequester('get_treatment_value');
     const queryParams = {
-        location: selectedLocation.value,
+        location: selectedLocation.value.name,
     };
     const requester_data  =  await requester.callApi('GET',queryParams);
     treatmentValue.value = requester_data.treatment;
@@ -81,16 +93,23 @@ function onChangeImage(){
 
 
 watch(selectedLocation, async (newSelectedLocation, oldSelectedLocation) => {
-    await fetchAllLocations(locations, selectedLocation);
+    console.log("watch")
+    // await fetchAllLocations(locations, selectedLocation);
     await fetchLocationHistory();
     await fetchTreatmentValue();
 });
 
 onMounted(async () => {
-    selectedLocation.value = await fetchAllLocations(locations, selectedLocation);
-    
+    console.log("mounted");
+    // TODO selected location is never set here correct it
+    await fetchAllLocations(locations, selectedLocation);
+    console.log("locations", locations);
+    console.log("locations.value", locations.value);
+    console.log("locations.value[0]", locations.value[0]);
+    selectedLocation.value = locations.value[0];
+    // selectedLocation.value = locations.value[0];
     // await fetchLocationHistory()
-    // isOwner.value = UserType.getInstance().getUserType();
+    isOwner.value = UserType.getInstance().getUserType();
     // console.log("fetch treatment")
     // fetchTreatmentValue();
 });
@@ -122,11 +141,11 @@ onMounted(async () => {
                                 containerStyle="max-width: 640px">
                                 <template #item="slotProps">
                                     <img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt"
-                                        style="width: 100%; display: block" @change="onChangeImage" />
+                                        style="width: 100%; display: block" @change="onChangeImage" crossorigin="anonymous"/>
                                 </template>
                                 <template #thumbnail="slotProps">
                                     <img :src="slotProps.item.thumbnailImageSrc" :alt="slotProps.item.alt"
-                                        style="display: block" />
+                                        style="display: block" crossorigin="anonymous"/>
                                 </template>
                                 <template #caption="slotProps">
                                     <div class="text-xl mb-2 font-bold">{{ slotProps.item.title }}</div>
@@ -160,34 +179,8 @@ onMounted(async () => {
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <h1 class="h5"> Treatment period: 20 days</h1>
-                        </div>
-                        <div class="row">
-                            <h1 class="h5"> Started from: 22-10-2020</h1>
-                        </div>
-                        <div class="row">
-                            <h1 class="h5"> End date at: 12-11-2020</h1>
-                        </div>
-                        <div class="row align-items-center">
-                            <div class="col-3">
-                                <h1 class="h5"> Extend by: </h1>
-
-                            </div>
-                            <div class="col-3">
-                                <div class="flex-auto">
-                                    <InputNumber v-model="periodExtension" inputId="minmax" :min="0" :max="100" />
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="extend-parent">
-                                    <div class="card flex justify-content-center submit-sub-parent">
-                                        <Button label="Extend" icon="pi pi-check" iconPos="right"
-                                            class="submit-button" @click="extendLocationByPeriod" :disabled="isOwner" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        
+                        
 
                     </div>
                 </div>

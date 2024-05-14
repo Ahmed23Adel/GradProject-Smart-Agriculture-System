@@ -22,16 +22,33 @@ const responsiveOptions = ref([
     }
 ]);
 
+function transform(url) {
+    const regex = /\/d\/(.*)\/view/;
+    const match = url.match(regex);
+
+    if (match) {
+        const imageId = match[1];
+        url = 'https://drive.google.com/uc?id=${imageId}&export=download';
+    }
+
+    url = url.replace("&export=download", "");
+    url = url.replace("google", "lienuc");
+    
+
+    return url;
+}
+
 async function fetchLocationHistory(location, fromDate, toDate) {
     const requester = new HttpRequester('location-history');
     const queryParams = {
-        location: selectedLocation.value,
+        location: selectedLocation.value.name,
         from_date: fromDate,
         to_date: toDate,
     };
     console.log("queryParams", queryParams)
     const requester_data = await requester.callApi('GET',queryParams);
     images.value = requester_data.allHistory;
+    console.log("images", images.value)
 }
 
 
@@ -107,10 +124,10 @@ watch([selectedLocation, fromDate, toDate], (newValues, oldValues) => {
                     <div class="card">
                         <Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5" containerStyle="max-width: 640px">
                             <template #item="slotProps">
-                                <img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt" style="width: 100%; display: block" />
+                                <img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt" style="width: 100%; display: block" crossorigin="anonymous" width="600px" height="600px"/>
                             </template>
                             <template #thumbnail="slotProps">
-                                <img :src="slotProps.item.thumbnailImageSrc" :alt="slotProps.item.alt" style="display: block" />
+                                <img :src="slotProps.item.thumbnailImageSrc" :alt="slotProps.item.alt" style="display: block" crossorigin="anonymous" />
                             </template>
                             <template #caption="slotProps">
                                 <div class="text-xl mb-2 font-bold">{{ slotProps.item.title }}</div>
