@@ -1,34 +1,39 @@
 <script lang="ts" setup>
 import "primeicons/primeicons.css";
-import { defineProps,ref } from "vue";
+import { defineProps, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { deleteCookie, UserType } from '@/modules/Basic.ts';
 
-const router =useRouter()
+const router = useRouter()
+const isOwner = ref()
 
 defineProps(['selected'])
-const fullWidth =ref(true)
+const fullWidth = ref(true)
 
-function signOut(){
-    deleteCookie("token");
-    deleteCookie("type");
-    router.push('/login')
+function signOut() {
+  deleteCookie("token");
+  deleteCookie("type");
+  router.push('/login')
 }
 
 function registerOwner(): void {
-    const is_owner: boolean = UserType.getInstance().getUserType(); 
-    
-    if (is_owner) {
-        router.push('register');
-    }
+  const is_owner: boolean = UserType.getInstance().getUserType();
+
+  if (is_owner) {
+    router.push('register');
+  }
 }
+
+onMounted(() => {
+    isOwner.value = UserType.getInstance().getUserType();
+});
 </script>
 
 <template>
   <div class="wrapper">
-    <i class="pi pi-list" @click="fullWidth=!fullWidth" style="color: var(--accenta);cursor: pointer;"></i>
-    <div class="sidebar-container" :class="{small:!fullWidth}">
-      <div class="today-summary"  :class="{ selected: selected == 0 }" @click="router.push('summary')">
+    <i class="pi pi-list" @click="fullWidth = !fullWidth" style="color: var(--accenta);cursor: pointer;"></i>
+    <div class="sidebar-container" :class="{ small: !fullWidth }">
+      <div class="today-summary" :class="{ selected: selected == 0 }" @click="router.push('summary')">
         <i class="pi pi-calendar"></i>
         <p>summary</p>
       </div>
@@ -40,19 +45,21 @@ function registerOwner(): void {
         <i class="pi pi-briefcase"></i>
         <p>treatments</p>
       </div>
-      <div class="reports" :class="{ selected: selected == 3 }" @click="router.push('reports')"> 
+      <div class="reports" :class="{ selected: selected == 3 }" @click="router.push('reports')">
         <i class="pi pi-file"></i>
         <p>reports</p>
       </div>
-      <div class="Register" :class="{ selected: selected == 4 }" @click="registerOwner"> 
-        <i class="pi pi-user-plus"></i>
-        <p>Register</p>
+      <div v-if="isOwner">
+            <div class="Register" :class="{ selected: selected == 4 }" @click="registerOwner">
+                <i class="pi pi-user-plus"></i>
+                <p>Register</p>
+            </div>
       </div>
-      <div class="signout" :class="{ selected: selected == 5 }" @click="signOut"> 
+      <div class="signout" :class="{ selected: selected == 5 }" @click="signOut">
         <i class="pi pi-file"></i>
         <p>Sign out</p>
       </div>
-      
+
     </div>
   </div>
 </template>
@@ -61,15 +68,17 @@ function registerOwner(): void {
 * {
   margin: 0;
   padding: 0;
-  font-size:12px;
+  font-size: 12px;
 }
-.wrapper{
-    padding-left: 4px;
-    background-color: var(--secondary);
-    width: fit-content;
-    height: 100vh;
-    position: sticky;
+
+.wrapper {
+  padding-left: 4px;
+  background-color: var(--secondary);
+  width: fit-content;
+  height: 100vh;
+  position: sticky;
 }
+
 .sidebar-container {
   height: 100vh;
   width: 100px;
@@ -83,10 +92,12 @@ function registerOwner(): void {
   overflow: hidden;
   transition-duration: 0.5s;
 }
-.small{
-    width:60px
+
+.small {
+  width: 60px
 }
-.sidebar-container > * {
+
+.sidebar-container>* {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -100,12 +111,14 @@ function registerOwner(): void {
   padding-inline: 8px;
   position: relative;
 }
+
 .selected {
   background-color: var(--primary);
   color: var(--accenta);
   border-bottom-left-radius: 32px;
   border-top-left-radius: 32px;
 }
+
 .selected::after {
   content: "";
   width: 16px;
@@ -118,6 +131,7 @@ function registerOwner(): void {
   border-bottom-right-radius: 100%;
   box-shadow: 8px 8px 0 8px var(--primary);
 }
+
 .selected::before {
   content: "";
   width: 16px;
@@ -130,11 +144,13 @@ function registerOwner(): void {
   border-top-right-radius: 100%;
   box-shadow: 8px -8px 0 8px var(--primary);
 }
-.selected>i{
-    background-color: var(--secondary);
-    border-radius: 100%;
+
+.selected>i {
+  background-color: var(--secondary);
+  border-radius: 100%;
 }
-i{
-    padding: 4px;
+
+i {
+  padding: 4px;
 }
 </style>

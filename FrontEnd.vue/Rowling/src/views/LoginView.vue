@@ -81,7 +81,7 @@ async function login_db(){
 }
 
 function saveCookie(key, value) {
-    Cookies.set(key, value, { expires: 365 }); // Expires in 365 days
+    Cookies.set(key, value, { expires: 1 }); // Expires in 1 days
 }
 function is_token_valid() {
     let key="token";

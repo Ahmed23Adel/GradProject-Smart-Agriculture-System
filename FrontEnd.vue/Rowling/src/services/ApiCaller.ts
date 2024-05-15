@@ -1,7 +1,7 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useRouter } from 'vue-router';
-
+import { deleteCookie } from '@/modules/Basic';
 export class HttpRequester{
     private endpoint;
     private bearer;
@@ -10,7 +10,7 @@ export class HttpRequester{
 
     constructor(endpoint: string, disableLogin: boolean = false) {
         this.endpoint = endpoint;
-        this.base_endpoint = "http://127.0.0.1:8000/";
+        this.base_endpoint = "https://greadproject-backend-fastapi.onrender.com/";
 
         if (this.isUserSignedIn()){
             this.bearer = this.get_cookie('token');
@@ -36,6 +36,12 @@ export class HttpRequester{
         return Cookies.get(key);
     }
     
+    public logOut(key: string){
+        deleteCookie('token');
+        deleteCookie('type');
+        this.router =useRouter()
+        this.router.push('/login')
+    }
 
     public async callApi(method: string, queryParams?: Record<string, any>): Promise<any> {
         try {
@@ -81,7 +87,13 @@ export class HttpRequester{
                 return false;
             }
         } catch (error) {
-            console.error('Error calling API:', error);
+            if (error.response && error.response.status === 401) {
+                // Perform your action when the response status is 401 (Unauthorized)
+                // For example, you can log out the user or redirect them to a login page
+                this.logOut();
+            } else {
+                console.error('Error calling API:', error);
+            }
         }
     }
 }
