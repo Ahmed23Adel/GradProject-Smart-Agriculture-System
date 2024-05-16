@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import "primeicons/primeicons.css";
-import plants from "@/modules/plants";
 import { defineProps, defineEmits, ref } from "vue";
 
 const props = defineProps(["title", "imageid", "paragraph"]);
@@ -8,6 +7,11 @@ const Title = ref(props.title);
 const imageid = ref(props.imageid);
 const paragraph = ref(props.paragraph);
 const emit = defineEmits(["titleChange", "paragraphChange",'delete']);
+function transform(url:string){
+  url=url.replace("$export=download", "");
+  url=url.replace("/uc?", "/thumbnail?");
+  return url
+}
 </script>
 
 <template>
@@ -26,7 +30,7 @@ const emit = defineEmits(["titleChange", "paragraphChange",'delete']);
           @change="emit('paragraphChange', paragraph)"
         ></textarea>
       </div>
-      <img :src="plants[imageid].src" alt="" />
+      <img :src="transform(imageid)" alt="" />
     </main>
   </div>
 </template>
@@ -52,6 +56,7 @@ textarea {
 }
 img {
   width: 90%;
+  aspect-ratio: 1/0.8;
   display: inline-block;
   margin-inline: auto;
   border-radius: 8px;

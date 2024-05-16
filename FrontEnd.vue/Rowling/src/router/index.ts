@@ -6,7 +6,7 @@ import Reports from  '../views/Reports.vue'
 import Treatment from   '../views/Treatment.vue'
 import DiseaseDefaultTreatment from   '../views/DiseaseDefaultTreatment.vue'
 import RegisterNewUser from   '../views/RegisterNewUser.vue'
-
+import ownerReport from "@/views/ownerReport.vue"
 import { createRouter, createWebHistory } from "vue-router"
 
 
@@ -52,12 +52,17 @@ const router = createRouter({
             path:"/reports",
             name:"reports",
             component: Reports
-        },
-        
+        },        
         {
             path:"/register",
             name:"register",
             component: RegisterNewUser
+        
+        },
+        {
+            path:"/ownerReport",
+            name:"ownerReport",
+            component: ownerReport
         }
 
     ]

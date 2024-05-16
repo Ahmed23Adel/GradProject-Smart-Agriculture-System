@@ -37,11 +37,11 @@ onMounted(() => {
         <i class="pi pi-calendar"></i>
         <p>summary</p>
       </div>
-      <div class="statistics" :class="{ selected: selected == 1 }" @click="router.push('stats')">
+      <div class="statistics" :class="{ selected: selected == 1 }" @click="router.push('/stats')">
         <i class="pi pi-chart-bar"></i>
         <p>statistics</p>
       </div>
-      <div class="treatment" :class="{ selected: selected == 2 }" @click="router.push('treatment')">
+      <div class="treatment" :class="{ selected: selected == 2 }" @click="router.push('/treatment')">
         <i class="pi pi-briefcase"></i>
         <p>treatments</p>
       </div>
