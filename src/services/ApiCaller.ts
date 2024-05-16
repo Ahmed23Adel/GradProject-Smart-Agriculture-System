@@ -3,6 +3,9 @@ import Cookies from 'js-cookie';
 import { useRouter } from 'vue-router';
 import { deleteCookie } from '@/modules/Basic';
 import { inject } from '@vercel/analytics';
+import { injectSpeedInsights } from '@vercel/speed-insights';
+ 
+injectSpeedInsights();
 inject();
 
 export class HttpRequester{
