@@ -2,6 +2,9 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useRouter } from 'vue-router';
 import { deleteCookie } from '@/modules/Basic';
+import { inject } from '@vercel/analytics';
+inject();
+
 export class HttpRequester{
     private endpoint;
     private bearer;
