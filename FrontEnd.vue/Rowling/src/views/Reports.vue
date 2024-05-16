@@ -8,44 +8,79 @@ import Title from "../components/reportspage/Title.vue";
 import ImageParagraph from "../components/reportspage/ImageParagraph.vue";
 import Paragraph from "../components/reportspage/Paragraph.vue";
 import { ref, reactive } from "vue";
+import axios from "axios";
+
+const plants = ref([]);
+const days = ref();
+const locations = ref();
+
+async function get_reports() {
+  await axios
+    .post("http://127.0.0.1:8000/get_summary", {}, {})
+    .then((res: any) => {
+      plants.value = res.data.data;
+    });
+
+  days.value = [...new Set(plants.value.map((obj: any) => obj.Date))];
+
+  locations.value = [...new Set(plants.value.map((obj: any) => obj.Location))];
+}
+get_reports();
 
 const selectedDay = ref();
 const selectedLocation = ref();
-const selectedPlant = ref();
-const selectedConfedancePercentage = ref();
-const selectedDiseaseCategory = ref();
+const status = ref();
+const allComponents = [Title, ImageParagraph, Paragraph];
 
-const allComponents = [Title, ImageParagraph,Paragraph];
-let lastElement = 0;
 const components = reactive([
   {
-    id: lastElement,
+    id: "0",
     order: 0,
     title: "The Report Title",
-    imageid: 0,
+    imagePath: "",
     paragraph: "type the paragraph here",
+    info:{}
   },
 ]);
 
-function addImageParagraphComponent(id: any) {
-  lastElement = lastElement + 1;
+function addImageParagraphComponent(id: string, path: string) {
   components.push({
-    id: lastElement,
+    id: id,
     order: 1,
     title: "The Paragraph Title",
-    imageid: id,
+    imagePath: path,
     paragraph: "Type the paragraph here",
+    info:{}
   });
 }
-
+let lastOrder = 0;
 function addParagraphComponent() {
-  lastElement = lastElement + 1;
+  lastOrder = lastOrder + 1;
   components.push({
-    id: lastElement,
+    id: lastOrder.toString(),
     order: 2,
     title: "The Paragraph Title",
-    imageid: 0,
+    imagePath: "",
     paragraph: "Type the paragraph here",
+    info:{}
+  });
+}
+function save() {
+  let date =new Date()
+  const report = { created_at:date.toDateString(),components: [] as any[] };
+
+  for (let com of components) {
+    report.components.push({
+      id: com.id,
+      order: com.order,
+      title: com.title,
+      imagePath: com.imagePath || "",
+      paragraph: com.paragraph,
+    });
+  }
+
+  axios.post("http://127.0.0.1:8000/add_report", report, {}).then((res) => {
+   
   });
 }
 </script>
@@ -56,37 +91,35 @@ function addParagraphComponent() {
     <div class="summary-container">
       <div class="main-container">
         <Fliter
+          :days="days"
+          :locations="locations"
           @day="
             (v) => {
-              v ? (selectedDay = v.name) : (selectedDay = v);
+              v ? (selectedDay = v) : (selectedDay = v);
             }
           "
           @location="
             (v) => {
-              v ? (selectedLocation = v.name) : (selectedLocation = v);
+              v ? (selectedLocation = v) : (selectedLocation = v);
             }
           "
-          @plant="
+           @status="
             (v) => {
-              v ? (selectedPlant = v.name) : (selectedPlant = v);
+              v ? (status = v) : (status = v);
             }
           "
-          @disease="(v) => (selectedDiseaseCategory = v)"
-          @accuracy="(v) => (selectedConfedancePercentage = v)"
           class="filter"
         />
         <Results
+          :plants="plants"
           :day="selectedDay"
           :location="selectedLocation"
-          :plant="selectedPlant"
-          :disease="selectedDiseaseCategory"
-          :accuracy="selectedConfedancePercentage"
+          :status="status"
           class="results"
-          @id="
+          @data="
             (e) => {
-              addImageParagraphComponent(e);
-
-              console.log(components);
+              addImageParagraphComponent(e.id, e.path);
+             
             }
           "
         />
@@ -100,7 +133,7 @@ function addParagraphComponent() {
           :key="component.id"
           :is="allComponents[component.order]"
           :paragraph="component.paragraph"
-          :imageid="component.imageid"
+          :imageid="component.imagePath"
           :title="component.title"
           @delete="components.splice(i, 1)"
           @titleChange="
@@ -109,15 +142,23 @@ function addParagraphComponent() {
             }
           "
         />
-       
       </div>
       <div class="action-container">
-          <Button label="Save" />
-          <i
-            class="pi pi-plus-circle"
-            @click="()=>{addParagraphComponent()}"
-            style="color: var(--accentb); font-size: 32px; display: block; cursor: pointer;" 
-          ></i>
+        <Button label="Save" @click="save" />
+        <i
+          class="pi pi-plus-circle"
+          @click="
+            () => {
+              addParagraphComponent();
+            }
+          "
+          style="
+            color: var(--accentb);
+            font-size: 32px;
+            display: block;
+            cursor: pointer;
+          "
+        ></i>
       </div>
     </div>
   </div>
@@ -134,7 +175,6 @@ function addParagraphComponent() {
 .summary-container {
   background-color: var(--primary);
   position: relative;
-  
 }
 .main-container {
   display: flex;
@@ -148,7 +188,6 @@ function addParagraphComponent() {
 }
 .page-area {
   background-color: var(--primary);
-
 }
 .report-components-wraper {
   width: 90%;
@@ -157,7 +196,7 @@ function addParagraphComponent() {
   min-height: 80vh;
   margin-top: 32px;
   border-radius: 8px;
-  padding: 64px
+  padding: 64px;
 }
 
 button {

@@ -20,19 +20,19 @@ function signOut(){
   <div class="wrapper">
     <i class="pi pi-list" @click="fullWidth=!fullWidth" style="color: var(--accenta);cursor: pointer;"></i>
     <div class="sidebar-container" :class="{small:!fullWidth}">
-      <div class="today-summary"  :class="{ selected: selected == 0 }" @click="router.push('summary')">
+      <div class="today-summary"  :class="{ selected: selected == 0 }" @click="router.push('/summary')">
         <i class="pi pi-calendar"></i>
         <p>summary</p>
       </div>
-      <div class="statistics" :class="{ selected: selected == 1 }" @click="router.push('stats')">
+      <div class="statistics" :class="{ selected: selected == 1 }" @click="router.push('/stats')">
         <i class="pi pi-chart-bar"></i>
         <p>statistics</p>
       </div>
-      <div class="treatment" :class="{ selected: selected == 2 }" @click="router.push('treatment')">
+      <div class="treatment" :class="{ selected: selected == 2 }" @click="router.push('/treatment')">
         <i class="pi pi-briefcase"></i>
         <p>treatments</p>
       </div>
-      <div class="reports" :class="{ selected: selected == 3 }" @click="router.push('reports')"> 
+      <div class="reports" :class="{ selected: selected == 3 }" @click="router.push('/reports')"> 
         <i class="pi pi-file"></i>
         <p>reports</p>
       </div>

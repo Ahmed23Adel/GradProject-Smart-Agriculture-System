@@ -2,46 +2,58 @@
 import Fliter from "../components/summary/Filter.vue";
 import Sidebar from "../components/Sidebar.vue";
 import Results from "../components/summary/Results.vue";
-
-import { ref } from "vue";
-
+import { ref,onMounted } from "vue";
+import axios from 'axios'
+const plants=ref([])
+const days=ref()
+const locations =ref()
+async function get_reports(){
+  await axios.post('http://127.0.0.1:8000/get_summary',{},{}).then((res:any)=>{plants.value = res.data.data})
+  days.value =  [...new Set(plants.value.map((obj:any) => obj.Date))];
+  locations.value =  [...new Set(plants.value.map((obj:any) => obj.Location))];
+}
+get_reports()
 const selectedDay = ref();
 const selectedLocation = ref();
-const selectedPlant = ref();
-const selectedConfedancePercentage = ref();
-const selectedDiseaseCategory = ref();
+const status = ref();
+
+
+
 </script>
 
+
 <template>
+
   <div class="summary-container">
+    
     <Sidebar class="sidebar" :selected="0"/>
     <div class="main-container">
       <Fliter
+      :days="days"
+      :locations="locations"
         @day="
           (v) => {
-            v ? (selectedDay = v.name) : (selectedDay = v);
+            (selectedDay = v) 
           }
         "
         @location="
           (v) => {
-            v ? (selectedLocation = v.name) : (selectedLocation = v);
+            (selectedLocation = v) 
           }
         "
-        @plant="
+
+@status="
           (v) => {
-            v ? (selectedPlant = v.name) : (selectedPlant = v);
+             (status = v) 
           }
         "
-        @disease="(v) => (selectedDiseaseCategory = v)"
-        @accuracy="(v) => (selectedConfedancePercentage = v)"
         class="filter"
       />
       <Results
+      :plants="plants"
         :day="selectedDay"
         :location="selectedLocation"
-        :plant="selectedPlant"
-        :disease="selectedDiseaseCategory"
-        :accuracy="selectedConfedancePercentage"
+        :status="status"
         class="results"
       />
     </div>
