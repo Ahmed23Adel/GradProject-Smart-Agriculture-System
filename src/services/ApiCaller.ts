@@ -80,6 +80,7 @@ export class HttpRequester{
     
             // Check if the response has data and success status
             if (response.data && response.data.success) {
+                console.log("response.data", response.data)
                 // Return the response data
                 return response.data.data;
             } else {

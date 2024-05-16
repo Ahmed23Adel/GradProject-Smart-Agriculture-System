@@ -17,8 +17,8 @@ function signOut() {
 }
 
 function registerOwner(): void {
+  
   const is_owner: boolean = UserType.getInstance().getUserType();
-
   if (is_owner) {
     router.push('register');
   }
@@ -49,11 +49,9 @@ onMounted(() => {
         <i class="pi pi-file"></i>
         <p>reports</p>
       </div>
-      <div v-if="isOwner">
-            <div class="Register" :class="{ selected: selected == 4 }" @click="registerOwner">
-                <i class="pi pi-user-plus"></i>
-                <p>Register</p>
-            </div>
+      <div v-if="isOwner" class="Register" :class="{ selected: selected == 4 }" @click="registerOwner">
+          <i class="pi pi-user-plus"></i>
+          <p>Register</p>
       </div>
       <div class="signout" :class="{ selected: selected == 5 }" @click="signOut">
         <i class="pi pi-file"></i>
