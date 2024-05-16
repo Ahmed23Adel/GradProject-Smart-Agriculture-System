@@ -36,7 +36,7 @@ async function addUser() {
         if (!requester_data) {
             console.log("User already exists")
             error.value = "User with username exists"
-            successMessage = ""
+            successMessage.value = ""
         }
         else {
             error.value = ""

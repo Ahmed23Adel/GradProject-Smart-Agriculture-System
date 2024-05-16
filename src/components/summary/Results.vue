@@ -73,32 +73,32 @@ function handleImageUpload(order:number) {
     }
   }, 200);
 };
+// TODO sure it's work, I'm not sure at all
+const drawCanvasImage = (order: number) => {
+  const canvas = document.getElementsByClassName("canvas")[order] as HTMLCanvasElement;
+  const image = document.getElementsByClassName("image")[order] as HTMLImageElement;
 
-const drawCanvasImage = (order:number) => {
-  const canvas = document.getElementsByClassName("canvas")[order];
-  const image = document.getElementsByClassName("image")[order];
-
-  if (!canvas) return; // Handle potential missing canvas element
+  if (!canvas || !image) return; // Handle potential missing canvas or image element
   const ctx = canvas.getContext("2d");
-  if (order==0){
-  
-  let w=image.width
-  let h=image.height
-  let ratio = Math.max(w, h) / 500;
-  ctx.drawImage(image, 0, 0, w / ratio, h / ratio);
+  if (!ctx) return; // Handle missing 2d context
 
-  return ratio;
-  }
-  else{
-    order=order-1
-    let sx=selectedPlant.value.bbox[order*4]
-    let sy=selectedPlant.value.bbox[order*4+1]
-    let sw=selectedPlant.value.bbox[order*4+2]
-    let sh=selectedPlant.value.bbox[order*4+3]
-    ctx.drawImage(image, sx, sy, sw , sh,0,0,100,100,sw,sx);
-  }
+  if (order === 0) {
+    let w = image.width;
+    let h = image.height;
+    let ratio = Math.max(w, h) / 500;
+    ctx.drawImage(image, 0, 0, w / ratio, h / ratio);
 
+    return ratio;
+  } else {
+    order = order - 1;
+    let sx = selectedPlant.value.bbox[order * 4];
+    let sy = selectedPlant.value.bbox[order * 4 + 1];
+    let sw = selectedPlant.value.bbox[order * 4 + 2];
+    let sh = selectedPlant.value.bbox[order * 4 + 3];
+    ctx.drawImage(image, sx, sy, sw, sh, 0, 0, 100, 100);
+  }
 };
+
 const drawRectangle = (
   x: number,
   y: number,
@@ -106,9 +106,10 @@ const drawRectangle = (
   height: number,
   label: string
 ) => {
-  const canvas = document.getElementsByClassName("canvas")[0];
+  const canvas = document.getElementsByClassName("canvas")[0] as HTMLCanvasElement;
   if (!canvas) return;
   const ctx = canvas.getContext("2d");
+  if (!ctx) return; // Add null check for ctx
 
   ctx.strokeStyle = "white"; // Set stroke color
   ctx.lineWidth = 2; // Set line width
@@ -118,7 +119,7 @@ const drawRectangle = (
   ctx.fillStyle = "white"; // Set fill color
   ctx.font = "16px Arial"; // Set font style and size
   const textWidth = ctx.measureText(label).width; // Get text width
-  ctx.fillText(label, x + (width - textWidth) / 2, y + 15); // Position text};
+  ctx.fillText(label, x + (width - textWidth) / 2, y + 15); // Position text
 };
 </script>
 

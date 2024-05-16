@@ -1,7 +1,8 @@
 import { HttpRequester } from '@/services/ApiCaller.ts';
-import { ref } from 'vue';
+import type { Ref, reactive } from 'vue'; // Import necessary types
+ // Import necessary types
 
-export function fetchAllLocations(locations: ref<any[]>, selectedLocation: ref<any>) {
+export function fetchAllLocations(locations: Ref<any[]>, selectedLocation: Ref<any>) {
     const requester = new HttpRequester('get-diseased-locations');
     console.log("locations.value", locations.value)
     locations.value = [];

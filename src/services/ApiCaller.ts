@@ -36,7 +36,7 @@ export class HttpRequester{
         return Cookies.get(key);
     }
     
-    public logOut(key: string){
+    public logOut(){
         deleteCookie('token');
         deleteCookie('type');
         this.router =useRouter()
@@ -87,7 +87,7 @@ export class HttpRequester{
                 console.error('API response did not indicate success');
                 return false;
             }
-        } catch (error) {
+        } catch (error: any) {
             if (error.response && error.response.status === 401) {
                 // Perform your action when the response status is 401 (Unauthorized)
                 // For example, you can log out the user or redirect them to a login page

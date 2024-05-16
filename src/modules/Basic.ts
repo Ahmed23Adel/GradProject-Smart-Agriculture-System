@@ -34,7 +34,7 @@ export function deleteCookie (key: string){
 }
 
 
-export function formatDate(date) {
+export function formatDate(date: Date) {
     const month = date.getMonth() + 1; // Months are 0-based, so add 1
     const day = date.getDate();
     const year = date.getFullYear();

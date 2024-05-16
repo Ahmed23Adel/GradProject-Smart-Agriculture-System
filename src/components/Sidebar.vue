@@ -4,6 +4,7 @@ import { defineProps, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { deleteCookie, UserType } from '@/modules/Basic.ts';
 
+
 const router = useRouter()
 const isOwner = ref()
 
