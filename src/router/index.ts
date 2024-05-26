@@ -39,11 +39,6 @@ const router = createRouter({
             component: StatsView
         },
         {
-            path:"/:catchall(.*)*",
-            name:"Not found",
-            component: NotFound
-        },
-        {
             path:"/summary",
             name:"summary",
             component: Summary
@@ -63,7 +58,12 @@ const router = createRouter({
             path:"/ownerReport",
             name:"ownerReport",
             component: ownerReport
-        }
+        }, 
+        {
+            path:"/:catchall(.*)*",
+            name:"Not found",
+            component: NotFound
+        },
 
     ]
 })
