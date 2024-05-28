@@ -11,6 +11,8 @@ const error = ref()
 const successMessage = ref()
 const isValid = ref(false)
 const users = ref([])
+const passwords = ref({})
+// const = 
 function validateUsername() {
     isValid.value = username.value.length >= 5 && password.value.length >= 5 && password.value === confirmPassword.value
 }
@@ -69,7 +71,31 @@ async function fetchAllUsers() {
 }
 onMounted(() => {
     fetchAllUsers();
+    users.value.forEach(user => {
+        this.passwords[user._id] = ""
+    });
 });
+
+async function switchActivationStatus(user_id, activated) {
+    const requester = new HttpRequester('activate_user');
+    const queryParams = {
+        user_id: user_id,
+        activated: !activated,
+    };
+    await requester.callApi('PUT', queryParams);
+
+}
+
+async function resetPassword(username, password) {
+    console.log(username, password)
+    const requester = new HttpRequester('reset_password');
+    const queryParams = {
+        username: username,
+        new_password: password,
+    };
+    requester.callApi('PUT', queryParams);
+}
+
 
 </script>
 
@@ -121,21 +147,39 @@ onMounted(() => {
                     </div>
                 </div>
                 <div class="row justify-content-center">
-                    <div class="col-md-8">
+                    <div class="col-md-12">
                         <h2 class="text-center">All userss</h2>
                         <table class="table table-striped table-bordered">
                             <thead class="thead-dark">
                                 <tr>
                                     <th scope="col">Username</th>
-                                    <th scope="col">Password</th>
+                                    <th scope="col"> Activated</th>
                                     <th scope="col">Type</th>
+                                    <th scope="col">Reset password</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="user in users" :key="user._id">
                                     <td>{{ user.user_name }}</td>
-                                    <td>{{ user.password }}</td>
+                                    <td>
+                                        <ToggleButton v-model="user.activated" onLabel="Activated"
+                                            offLabel="Deactivated"
+                                            @click="switchActivationStatus(user._id, user.activated)" />
+                                    </td>
                                     <td>{{ user.type }}</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col">
+                                                <InputText type="password" v-model="passwords[user._id]" />
+                                            </div>
+                                            <div class="col">
+                                                <div class="card flex justify-content-center">
+                                                    <Button label="Reset"
+                                                        @click="resetPassword(user.user_name, passwords[user._id])" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>

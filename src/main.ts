@@ -20,6 +20,7 @@ import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
 import InputNumber from 'primevue/inputnumber';
 import ProgressSpinner from 'primevue/progressspinner';
+import ToggleButton from 'primevue/togglebutton';
 
 
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -44,6 +45,7 @@ app.component('Textarea', Textarea)
 app.component('Button', Button)
 app.component('InputNumber', InputNumber)
 app.component('ProgressSpinner', ProgressSpinner)
+app.component('ToggleButton', ToggleButton)
 
 
 app.mount('#app')
