@@ -11,6 +11,7 @@ const isOwner = ref(false);
 const images = ref();
 const treatmentValue = ref("")
 const isShowLoading = ref(true)
+const isShowLoadingSaveUpdates = ref(false)
 treatmentValue.value = ""
 
 // defineProps(["location"])
@@ -45,21 +46,25 @@ async function fetchLocationHistory() {
 
 
 
-function updateTreatment(){
+async function updateTreatment(){
+    isShowLoadingSaveUpdates.value = true;
     const requester = new HttpRequester('update_treatment');
     const queryParams = {
         location: selectedLocation.value.name,
         treatment: treatmentValue.value,
     };
-    requester.callApi('PUT', queryParams);
+    await requester.callApi('PUT', queryParams);
+    isShowLoadingSaveUpdates.value = false;
 }
 
-function declareLocationTreated(){
+async function declareLocationTreated(){
+    isShowLoadingSaveUpdates.value = true;
     const requester = new HttpRequester('declare_location_healthy');
     const queryParams = {
         location: selectedLocation.value.name,
     };
-    requester.callApi('PUT',queryParams);
+    await requester.callApi('PUT',queryParams);
+    isShowLoadingSaveUpdates.value = false;
 }
 
 
@@ -156,7 +161,9 @@ onMounted(async () => {
                                 </div>
                             </div>
                         </div>
-                        
+                        <div v-if="isShowLoadingSaveUpdates" class="row">
+                                <ProgressSpinner />
+                        </div>
                         
 
                     </div>
