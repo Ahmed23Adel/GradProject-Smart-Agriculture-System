@@ -13,6 +13,7 @@ const treatmentValue = ref("")
 const isShowLoading = ref(true)
 const isShowLoadingSaveUpdates = ref(false)
 const isShowErrorMsg = ref(false)
+const errorMessage = ref("Error happened while performing this action. Please try again")
 treatmentValue.value = ""
 
 // defineProps(["location"])
@@ -42,6 +43,10 @@ async function fetchLocationHistory() {
         to_date: formattedDate,
     };
     const requester_data = await requester.callApi('GET', queryParams);
+    if (! requester_data){
+        isShowErrorMsg.value = true;
+        errorMessage.value = "Error loading images. Please try again"
+    } 
     images.value = requester_data.allHistory;
 }
 
@@ -50,7 +55,7 @@ async function fetchLocationHistory() {
 async function updateTreatment(){
     isShowLoadingSaveUpdates.value = true;
     isShowErrorMsg.value = false;
-    const requester = new HttpRequester('update_treatmentt');
+    const requester = new HttpRequester('update_treatment');
     const queryParams = {
         location: selectedLocation.value.name,
         treatment: treatmentValue.value,
@@ -58,6 +63,7 @@ async function updateTreatment(){
     const requester_data = await requester.callApi('PUT', queryParams);
     if (! requester_data){
         isShowErrorMsg.value = true;
+        errorMessage.value = "Error saving your updates. Please try again"
     }
     isShowLoadingSaveUpdates.value = false;
     
@@ -73,6 +79,7 @@ async function declareLocationTreated(){
     const requester_data = await requester.callApi('PUT', queryParams);
     if (! requester_data){
         isShowErrorMsg.value = true;
+        errorMessage.value = "Error declaring your location healthy. Please try again"
     }
     isShowLoadingSaveUpdates.value = false;
 }
@@ -175,7 +182,7 @@ onMounted(async () => {
                                 <ProgressSpinner />
                         </div>
                         <div v-if="isShowErrorMsg" class="row" style="margin-top: 10px; margin:10px;">
-                            <Message severity="error">Error happened while performing this action. Please try again</Message>
+                            <Message severity="error" >{{ errorMessage }}</Message>
                         </div>
                         
 
