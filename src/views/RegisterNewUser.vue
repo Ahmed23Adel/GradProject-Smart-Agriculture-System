@@ -13,6 +13,7 @@ const isValid = ref(false)
 const users = ref([])
 const passwords = ref({})
 const isShowError = ref(false)
+const isShowLoading = ref(false)
 // const = 
 function validateUsername() {
     isValid.value = username.value.length >= 5 && password.value.length >= 5 && password.value === confirmPassword.value
@@ -27,6 +28,7 @@ function validatePasswordConfirmation() {
 }
 
 async function addUser() {
+    isShowLoading.value = true;
     if (isValid.value) {
         const requester = new HttpRequester('register');
         const queryParams = {
@@ -40,16 +42,19 @@ async function addUser() {
             console.log("User already exists")
             error.value = "User with username exists"
             successMessage.value = ""
+            isShowLoading.value = false;
         }
         else {
             error.value = ""
             successMessage.value = "User added successfully";
             fetchAllUsers()
+            isShowLoading.value = false;
         }
         console.log('User added successfully')
     } else {
 
         console.log('Form is invalid')
+        isShowLoading.value = false;
     }
 }
 
@@ -147,6 +152,9 @@ async function resetPassword(username, password) {
                         </div>
                         <div class="text-center" style="margin-top: 20px;">
                             <button class="btn btn-primary" :disabled="!isValid" @click="addUser">Add User</button>
+                        </div>
+                        <div v-if="isShowLoading" class="text-center" style="margin-top: 20px;">
+                            <ProgressSpinner />
                         </div>
                         <div class="text-center">
                             <div class="text-center">
