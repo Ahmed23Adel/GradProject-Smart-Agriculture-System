@@ -12,6 +12,7 @@ const images = ref();
 const treatmentValue = ref("")
 const isShowLoading = ref(true)
 const isShowLoadingSaveUpdates = ref(false)
+const isShowErrorMsg = ref(false)
 treatmentValue.value = ""
 
 // defineProps(["location"])
@@ -48,22 +49,31 @@ async function fetchLocationHistory() {
 
 async function updateTreatment(){
     isShowLoadingSaveUpdates.value = true;
-    const requester = new HttpRequester('update_treatment');
+    isShowErrorMsg.value = false;
+    const requester = new HttpRequester('update_treatmentt');
     const queryParams = {
         location: selectedLocation.value.name,
         treatment: treatmentValue.value,
     };
-    await requester.callApi('PUT', queryParams);
+    const requester_data = await requester.callApi('PUT', queryParams);
+    if (! requester_data){
+        isShowErrorMsg.value = true;
+    }
     isShowLoadingSaveUpdates.value = false;
+    
 }
 
 async function declareLocationTreated(){
     isShowLoadingSaveUpdates.value = true;
+    isShowErrorMsg.value = false;
     const requester = new HttpRequester('declare_location_healthy');
     const queryParams = {
         location: selectedLocation.value.name,
     };
-    await requester.callApi('PUT',queryParams);
+    const requester_data = await requester.callApi('PUT', queryParams);
+    if (! requester_data){
+        isShowErrorMsg.value = true;
+    }
     isShowLoadingSaveUpdates.value = false;
 }
 
@@ -163,6 +173,9 @@ onMounted(async () => {
                         </div>
                         <div v-if="isShowLoadingSaveUpdates" class="row">
                                 <ProgressSpinner />
+                        </div>
+                        <div v-if="isShowErrorMsg" class="row" style="margin-top: 10px; margin:10px;">
+                            <Message severity="error">Error happened while performing this action. Please try again</Message>
                         </div>
                         
 
