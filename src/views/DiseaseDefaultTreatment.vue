@@ -13,6 +13,9 @@ const diseaseId = route.params['id']
 const treatmentValue = ref("")
 treatmentValue.value = ""
 const isOwner = ref(false);
+const isShowLoadingSaveUpdates = ref(false)
+const isShowErrorMsg = ref(false)
+const errorMessage = ref("Error happened while performing this action. Please try again")
 
 async function fetchDefaultTreatment(){
     const requester = new HttpRequester('get-default-treatment');
@@ -26,26 +29,36 @@ async function fetchDefaultTreatment(){
     // TODO Make sure that this is its treatemtn
 }
 
-function saveUpdates(){
+async function saveUpdates(){
+    isShowLoadingSaveUpdates.value = true;
+    isShowErrorMsg.value = false;
     const requester = new HttpRequester('update-default-treatment');
     let diseaseNameAbbreviation = ""
     if (diseaseId == 1){
-        diseaseNameAbbreviation = "EB"
+        diseaseNameAbbreviation = "Early_Blight"
     }
     else{
-        diseaseNameAbbreviation = "Late blight"
+        diseaseNameAbbreviation = "Late_Blight"
     }
     const queryParams = {
         diseaesName: diseaseNameAbbreviation,
         treatment: treatmentValue.value,
     };
-    requester.callApi('PUTq', queryParams);
+    const requester_data = await requester.callApi('PUT', queryParams);
+    console.log("requester_data", requester_data)
+    if (requester_data === false){
+        isShowErrorMsg.value = true;
+        errorMessage.value = "Error saving your updates. Please try again"
+    }
+    isShowLoadingSaveUpdates.value = false;
 }
 
 
 onMounted(async () => {
+    isOwner.value = UserType.getInstance().getUserType();   
+    console.log("isowner", isOwner.value);
     await fetchDefaultTreatment();
-    isOwner.value = UserType.getInstance().getUserType();    
+     
 });
 
 
@@ -67,8 +80,15 @@ onMounted(async () => {
             </div>
             <div class="submit-parent">
                 <div class="card flex justify-content-center submit-sub-parent">
-                    <Button label="Save the updates" icon="pi pi-check" iconPos="right" class="submit-button" @click="saveUpdates" :disabled="is_owner"/>
+                    <Button label="Save the updates" icon="pi pi-check" iconPos="right" class="submit-button" @click="saveUpdates" :disabled="isOwner"/>
                 </div>
+                
+            </div>
+            <div v-if="isShowLoadingSaveUpdates" class="row">
+                    <ProgressSpinner />
+            </div>
+            <div v-if="isShowErrorMsg" class="row" style="margin-top: 10px; margin:10px;">
+                <Message severity="error" >{{ errorMessage }}</Message>
             </div>
 
 
