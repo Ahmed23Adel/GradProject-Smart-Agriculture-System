@@ -16,15 +16,17 @@ const EB = ref([]);
 const LB = ref([]);
 const chartData = ref();
 const chartOptions = ref();
-
+const latestDate = ref()
 
 const fetchTodayStats = async () => {
-    const requester = new HttpRequester('today_pics');
+    const requester = new HttpRequester('latest_pics');
     const requester_data = await requester.callApi('GET');
     count.value = requester_data.count;
     percentageDiseased.value = requester_data.percentage_diseased;
     percentageDiseasedAfterMod.value = requester_data.percentage_diseased_after_mod;
     modRate.value = requester_data.mod_rate;
+    latestDate.value = requester_data.latest_date;
+
 };
 
 
@@ -115,7 +117,7 @@ const setChartOptions = () => {
         <div class="col-xs-12 col-sm-12 col-md-12 col-xl-8">
             <div class="row" style="padding:30px">
                 <div class="col-8">
-                    <h1 class="h3">Today's Pictures</h1>
+                    <h1 class="h3">Latest day's Pictures ({{ latestDate }})</h1>
 
                 </div>
             </div>

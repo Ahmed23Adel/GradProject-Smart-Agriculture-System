@@ -71,6 +71,14 @@ function openGoogleMaps(zone) {
     window.open(googleMapsLink, '_blank');
 }
 
+function openGoogleMapsWithLatLong() {
+    const googleMapsLink = `https://www.google.com/maps?q=${calculatedCoordinates.value.lat},${calculatedCoordinates.value.long}`;
+    window.open(googleMapsLink, '_blank');
+}
+
+
+
+
 onMounted(async () => {
     await generateGrid();
 });
@@ -82,17 +90,22 @@ onMounted(async () => {
         <Sidebar class="sidebar" :selected="6" />
         <div class="main-container" style="margin-top:60px">
             <div class="zone-input row">
-                <div class="col-4">
+                <div class="col-3">
                     <FloatLabel>
                         <InputText id="zonename" v-model="zoneNameSearch" />
                         <label for="zonename">Zone name</label>
                     </FloatLabel>
                 </div>
-                <div class="col-4">
+                <div class="col-3">
                     <Button label="Calculate Coordinates" @click="findCoordinates"/>
                 </div>
-                <div class="col-4">
+                <div class="col-3">
                     <div v-if="calculatedCoordinates">Longitude: {{ calculatedCoordinates.long }}, Latitude: {{ calculatedCoordinates.lat }}</div>
+                </div>
+                <div class="col-3">
+                    <div v-if="calculatedCoordinates">
+                        <Button label="Go to Google Maps" @click="openGoogleMapsWithLatLong"/>
+                    </div>
                 </div>
             </div>
             <div id="app" style="position: relative;">

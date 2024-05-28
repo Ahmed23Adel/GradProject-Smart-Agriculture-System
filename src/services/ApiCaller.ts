@@ -16,7 +16,7 @@ export class HttpRequester{
 
     constructor(endpoint: string, disableLogin: boolean = false) {
         this.endpoint = endpoint;
-        this.base_endpoint = "https://greadproject-backend-fastapi.onrender.com/";
+        // this.base_endpoint = "https://greadproject-backend-fastapi.onrender.com/";
         this.base_endpoint = "http://localhost:8000/";
 
         if (this.isUserSignedIn()){

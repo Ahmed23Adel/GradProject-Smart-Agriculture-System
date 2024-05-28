@@ -15,14 +15,14 @@ import PercentageDateCard from '@/components//stats/PercentageDateCard.vue';
         <div class="main-container">
             <UpperBar/>
             <TodaysSummary/>
-            <hr class="header-line">
+            <!-- <hr class="header-line">
             <PercentageDateCard />
             <hr class="header-line">
             <LocationHistory />
             <hr class="header-line">
             <ChartDateDiseased/>
             <hr class="header-line-white" style="color:white;">
-            <ChartDateDiseaseTypePie/> 
+            <ChartDateDiseaseTypePie/>  -->
 
 
         </div>
