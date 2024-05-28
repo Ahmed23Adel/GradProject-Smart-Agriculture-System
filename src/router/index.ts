@@ -7,8 +7,9 @@ import Treatment from   '../views/Treatment.vue'
 import DiseaseDefaultTreatment from   '../views/DiseaseDefaultTreatment.vue'
 import RegisterNewUser from   '../views/RegisterNewUser.vue'
 import ownerReport from "@/views/ownerReport.vue"
-import { createRouter, createWebHistory } from "vue-router"
+import ZonesMapping from "@/views/ZonesMapping.vue"
 
+import { createRouter, createWebHistory } from "vue-router"
 
 const router = createRouter({
     history:createWebHistory(import.meta.env.BASE_URL),
@@ -58,6 +59,11 @@ const router = createRouter({
             path:"/ownerReport",
             name:"ownerReport",
             component: ownerReport
+        },
+        {
+            path:"/zonesMapping",
+            name:"zonesMapping",
+            component: ZonesMapping
         }, 
         {
             path:"/:catchall(.*)*",

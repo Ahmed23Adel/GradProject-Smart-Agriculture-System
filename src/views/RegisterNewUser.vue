@@ -12,6 +12,7 @@ const successMessage = ref()
 const isValid = ref(false)
 const users = ref([])
 const passwords = ref({})
+const isShowError = ref(false)
 // const = 
 function validateUsername() {
     isValid.value = username.value.length >= 5 && password.value.length >= 5 && password.value === confirmPassword.value
@@ -76,10 +77,19 @@ onMounted(() => {
     });
 });
 
-async function switchActivationStatus(user_id, activated) {
+async function switchActivationStatus(type, userId, activated) {
+    if (type === "owner"){
+        console.log("owner")
+        isShowError.value = true;
+        console.log(users.value)
+        console.log(userId, users.value.find(user => user._id === userId))
+        users.value.find(user => user._id === userId).activated = true;
+        console.log(userId, users.value.find(user => user._id === userId))
+        return;
+    }
     const requester = new HttpRequester('activate_user');
     const queryParams = {
-        user_id: user_id,
+        user_id: userId,
         activated: !activated,
     };
     await requester.callApi('PUT', queryParams);
@@ -164,7 +174,9 @@ async function resetPassword(username, password) {
                                     <td>
                                         <ToggleButton v-model="user.activated" onLabel="Activated"
                                             offLabel="Deactivated"
-                                            @click="switchActivationStatus(user._id, user.activated)" />
+                                            @click="switchActivationStatus(user.type, user._id, user.activated)" 
+                                            :disabled="user.type === 'owner'"
+                                            />
                                     </td>
                                     <td>{{ user.type }}</td>
                                     <td>
@@ -185,6 +197,10 @@ async function resetPassword(username, password) {
                         </table>
                     </div>
                 </div>
+                <div class="alert-container" v-if="isShowError">
+                    <Message severity="error">You can't change the status of an owner</Message>
+                </div>
+                
             </div>
         </div>
     </div>
