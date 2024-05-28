@@ -3,7 +3,6 @@ import {defineProps} from "vue"
 import { ref } from 'vue';
 
 const {diseaesName, backColor, diseaseId} = defineProps(['diseaesName','backColor', 'diseaseId'])
-console.log(diseaesName)
 
 const toRef = ref("")
 toRef.value = "/treatment/disease-default-treatment/" + diseaseId;

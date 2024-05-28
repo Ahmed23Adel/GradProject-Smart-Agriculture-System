@@ -9,8 +9,8 @@ const locations = ref([])
 const selectedLocation = ref();
 const isOwner = ref(false);
 const images = ref();
-const periodExtension = ref()
 const treatmentValue = ref("")
+const isShowLoading = ref(true)
 treatmentValue.value = ""
 
 // defineProps(["location"])
@@ -28,7 +28,6 @@ const responsiveOptions = ref([
 ]);
 
 async function fetchLocationHistory() {
-    console.log("fetchLocationHistory")
     const requester = new HttpRequester('location-history');
     const today = new Date();
     const dd = String(today.getDate()).padStart(2, '0');
@@ -40,16 +39,13 @@ async function fetchLocationHistory() {
         from_date: "01/01/0001",
         to_date: formattedDate,
     };
-    console.log("queryParams", queryParams)
     const requester_data = await requester.callApi('GET', queryParams);
-    console.log("requester_data", requester_data)
     images.value = requester_data.allHistory;
 }
 
 
 
 function updateTreatment(){
-    console.log("updateTreatment")
     const requester = new HttpRequester('update_treatment');
     const queryParams = {
         location: selectedLocation.value.name,
@@ -59,7 +55,6 @@ function updateTreatment(){
 }
 
 function declareLocationTreated(){
-    console.log("declareLocationTreated")
     const requester = new HttpRequester('declare_location_healthy');
     const queryParams = {
         location: selectedLocation.value.name,
@@ -68,18 +63,7 @@ function declareLocationTreated(){
 }
 
 
-function extendLocationByPeriod(){
-    console.log("extendLocationByPeriod")
-    const requester = new HttpRequester('extend_location_by_days');
-    const queryParams = {
-        location: selectedLocation.value.name,
-        period: periodExtension.value,
-    };
-    requester.callApi('PUT',queryParams);
-}
-
 async function fetchTreatmentValue(){
-    console.log("fetchTreatmentValue")
     const requester = new HttpRequester('get_treatment_value');
     const queryParams = {
         location: selectedLocation.value.name,
@@ -88,37 +72,30 @@ async function fetchTreatmentValue(){
     treatmentValue.value = requester_data.treatment;
 }
 function onChangeImage(){
-    // console.log('hi')
 }
 
 
 watch(selectedLocation, async (newSelectedLocation, oldSelectedLocation) => {
-    console.log("watch")
-    // await fetchAllLocations(locations, selectedLocation);
     await fetchLocationHistory();
     await fetchTreatmentValue();
 });
 
 onMounted(async () => {
-    console.log("mounted");
     // TODO selected location is never set here correct it
-    await fetchAllLocations(locations, selectedLocation);
-    console.log("locations", locations);
-    console.log("locations.value", locations.value);
-    console.log("locations.value[0]", locations.value[0]);
-    selectedLocation.value = locations.value[0];
-    // selectedLocation.value = locations.value[0];
-    // await fetchLocationHistory()
     isOwner.value = UserType.getInstance().getUserType();
-    // console.log("fetch treatment")
-    // fetchTreatmentValue();
+    await fetchAllLocations(locations, selectedLocation);
+    selectedLocation.value = locations.value[0];
+    isShowLoading.value=false;
+
 });
 </script>
 
 
 <template>
-
-    <div class="selectors">
+    <div v-if="isShowLoading">
+            <ProgressSpinner />
+    </div>
+    <div class="selectors" v-if="!isShowLoading">
         <el-row>
             <el-col :span="8" :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
                 <div class="grid-content ep-bg-purple">
@@ -141,7 +118,7 @@ onMounted(async () => {
                                 containerStyle="max-width: 640px">
                                 <template #item="slotProps">
                                     <img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt"
-                                        style="width: 100%; display: block" @change="onChangeImage" crossorigin="anonymous"/>
+                                        style="width: 100%; display: block" @change="onChangeImage" crossorigin="anonymous" witdth="450px" height="450px"/>
                                 </template>
                                 <template #thumbnail="slotProps">
                                     <img :src="slotProps.item.thumbnailImageSrc" :alt="slotProps.item.alt"

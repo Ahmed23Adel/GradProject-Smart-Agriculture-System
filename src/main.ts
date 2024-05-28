@@ -19,6 +19,7 @@ import Message from 'primevue/message';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
 import InputNumber from 'primevue/inputnumber';
+import ProgressSpinner from 'primevue/progressspinner';
 
 
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -42,6 +43,7 @@ app.component('Chart', Chart)
 app.component('Textarea', Textarea)
 app.component('Button', Button)
 app.component('InputNumber', InputNumber)
+app.component('ProgressSpinner', ProgressSpinner)
 
 
 app.mount('#app')

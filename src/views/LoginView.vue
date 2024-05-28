@@ -11,7 +11,7 @@ const passwordValue = ref("")
 const isUsernameValid = ref(true)
 const isPasswordValid = ref(true)
 const isCredentialValid = ref(true)
-
+const isShowLoading = ref(false)
 const router =useRouter()
 
 
@@ -58,6 +58,7 @@ function validateInput() {
 const token = ref()
 const userType = ref()
 async function login_db(){
+    isShowLoading.value = true;
     const requester = new HttpRequester('login', true);
     const queryParams = {
         user_name: usernameValue.value,
@@ -66,6 +67,7 @@ async function login_db(){
     console.log(queryParams)
     const requester_data = await requester.callApi('GET', queryParams);
     console.log("requester_data", requester_data)
+    isShowLoading.value = false;
     if (! requester_data){
         console.log("Credential wrong")
         isCredentialValid.value = false;
@@ -76,7 +78,6 @@ async function login_db(){
     userType.value = requester_data.user_type
     saveCookie('token',token.value)
     saveCookie('type',userType.value)
-    console.log("token", token)
     return true
 }
 
@@ -114,6 +115,9 @@ function get_cookie(key){
             <h1>Welcome to Rowling (Login)</h1>
             <h3>This is where all plants magic take place</h3>
         </header>
+        <div v-if="isShowLoading">
+            <ProgressSpinner />
+        </div>
 
         <div class="usernamePassword-div" id="username">
             <div class="card flex justify-content-center">
