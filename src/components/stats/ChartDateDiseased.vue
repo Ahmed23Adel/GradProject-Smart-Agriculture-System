@@ -95,23 +95,23 @@ onMounted(async () => {
 });
 </script>
 <template>
-    <el-row>
-        <el-col :span="8" :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
+    <div class="row">
+        <div clas="col-4">
             <div class="grid-content ep-bg-purple">
-                <p class="pre-date" style="margin:20px"> Location </p>
+                <h1 class="pre-date" style="margin:20px"> Location </h1>
                 <div class="card flex justify-content-center" style="margin:20px">
                     <CascadeSelect v-model="selectedLocation" :options="locations" optionLabel="name"
                         optionGroupLabel="name" :optionGroupChildren="['subLocations']" style="min-width: 14rem"
                         placeholder="Select a Location" />
                 </div>
             </div>
-        </el-col>
-    </el-row>
+        </div>
+    </div>
     <div class="label-container">
         Percentage of Diseased Plants Over Time
     </div> 
-    <el-row>
-        <el-col :span="24">
+    <div class=row>
+        <div class="col-12">
             <div class="chart-parent-center">
                 <div clas="grid-content ep-bg-purple chart-parent">
                     <div class="card flex justify-content-center chart-parent">
@@ -120,8 +120,8 @@ onMounted(async () => {
                 </div>
             </div>>
 
-        </el-col>
-    </el-row>
+        </div>
+    </div>
 
 </template>
 

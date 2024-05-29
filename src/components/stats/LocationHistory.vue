@@ -62,18 +62,18 @@ watch([selectedLocation, fromDate, toDate], async (newValues, oldValues) => {
 
 
 <template>
-    <el-row>
-        <el-col :span="22">
+    <div class="row">
+        <div class="col-12">
             <div clas="grid-content ep-bg-purple">
                 <!-- <h2 class="sub-header-gen-stats" style="color:white">History of certain location:</h2> -->
                 <h1 class="h3">History of certain location:</h1>
             </div>
-        </el-col>
-    </el-row>
+        </div>
+    </div>
 
     <div class="selectors">
-        <el-row>
-            <el-col :span="8" :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
+        <div class="row">
+            <div class="col-4">
                 <div class="grid-content ep-bg-purple">
                     <p class="pre-date" style="margin:20px"> Location </p>
                     <div class="card flex justify-content-center" style="margin:20px">
@@ -82,9 +82,9 @@ watch([selectedLocation, fromDate, toDate], async (newValues, oldValues) => {
                             placeholder="Select a Location" />
                     </div>
                 </div>
-            </el-col>
+            </div>
 
-            <el-col :span="8" :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
+            <div class="col-4">
                 <div class="grid-content ep-bg-purple">
                     <p class="pre-date" style="margin:20px"> From: </p>
                     <div class="card flex justify-content-center" style="margin:20px">
@@ -92,25 +92,25 @@ watch([selectedLocation, fromDate, toDate], async (newValues, oldValues) => {
 
                     </div>
                 </div>
-            </el-col>
+            </div>
 
-            <el-col :span="8" :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
+            <div class="col-4">
                 <div class="grid-content ep-bg-purple">
                     <p class="pre-date" style="margin:20px"> To: </p>
                     <div class="card flex justify-content-center" style="margin:20px">
                         <Calendar v-model="toDate" />
                     </div>
                 </div>
-            </el-col>
+            </div>
 
-        </el-row>
+        </div>
         <div class="row justify-content-center" v-if="isShowLoading">
             <div class="col-12 text-center">
                 <ProgressSpinner />
             </div>
         </div>
-        <el-row>
-            <el-col :span="24">
+        <div class="row">
+            <div class="col-12">
                 <div class="grid-content ep-bg-purple graph-image-parent">
                     <div class="card images-parent">
                         <Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5"
@@ -131,8 +131,8 @@ watch([selectedLocation, fromDate, toDate], async (newValues, oldValues) => {
                     </div>
                 </div>
 
-            </el-col>
-        </el-row>
+            </div>
+        </div>
 
 
 

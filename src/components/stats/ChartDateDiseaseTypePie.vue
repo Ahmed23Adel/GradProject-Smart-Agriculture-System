@@ -100,8 +100,8 @@ watch(atDate, async (newDate) => {
         <Message severity="warn">No data for this date. Please try another date</Message>
     </div>
     
-    <el-row>
-        <el-col :span="24">
+    <div class="row">
+        <div class="col-12">
             <div class="chart-parent-center">
                 <div clas="grid-content ep-bg-purple chart-parent">
                     <div class="card flex justify-content-center chart-parent">
@@ -110,8 +110,8 @@ watch(atDate, async (newDate) => {
                 </div>
             </div>>
 
-        </el-col>
-    </el-row>
+        </div>
+    </div>
 
 
 </template>

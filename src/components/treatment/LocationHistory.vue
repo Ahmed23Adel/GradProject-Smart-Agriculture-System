@@ -118,8 +118,8 @@ onMounted(async () => {
         <ProgressSpinner />
     </div>
     <div class="selectors" v-if="!isShowLoading">
-        <el-row>
-            <el-col :span="8" :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
+        <div class="row">
+            <div class="col0-12">
                 <div class="grid-content ep-bg-purple">
                     <p class="pre-date" style="margin:20px"> Location </p>
                     <div class="card flex justify-content-center" style="margin:20px">
@@ -128,8 +128,8 @@ onMounted(async () => {
                             placeholder="Select a Location" />
                     </div>
                 </div>
-            </el-col>
-        </el-row>
+            </div>
+        </div>
 
         <div class="row">
             <div class="col-12">
