@@ -46,8 +46,12 @@ export class HttpRequester{
     public logOut(){
         deleteCookie('token');
         deleteCookie('type');
-        this.router =useRouter()
-        this.router.push('/login')
+        if (this.router){
+            this.router.push('/login')
+        }
+        // this.router = useRouter()
+        // console.log("this.router", this.router)
+        
     }
 
     public async callApi(method: string, queryParams?: Record<string, any>): Promise<any> {

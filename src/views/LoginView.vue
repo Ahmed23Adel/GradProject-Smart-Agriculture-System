@@ -64,7 +64,7 @@ async function login_db(){
         user_name: usernameValue.value,
         password: passwordValue.value.trim(),
     };
-    console.log(queryParams)
+    console.log("queryParams", queryParams)
     const requester_data = await requester.callApi('GET', queryParams);
     console.log("requester_data", requester_data)
     isShowLoading.value = false;
@@ -84,22 +84,7 @@ async function login_db(){
 function saveCookie(key, value) {
     Cookies.set(key, value, { expires: 1 }); // Expires in 1 days
 }
-function is_token_valid() {
-    let key="token";
-    const cookieValue = Cookies.get(key); // Retrieve the cookie value
-    if (cookieValue !== undefined && cookieValue !== null) { // Check if cookie exists
-        const cookieExpiration = Cookies.getJSON(key + '_expires'); // Get expiration date
-        if (!cookieExpiration || new Date(cookieExpiration) > new Date()) { // Check expiration
-            return true; // Cookie is valid
-        } else {
-            // Cookie has expired
-            // You can remove the expired cookie if needed
-            Cookies.remove(key);
-            return false; // Or handle the expiration accordingly
-        }
-    }
-    return false; // Return null if cookie doesn't exist
-}
+
 function get_cookie(key){
     return Cookies.get(key);
 }
@@ -153,7 +138,7 @@ function get_cookie(key){
         </Transition>
         <Transition>
             <div class="alert-container" v-if="!isCredentialValid" @click="isCredentialValid = true">
-                <Message severity="error">Either username or password is not correct</Message>
+                <Message severity="error">Either username or password is not correct. Or an owner deactivated you. Please contact your supervisor</Message>
 
             </div>
         </Transition>
