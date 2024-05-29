@@ -7,10 +7,11 @@ import { formatDate } from '@/modules/Basic.ts';
 
 const locations = ref([])
 const selectedLocation = ref();
-const today = new Date(); // Create a new Date object for today's date
-const fromDate = ref(today);
+const today = new Date();
+const fromDate = ref(new Date(today.getFullYear(), 0, 1));
 const toDate = ref(today);
 const images = ref();
+const isShowLoading = ref(true)
 const responsiveOptions = ref([
     {
         breakpoint: '1300px',
@@ -22,21 +23,6 @@ const responsiveOptions = ref([
     }
 ]);
 
-function transform(url) {
-    const regex = /\/d\/(.*)\/view/;
-    const match = url.match(regex);
-
-    if (match) {
-        const imageId = match[1];
-        url = 'https://drive.google.com/uc?id=${imageId}&export=download';
-    }
-
-    url = url.replace("&export=download", "");
-    url = url.replace("google", "lienuc");
-    
-
-    return url;
-}
 
 async function fetchLocationHistory(location, fromDate, toDate) {
     const requester = new HttpRequester('location-history');
@@ -45,23 +31,23 @@ async function fetchLocationHistory(location, fromDate, toDate) {
         from_date: fromDate,
         to_date: toDate,
     };
-    console.log("queryParams", queryParams)
-    const requester_data = await requester.callApi('GET',queryParams);
+    const requester_data = await requester.callApi('GET', queryParams);
     images.value = requester_data.allHistory;
-    console.log("images", images.value)
 }
 
 
 
 onMounted(async () => {
     await fetchAllLocations(locations, selectedLocation);
+    selectedLocation.value = locations.value[0];
     const formattedFromDate = formatDate(fromDate.value);
     const formattedToDate = formatDate(toDate.value);
-    console.log("selectedLocation", selectedLocation.value)
-    fetchLocationHistory(location, formattedFromDate, formattedToDate);
+    await fetchLocationHistory(location, formattedFromDate, formattedToDate);
+    isShowLoading.value = false;
 });
 
-watch([selectedLocation, fromDate, toDate], (newValues, oldValues) => {
+watch([selectedLocation, fromDate, toDate], async (newValues, oldValues) => {
+    isShowLoading.value = true;
     const [newLocation, newFromDate, newToDate] = newValues;
 
     // Format the new dates
@@ -69,7 +55,8 @@ watch([selectedLocation, fromDate, toDate], (newValues, oldValues) => {
     const formattedToDate = formatDate(newToDate);
 
     // Call fetchLocationHistory with the new values
-    fetchLocationHistory(newLocation, formattedFromDate, formattedToDate);
+    await fetchLocationHistory(newLocation, formattedFromDate, formattedToDate);
+    isShowLoading.value = false;
 });
 </script>
 
@@ -102,7 +89,7 @@ watch([selectedLocation, fromDate, toDate], (newValues, oldValues) => {
                     <p class="pre-date" style="margin:20px"> From: </p>
                     <div class="card flex justify-content-center" style="margin:20px">
                         <Calendar v-model="fromDate" />
-                        
+
                     </div>
                 </div>
             </el-col>
@@ -117,17 +104,24 @@ watch([selectedLocation, fromDate, toDate], (newValues, oldValues) => {
             </el-col>
 
         </el-row>
-
+        <div class="row justify-content-center" v-if="isShowLoading">
+            <div class="col-12 text-center">
+                <ProgressSpinner />
+            </div>
+        </div>
         <el-row>
             <el-col :span="24">
                 <div class="grid-content ep-bg-purple graph-image-parent">
-                    <div class="card">
-                        <Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5" containerStyle="max-width: 640px">
+                    <div class="card images-parent">
+                        <Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5"
+                            containerStyle="max-width: 640px">
                             <template #item="slotProps">
-                                <img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt" style="width: 100%; display: block" crossorigin="anonymous" width="600px" height="600px"/>
+                                <img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt"
+                                    class="fixed-size-image" @change="onChangeImage" crossorigin="anonymous" />
                             </template>
                             <template #thumbnail="slotProps">
-                                <img :src="slotProps.item.thumbnailImageSrc" :alt="slotProps.item.alt" style="display: block" crossorigin="anonymous" />
+                                <img :src="slotProps.item.thumbnailImageSrc" :alt="slotProps.item.alt"
+                                    class="fixed-size-thumbnail" crossorigin="anonymous" />
                             </template>
                             <template #caption="slotProps">
                                 <div class="text-xl mb-2 font-bold">{{ slotProps.item.title }}</div>
@@ -160,13 +154,35 @@ watch([selectedLocation, fromDate, toDate], (newValues, oldValues) => {
     flex-direction: row; */
 }
 
-.graph-image-parent{
+.graph-image-parent {
     display: flex;
-    justify-content: center; /* Center items horizontally */
-    align-items: center; /* Center items vertically */
+    justify-content: center;
+    /* Center items horizontally */
+    align-items: center;
+    /* Center items vertically */
 }
 
-.pre-date{
+.pre-date {
     font-size: 28px;
 }
+
+.images-parent {
+    background-color: var(--primary);
+    border: none;
+}
+
+.fixed-size-image {
+    width: 600px;
+    height: 450px;
+    object-fit: cover; /* or "contain" depending on the desired effect */
+    display: block;
+}
+
+.fixed-size-thumbnail {
+    width: 80px;
+    height: 80px;
+    object-fit: cover; /* or "contain" */
+    display: block;
+}
+
 </style>

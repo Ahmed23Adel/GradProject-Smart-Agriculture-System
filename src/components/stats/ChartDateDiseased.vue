@@ -90,13 +90,7 @@ watch(selectedLocation, async (newSelectedLocation, oldSelectedLocation) => {
 onMounted(async () => {
     console.log("mounting")
     await fetchAllLocations(locations, selectedLocation);
-    selectedLocation.value = locations.value[0].name;
-    console.log("mountinglocations", locations)
-    console.log("mountingselectedLocation.value", selectedLocation.value)
-    // await fetchDatesDiseases();
-    // console.log(locations.value, selectedLocation.value)
-    // chartData.value = setChartData();
-    // chartOptions.value = setChartOptions();
+    selectedLocation.value = locations.value[0];
     
 });
 </script>
@@ -113,6 +107,9 @@ onMounted(async () => {
             </div>
         </el-col>
     </el-row>
+    <div class="label-container">
+        Percentage of Diseased Plants Over Time
+    </div> 
     <el-row>
         <el-col :span="24">
             <div class="chart-parent-center">
@@ -142,4 +139,14 @@ onMounted(async () => {
     height: 100%;
 
 }
+
+.label-container {
+    font-size: 1.2rem; 
+    font-weight: bold;
+    color: #333; 
+    text-align: center; 
+    margin-bottom: 1rem; 
+    padding: 0.5rem; 
+}
+
 </style>

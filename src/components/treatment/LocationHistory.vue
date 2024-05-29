@@ -36,23 +36,23 @@ async function fetchLocationHistory() {
     const dd = String(today.getDate()).padStart(2, '0');
     const mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
     const yyyy = today.getFullYear();
-    const formattedDate = `${dd}/${mm}/${yyyy}`;
+    const formattedDate = `${dd}-${mm}-${yyyy}`;
     const queryParams = {
         location: selectedLocation.value.name,
-        from_date: "01/01/0001",
+        from_date: "01-01-1990",
         to_date: formattedDate,
     };
     const requester_data = await requester.callApi('GET', queryParams);
-    if (! requester_data){
+    if (!requester_data) {
         isShowErrorMsg.value = true;
         errorMessage.value = "Error loading images. Please try again"
-    } 
+    }
     images.value = requester_data.allHistory;
 }
 
 
 
-async function updateTreatment(){
+async function updateTreatment() {
     isShowLoadingSaveUpdates.value = true;
     isShowErrorMsg.value = false;
     const requester = new HttpRequester('update_treatment');
@@ -61,15 +61,15 @@ async function updateTreatment(){
         treatment: treatmentValue.value,
     };
     const requester_data = await requester.callApi('PUT', queryParams);
-    if (! requester_data){
+    if (!requester_data) {
         isShowErrorMsg.value = true;
         errorMessage.value = "Error saving your updates. Please try again"
     }
     isShowLoadingSaveUpdates.value = false;
-    
+
 }
 
-async function declareLocationTreated(){
+async function declareLocationTreated() {
     isShowLoadingSaveUpdates.value = true;
     isShowErrorMsg.value = false;
     const requester = new HttpRequester('declare_location_healthy');
@@ -77,7 +77,7 @@ async function declareLocationTreated(){
         location: selectedLocation.value.name,
     };
     const requester_data = await requester.callApi('PUT', queryParams);
-    if (! requester_data){
+    if (!requester_data) {
         isShowErrorMsg.value = true;
         errorMessage.value = "Error declaring your location healthy. Please try again"
     }
@@ -85,15 +85,15 @@ async function declareLocationTreated(){
 }
 
 
-async function fetchTreatmentValue(){
+async function fetchTreatmentValue() {
     const requester = new HttpRequester('get_treatment_value');
     const queryParams = {
         location: selectedLocation.value.name,
     };
-    const requester_data  =  await requester.callApi('GET',queryParams);
+    const requester_data = await requester.callApi('GET', queryParams);
     treatmentValue.value = requester_data.treatment;
 }
-function onChangeImage(){
+function onChangeImage() {
 }
 
 
@@ -107,7 +107,7 @@ onMounted(async () => {
     isOwner.value = UserType.getInstance().getUserType();
     await fetchAllLocations(locations, selectedLocation);
     selectedLocation.value = locations.value[0];
-    isShowLoading.value=false;
+    isShowLoading.value = false;
 
 });
 </script>
@@ -115,7 +115,7 @@ onMounted(async () => {
 
 <template>
     <div v-if="isShowLoading">
-            <ProgressSpinner />
+        <ProgressSpinner />
     </div>
     <div class="selectors" v-if="!isShowLoading">
         <el-row>
@@ -140,11 +140,11 @@ onMounted(async () => {
                                 containerStyle="max-width: 640px">
                                 <template #item="slotProps">
                                     <img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt"
-                                        style="width: 100%; display: block" @change="onChangeImage" crossorigin="anonymous" witdth="450px" height="450px"/>
+                                        class="fixed-size-image" @change="onChangeImage" crossorigin="anonymous" />
                                 </template>
                                 <template #thumbnail="slotProps">
                                     <img :src="slotProps.item.thumbnailImageSrc" :alt="slotProps.item.alt"
-                                        style="display: block" crossorigin="anonymous"/>
+                                        class="fixed-size-thumbnail" crossorigin="anonymous" />
                                 </template>
                                 <template #caption="slotProps">
                                     <div class="text-xl mb-2 font-bold">{{ slotProps.item.title }}</div>
@@ -174,17 +174,17 @@ onMounted(async () => {
                             <div class="submit-parent">
                                 <div class="card flex justify-content-center submit-sub-parent">
                                     <Button label="Declare this location healty" icon="pi pi-check" iconPos="right"
-                                        class="submit-button" @click="declareLocationTreated" :disabled="isOwner"/>
+                                        class="submit-button" @click="declareLocationTreated" :disabled="isOwner" />
                                 </div>
                             </div>
                         </div>
                         <div v-if="isShowLoadingSaveUpdates" class="row">
-                                <ProgressSpinner />
+                            <ProgressSpinner />
                         </div>
                         <div v-if="isShowErrorMsg" class="row" style="margin-top: 10px; margin:10px;">
-                            <Message severity="error" >{{ errorMessage }}</Message>
+                            <Message severity="error">{{ errorMessage }}</Message>
                         </div>
-                        
+
 
                     </div>
                 </div>
@@ -259,8 +259,24 @@ onMounted(async () => {
     /* Center vertically */
 }
 
-.extend-parent{
+.extend-parent {
     display: flex;
     justify-content: center;
+}
+
+.fixed-size-image {
+    width: 600px;
+    height: 450px;
+    object-fit: cover;
+    /* or "contain" depending on the desired effect */
+    display: block;
+}
+
+.fixed-size-thumbnail {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    /* or "contain" */
+    display: block;
 }
 </style>

@@ -9,23 +9,23 @@ const diseases = ref()
 const percentages = ref()
 const chartData = ref();
 const chartOptions = ref();
-
+const isShowNoData = ref(false)
+const isShowLoading = ref(true)
 
 async function fetchDiseasePercentages() {
+    isShowLoading.value = true;
+    isShowNoData.value = false;
     const requester = new HttpRequester('get_disease_statistics');
-    const atDateFormatted = atDate.value.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    });
-    console.log("Formatted date:", atDateFormatted);
-
     const queryParams = {
-        date: atDateFormatted
+        date: formatDate(atDate.value)
     };
     const requester_data = await requester.callApi('GET', queryParams);
     diseases.value = requester_data.diseases;
     percentages.value = requester_data.percentages;
+    if (percentages.value.every(value => value === 0)){
+        isShowNoData.value = true;
+    }
+    isShowLoading.value = false;
 }
 
 const setChartData = () => {
@@ -66,9 +66,9 @@ onMounted(async () => {
     
 });
 
-watch(atDate, (newDate) => {
+watch(atDate, async (newDate) => {
     const formattedDate = formatDate(newDate);
-    fetchDiseasePercentages(formattedDate);
+    await fetchDiseasePercentages(formattedDate);
     chartData.value = setChartData();
     chartOptions.value = setChartOptions();
 });
@@ -78,18 +78,28 @@ watch(atDate, (newDate) => {
 
 </script>
 <template>
-    <el-row>
-        <el-col :span="8" :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
-            <div class="grid-content ep-bg-purple">
-                <!-- <p class="pre-date" style="margin:20px"> At date: </p> -->
-                <h1 class="h3">At date:</h1>
-                <div class="card flex justify-content-center" style="margin:20px">
-                    <Calendar v-model="atDate" />
+    <div class="row">
+        <h1 class="h3">At date:</h1>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="card flex justify-content-center" style="margin:20px">
+                <Calendar v-model="atDate" />
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row justify-content-center" v-if="isShowLoading">
+                <div class="col-12 text-center">
+                    <ProgressSpinner />
                 </div>
             </div>
-        </el-col>
-    </el-row>
-
+        </div>
+       
+    </div>
+    <div v-if="isShowNoData">
+        <Message severity="warn">No data for this date. Please try another date</Message>
+    </div>
+    
     <el-row>
         <el-col :span="24">
             <div class="chart-parent-center">

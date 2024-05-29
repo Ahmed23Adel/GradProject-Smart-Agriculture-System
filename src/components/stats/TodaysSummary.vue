@@ -17,7 +17,7 @@ const LB = ref([]);
 const chartData = ref();
 const chartOptions = ref();
 const latestDate = ref()
-
+const isShowLoading = ref(true)
 const fetchTodayStats = async () => {
     const requester = new HttpRequester('latest_pics');
     const requester_data = await requester.callApi('GET');
@@ -41,6 +41,7 @@ const fetchMonsPercentages = async () => {
 
 const setChartData = () => {
     const documentStyle = getComputedStyle(document.documentElement);
+    console.log("LB.value", LB.value)
     return {
         labels: mons.value,
         
@@ -65,9 +66,10 @@ const setChartData = () => {
 
 onMounted(async () => {
     await fetchMonsPercentages();
-    fetchTodayStats();
+    await fetchTodayStats();
     chartData.value = setChartData();
     chartOptions.value = setChartOptions();
+    isShowLoading.value = false;
     
 });
 
@@ -120,6 +122,11 @@ const setChartOptions = () => {
                     <h1 class="h3">Latest day's Pictures ({{ latestDate }})</h1>
 
                 </div>
+                <div class="col-4">
+                    <div v-if="isShowLoading">
+                        <ProgressSpinner />
+                    </div>
+                </div>
             </div>
             <div class="row">
                 <div class="row">
@@ -163,8 +170,12 @@ const setChartOptions = () => {
                 </div>
             </div>
         </div>
+        
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-4 disease-percen">
-                <Chart type="line" :data="chartData" :options="chartOptions" class="h-30rem" />
+            <div class="label-container">
+                monthly percentage distribution of two classes (EB and LB) of images over a year
+            </div> 
+            <Chart type="line" :data="chartData" :options="chartOptions" class="h-30rem" />
         </div>
     </div>
 </template>
@@ -185,4 +196,13 @@ const setChartOptions = () => {
     padding-right:50px;
     /* margin:20px; */
 }
+.label-container {
+    font-size: 1.2rem; 
+    font-weight: bold;
+    color: #333; 
+    text-align: center; 
+    margin-bottom: 1rem; 
+    padding: 0.5rem; 
+}
+
 </style>

@@ -42,5 +42,5 @@ export function formatDate(date: Date) {
     const paddedMonth = month.toString().padStart(2, '0');
     const paddedDay = day.toString().padStart(2, '0');
     // Return the formatted date as a string
-    return `${paddedMonth}/${paddedDay}/${year}`;
+    return `${paddedDay}-${paddedMonth}-${year}`;
 }

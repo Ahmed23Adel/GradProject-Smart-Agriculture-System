@@ -15,11 +15,12 @@ const eb_per = ref(0);
 const lb_per = ref(0);
 const chartData = ref();
 const chartOptions = ref();
-
-
+const isShowLoading = ref(true)
+const isShowNoData = ref(false)
 
 const fetchRoundStatsAtDate = async () => {
-    console.log(formatDate(date.value))
+    isShowNoData.value = false;
+    isShowLoading.value = true;
     const queryParams = {
         date_str: formatDate(date.value),
     };
@@ -31,6 +32,10 @@ const fetchRoundStatsAtDate = async () => {
     mod_rate.value = requester_data.mod_rate;
     eb_per.value = requester_data.EB_per;
     lb_per.value = requester_data.LB_per;
+    if (count.value == 0){
+        isShowNoData.value = true;
+    }
+    isShowLoading.value = false;
 };
 
 
@@ -38,12 +43,11 @@ const fetchRoundStatsAtDate = async () => {
 
 const setChartData = () => {
     const documentStyle = getComputedStyle(document.documentElement);
-    
     return {
-        labels: ['Early blight', 'Late bligh'],
+        labels: ['Early blight', 'Late blight'],
         datasets: [
             {
-                label: "% of disease type",
+                label: "% of disease type at this date",
                 backgroundColor: documentStyle.getPropertyValue('--gray-500'),
                 borderColor: documentStyle.getPropertyValue('--gray-500'),
                 data: [eb_per.value, lb_per.value]
@@ -97,18 +101,26 @@ onMounted(async () => {
     await fetchRoundStatsAtDate();
     chartData.value = setChartData();
     chartOptions.value = setChartOptions();
+    isShowLoading.value = false;
     
 });
 
-watch(date, (newDate) => {
+watch(date, async (newDate) => {
     const formattedDate = formatDate(newDate);
-    fetchRoundStatsAtDate(formattedDate);
+    await fetchRoundStatsAtDate(formattedDate);
+    chartData.value = setChartData();
+    chartOptions.value = setChartOptions();
 });
 </script>
 <template>
     <div class="row" style="padding:30px">
-        <div class="col-6">
+        <div class="col-4">
             <h1 class="h3">At specific date:</h1>
+        </div>
+        <div class="col-2">
+            <div v-if="isShowLoading">
+                <ProgressSpinner />
+            </div>
         </div>
         <div class="col-6">
             <FloatLabel>
@@ -118,6 +130,10 @@ watch(date, (newDate) => {
         </div>
 
     </div>
+    <div v-if="isShowNoData">
+        <Message severity="warn">No data for this date. Please try another date</Message>
+    </div>
+    
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-xl-8">
 
