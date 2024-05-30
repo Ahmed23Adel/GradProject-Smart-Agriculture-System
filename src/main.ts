@@ -21,7 +21,9 @@ import Button from 'primevue/button';
 import InputNumber from 'primevue/inputnumber';
 import ProgressSpinner from 'primevue/progressspinner';
 import ToggleButton from 'primevue/togglebutton';
+import Checkbox from 'primevue/checkbox';
 
+ 
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -46,6 +48,7 @@ app.component('Button', Button)
 app.component('InputNumber', InputNumber)
 app.component('ProgressSpinner', ProgressSpinner)
 app.component('ToggleButton', ToggleButton)
+app.component('Checkbox', Checkbox)
 
 
 app.mount('#app')

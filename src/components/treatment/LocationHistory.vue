@@ -6,6 +6,7 @@ import { fetchAllLocations } from '@/modules/CommonRequests.ts';
 
 
 const locations = ref([])
+const isLocationNewForExpert = ref([])
 const selectedLocation = ref();
 const isOwner = ref(false);
 const images = ref();
@@ -15,9 +16,10 @@ const isShowLoadingSaveUpdates = ref(false)
 const isShowErrorMsg = ref(false)
 const errorMessage = ref("Error happened while performing this action. Please try again")
 treatmentValue.value = ""
-
-// defineProps(["location"])
-
+const newZonesNames = ref([])
+const newZonesNamesConcatenated = ref("")
+const isThisLocationChecked = ref(false)
+const dates = ref();
 
 const responsiveOptions = ref([
     {
@@ -97,16 +99,48 @@ function onChangeImage() {
 }
 
 
-watch(selectedLocation, async (newSelectedLocation, oldSelectedLocation) => {
+function sheduleTreatment(){
+    console.log("hello")
+    console.log(dates.value)
+}
+function setZoneCheckedByExpert(zoneName){
+    const requester = new HttpRequester('set-location-checked');
+    const queryParams = {
+        location_name: zoneName,
+    };
+    requester.callApi('POST', queryParams);
+
+}
+watch([selectedLocation, isThisLocationChecked], async ([newSelectedLocation, newIsThisLocationChecked], [oldSelectedLocation, oldIsThisLocationChecked]) => {
+    // same location but check is diff
+    if (oldSelectedLocation && !oldIsThisLocationChecked && newSelectedLocation.name === oldSelectedLocation.name && 
+            oldIsThisLocationChecked === false && newIsThisLocationChecked === true){
+        setZoneCheckedByExpert(oldSelectedLocation.name)
+        isLocationNewForExpert.value[locations.value.findIndex(location => location.name === selectedLocation.value.name)] = false;
+    }
+    let selectedLocationIndex = locations.value.findIndex(location => location.name === selectedLocation.value.name);
+    isThisLocationChecked.value = !isLocationNewForExpert.value[selectedLocationIndex]
     await fetchLocationHistory();
     await fetchTreatmentValue();
 });
 
+
 onMounted(async () => {
     // TODO selected location is never set here correct it
     isOwner.value = UserType.getInstance().getUserType();
-    await fetchAllLocations(locations, selectedLocation);
+    await fetchAllLocations(locations, selectedLocation, isLocationNewForExpert);
     selectedLocation.value = locations.value[0];
+    for (let i = 0; i < locations.value.length; i++){
+        if (isLocationNewForExpert.value[i])
+            newZonesNames.value.push(locations.value[i].name)
+    }
+    const length = newZonesNames.value.length;
+    if (length === 0) newZonesNamesConcatenated.value = "";
+    else if (length === 1) newZonesNamesConcatenated.value =  newZonesNames.value[0];
+    else if (length === 2) newZonesNamesConcatenated.value = `${newZonesNames.value[0]} and ${newZonesNames.value[1]}`;
+    else newZonesNamesConcatenated.value = `${newZonesNames.value.slice(0, -1).join(', ')}, and ${newZonesNames.value[length - 1]}`;
+    isThisLocationChecked.value = !isLocationNewForExpert.value[0]
+    // console.log("isThisLocationChecked", isThisLocationChecked.value)
     isShowLoading.value = false;
 
 });
@@ -129,6 +163,9 @@ onMounted(async () => {
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="row">
+            <Message severity="success">New diseased zones have been added. You should check them: {{ newZonesNamesConcatenated }}</Message>
         </div>
 
         <div class="row">
@@ -153,7 +190,15 @@ onMounted(async () => {
                             </Galleria>
                         </div>
                     </div>
+                    
                     <div class="col-6">
+                        <div class="row">
+                            <div class="col-6" style="margin-bottom: 20px" v-if="!isThisLocationChecked">
+                                <Checkbox v-model="isThisLocationChecked" :binary="true" />
+                                Declare this location checked
+                            </div>
+
+                        </div>
                         <div class="row">
                             <h1 class="h5"> Treatment (you may edit it to something special)</h1>
                         </div>
@@ -178,6 +223,21 @@ onMounted(async () => {
                                 </div>
                             </div>
                         </div>
+                        <div class=row> 
+                            <h3 class="h5" style="margin-top:20px"> Schedule treatment for this location (please select a range)</h3>
+                        </div>
+                        <div class=row>
+                        <div class="col-8">
+                                <div class="card flex justify-content-center">
+                                    <Calendar v-model="dates" selectionMode="range" :manualInput="false" />
+                                </div>
+                        </div>
+                        <div class="col-4">
+                            <button type="button" class="btn btn-primary" @click="sheduleTreatment">Confirm</button>
+                        </div>
+                        </div>   
+                        
+                        <!-- </div> -->
                         <div v-if="isShowLoadingSaveUpdates" class="row">
                             <ProgressSpinner />
                         </div>
