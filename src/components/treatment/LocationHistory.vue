@@ -3,6 +3,7 @@ import { ref, onMounted, watch } from "vue";
 import { HttpRequester } from '@/services/ApiCaller.ts';
 import { UserType } from '@/modules/Basic.ts';
 import { fetchAllLocations } from '@/modules/CommonRequests.ts';
+import { formatDate } from '@/modules/Basic.ts';
 
 
 const locations = ref([])
@@ -20,7 +21,8 @@ const newZonesNames = ref([])
 const newZonesNamesConcatenated = ref("")
 const isThisLocationChecked = ref(false)
 const dates = ref();
-
+const isShowSchedulingDone = ref(false)
+const scheduleData = ref()
 const responsiveOptions = ref([
     {
         breakpoint: '1300px',
@@ -99,11 +101,23 @@ function onChangeImage() {
 }
 
 
-function sheduleTreatment(){
+async function sheduleTreatment() {
     console.log("hello")
     console.log(dates.value)
+    const requester = new HttpRequester('schedule-zones');
+    let start_date_full = dates.value[0]
+    let end_date_full = dates.value[1]
+    const queryParams = {
+        start_date: formatDate(start_date_full),
+        end_date: formatDate(end_date_full),
+        zone_name: selectedLocation.value.name,
+    };
+    const requester_data = await requester.callApi('POST', queryParams);
+    if (requester_data) {
+        isShowSchedulingDone.value = true;
+    }
 }
-function setZoneCheckedByExpert(zoneName){
+function setZoneCheckedByExpert(zoneName) {
     const requester = new HttpRequester('set-location-checked');
     const queryParams = {
         location_name: zoneName,
@@ -111,10 +125,22 @@ function setZoneCheckedByExpert(zoneName){
     requester.callApi('POST', queryParams);
 
 }
+
+async function fetchSceduleData(){
+    const requester = new HttpRequester('zone-scheduled');
+    const queryParams = {
+        location: selectedLocation.value.name,
+    };
+    // console.log("queryParams", queryParams)
+    const requester_data = await requester.callApi('GET', queryParams);
+    scheduleData.value = requester_data.schedule;
+    console.log("selectedLocation.value", selectedLocation.value)
+    console.log("scheduleData.value", scheduleData.value)
+}
 watch([selectedLocation, isThisLocationChecked], async ([newSelectedLocation, newIsThisLocationChecked], [oldSelectedLocation, oldIsThisLocationChecked]) => {
     // same location but check is diff
-    if (oldSelectedLocation && !oldIsThisLocationChecked && newSelectedLocation.name === oldSelectedLocation.name && 
-            oldIsThisLocationChecked === false && newIsThisLocationChecked === true){
+    if (oldSelectedLocation && !oldIsThisLocationChecked && newSelectedLocation.name === oldSelectedLocation.name &&
+        oldIsThisLocationChecked === false && newIsThisLocationChecked === true) {
         setZoneCheckedByExpert(oldSelectedLocation.name)
         isLocationNewForExpert.value[locations.value.findIndex(location => location.name === selectedLocation.value.name)] = false;
     }
@@ -122,6 +148,7 @@ watch([selectedLocation, isThisLocationChecked], async ([newSelectedLocation, ne
     isThisLocationChecked.value = !isLocationNewForExpert.value[selectedLocationIndex]
     await fetchLocationHistory();
     await fetchTreatmentValue();
+    await fetchSceduleData();
 });
 
 
@@ -130,13 +157,13 @@ onMounted(async () => {
     isOwner.value = UserType.getInstance().getUserType();
     await fetchAllLocations(locations, selectedLocation, isLocationNewForExpert);
     selectedLocation.value = locations.value[0];
-    for (let i = 0; i < locations.value.length; i++){
+    for (let i = 0; i < locations.value.length; i++) {
         if (isLocationNewForExpert.value[i])
             newZonesNames.value.push(locations.value[i].name)
     }
     const length = newZonesNames.value.length;
     if (length === 0) newZonesNamesConcatenated.value = "";
-    else if (length === 1) newZonesNamesConcatenated.value =  newZonesNames.value[0];
+    else if (length === 1) newZonesNamesConcatenated.value = newZonesNames.value[0];
     else if (length === 2) newZonesNamesConcatenated.value = `${newZonesNames.value[0]} and ${newZonesNames.value[1]}`;
     else newZonesNamesConcatenated.value = `${newZonesNames.value.slice(0, -1).join(', ')}, and ${newZonesNames.value[length - 1]}`;
     isThisLocationChecked.value = !isLocationNewForExpert.value[0]
@@ -144,6 +171,22 @@ onMounted(async () => {
     isShowLoading.value = false;
 
 });
+
+
+const getSeverity = (product) => {
+    console.log("product", product.Done)
+    switch (product.Done) {
+        case true:
+            console.log("true")
+            return 'success';
+        case false:
+            console.log("false")
+            return 'danger';
+
+        default:
+            return null;
+    }
+};
 </script>
 
 
@@ -165,7 +208,8 @@ onMounted(async () => {
             </div>
         </div>
         <div class="row">
-            <Message severity="success">New diseased zones have been added. You should check them: {{ newZonesNamesConcatenated }}</Message>
+            <Message severity="success">New diseased zones have been added. You should check them: {{
+        newZonesNamesConcatenated }}</Message>
         </div>
 
         <div class="row">
@@ -190,7 +234,7 @@ onMounted(async () => {
                             </Galleria>
                         </div>
                     </div>
-                    
+
                     <div class="col-6">
                         <div class="row">
                             <div class="col-6" style="margin-bottom: 20px" v-if="!isThisLocationChecked">
@@ -223,26 +267,43 @@ onMounted(async () => {
                                 </div>
                             </div>
                         </div>
-                        <div class=row> 
-                            <h3 class="h5" style="margin-top:20px"> Schedule treatment for this location (please select a range)</h3>
+                        <div class=row>
+                            <h3 class="h5" style="margin-top:20px"> Schedule treatment for this location (please select
+                                a range)</h3>
                         </div>
                         <div class=row>
-                        <div class="col-8">
+                            <div class="col-8">
                                 <div class="card flex justify-content-center">
                                     <Calendar v-model="dates" selectionMode="range" :manualInput="false" />
                                 </div>
+                            </div>
+                            <div class="col-4">
+                                <button type="button" class="btn btn-primary" @click="sheduleTreatment">Confirm</button>
+                            </div>
                         </div>
-                        <div class="col-4">
-                            <button type="button" class="btn btn-primary" @click="sheduleTreatment">Confirm</button>
-                        </div>
-                        </div>   
                         
+                        <div class="card row ">
+                            <DataTable :value="scheduleData" showGridlines tableStyle="min-width: 50rem"  >
+                                <Column field="Date_Scheduled" header="Date"></Column>
+                                <Column field="Done" header="Done"></Column>
+                                <!-- <Column header="Done">
+                                    <template #body="slotProps">
+                                        <Tag :value="slotProps.data.Done" :severity="getSeverity(slotProps.data)" />
+                                    </template>
+                                </Column> -->
+                                <Column field="Farmer_Finished" header="Farmer"></Column>
+                            </DataTable>
+                        </div>
+
                         <!-- </div> -->
                         <div v-if="isShowLoadingSaveUpdates" class="row">
                             <ProgressSpinner />
                         </div>
                         <div v-if="isShowErrorMsg" class="row" style="margin-top: 10px; margin:10px;">
                             <Message severity="error">{{ errorMessage }}</Message>
+                        </div>
+                        <div v-if="isShowSchedulingDone" class="row" style="margin-top: 10px; margin:10px;">
+                            <Message severity="success">Treatment has been scheduled for this zone</Message>
                         </div>
 
 

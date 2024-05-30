@@ -22,7 +22,10 @@ import InputNumber from 'primevue/inputnumber';
 import ProgressSpinner from 'primevue/progressspinner';
 import ToggleButton from 'primevue/togglebutton';
 import Checkbox from 'primevue/checkbox';
-
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import ColumnGroup from 'primevue/columngroup';   // optional
+import Row from 'primevue/row';                   // optional
  
 
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -49,6 +52,10 @@ app.component('InputNumber', InputNumber)
 app.component('ProgressSpinner', ProgressSpinner)
 app.component('ToggleButton', ToggleButton)
 app.component('Checkbox', Checkbox)
+app.component('DataTable', DataTable)
+app.component('Column', Column)
+app.component('ColumnGroup', ColumnGroup)
+app.component('Row', Row)
 
 
 app.mount('#app')
