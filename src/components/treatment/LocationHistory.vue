@@ -7,6 +7,7 @@ import { formatDate } from '@/modules/Basic.ts';
 
 
 const locations = ref([])
+const zonesTreatment = ref([])
 const isLocationNewForExpert = ref([])
 const selectedLocation = ref();
 const isOwner = ref(false);
@@ -102,8 +103,6 @@ function onChangeImage() {
 
 
 async function sheduleTreatment() {
-    console.log("hello")
-    console.log(dates.value)
     const requester = new HttpRequester('schedule-zones');
     let start_date_full = dates.value[0]
     let end_date_full = dates.value[1]
@@ -118,11 +117,14 @@ async function sheduleTreatment() {
     }
 }
 function setZoneCheckedByExpert(zoneName) {
-    const requester = new HttpRequester('set-location-checked');
-    const queryParams = {
-        location_name: zoneName,
-    };
-    requester.callApi('POST', queryParams);
+    if (!isOwner.value){
+        const requester = new HttpRequester('set-location-checked');
+        const queryParams = {
+            location_name: zoneName,
+        };
+        requester.callApi('POST', queryParams);
+    }
+    
 
 }
 
@@ -131,11 +133,8 @@ async function fetchSceduleData(){
     const queryParams = {
         location: selectedLocation.value.name,
     };
-    // console.log("queryParams", queryParams)
     const requester_data = await requester.callApi('GET', queryParams);
     scheduleData.value = requester_data.schedule;
-    console.log("selectedLocation.value", selectedLocation.value)
-    console.log("scheduleData.value", scheduleData.value)
 }
 watch([selectedLocation, isThisLocationChecked], async ([newSelectedLocation, newIsThisLocationChecked], [oldSelectedLocation, oldIsThisLocationChecked]) => {
     // same location but check is diff
@@ -147,15 +146,16 @@ watch([selectedLocation, isThisLocationChecked], async ([newSelectedLocation, ne
     let selectedLocationIndex = locations.value.findIndex(location => location.name === selectedLocation.value.name);
     isThisLocationChecked.value = !isLocationNewForExpert.value[selectedLocationIndex]
     await fetchLocationHistory();
-    await fetchTreatmentValue();
+    treatmentValue.value = zonesTreatment.value[selectedLocationIndex]
     await fetchSceduleData();
+    
 });
 
 
 onMounted(async () => {
     // TODO selected location is never set here correct it
     isOwner.value = UserType.getInstance().getUserType();
-    await fetchAllLocations(locations, selectedLocation, isLocationNewForExpert);
+    await fetchAllLocations(locations, selectedLocation, isLocationNewForExpert, zonesTreatment);
     selectedLocation.value = locations.value[0];
     for (let i = 0; i < locations.value.length; i++) {
         if (isLocationNewForExpert.value[i])
@@ -167,14 +167,12 @@ onMounted(async () => {
     else if (length === 2) newZonesNamesConcatenated.value = `${newZonesNames.value[0]} and ${newZonesNames.value[1]}`;
     else newZonesNamesConcatenated.value = `${newZonesNames.value.slice(0, -1).join(', ')}, and ${newZonesNames.value[length - 1]}`;
     isThisLocationChecked.value = !isLocationNewForExpert.value[0]
-    // console.log("isThisLocationChecked", isThisLocationChecked.value)
     isShowLoading.value = false;
 
 });
 
 
 const getSeverity = (product) => {
-    console.log("product", product.Done)
     switch (product.Done) {
         case true:
             console.log("true")

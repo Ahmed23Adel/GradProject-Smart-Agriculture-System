@@ -98,6 +98,12 @@ export class HttpRequester{
                 return false;
             }
         } catch (error: any) {
+            if (error.response &&  error.response.status === 401 && 
+                    ((error.response.data.detail === "Only expert can perform this operation") 
+                    || (error.response.data.detail === "Only farmers can perform this operation") ||
+                     (error.response.data.detail === "Only owner can perform this operation"))){
+                    console.log(error.response);
+            }  
             if (error.response && error.response.status === 401) {
                 // Perform your action when the response status is 401 (Unauthorized)
                 // For example, you can log out the user or redirect them to a login page
