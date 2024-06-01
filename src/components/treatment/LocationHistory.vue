@@ -24,6 +24,9 @@ const isThisLocationChecked = ref(false)
 const dates = ref();
 const isShowSchedulingDone = ref(false)
 const scheduleData = ref()
+const showSuccessMsg = ref("")
+const isShowSuccessMsg = ref(false)
+
 const responsiveOptions = ref([
     {
         breakpoint: '1300px',
@@ -60,15 +63,18 @@ async function fetchLocationHistory() {
 async function updateTreatment() {
     isShowLoadingSaveUpdates.value = true;
     isShowErrorMsg.value = false;
-    const requester = new HttpRequester('update_treatment');
+    const requester = new HttpRequester('update-specific-treatment');
     const queryParams = {
-        location: selectedLocation.value.name,
-        treatment: treatmentValue.value,
+        zone_name: selectedLocation.value.name,
+        specific_treatment: treatmentValue.value,
     };
     const requester_data = await requester.callApi('PUT', queryParams);
     if (!requester_data) {
         isShowErrorMsg.value = true;
         errorMessage.value = "Error saving your updates. Please try again"
+    } else {
+        isShowSuccessMsg.value = true;
+        showSuccessMsg.value = "Your updates were saved"
     }
     isShowLoadingSaveUpdates.value = false;
 
@@ -117,18 +123,18 @@ async function sheduleTreatment() {
     }
 }
 function setZoneCheckedByExpert(zoneName) {
-    if (!isOwner.value){
+    if (!isOwner.value) {
         const requester = new HttpRequester('set-location-checked');
         const queryParams = {
             location_name: zoneName,
         };
         requester.callApi('POST', queryParams);
     }
-    
+
 
 }
 
-async function fetchSceduleData(){
+async function fetchSceduleData() {
     const requester = new HttpRequester('zone-scheduled');
     const queryParams = {
         location: selectedLocation.value.name,
@@ -148,7 +154,7 @@ watch([selectedLocation, isThisLocationChecked], async ([newSelectedLocation, ne
     await fetchLocationHistory();
     treatmentValue.value = zonesTreatment.value[selectedLocationIndex]
     await fetchSceduleData();
-    
+
 });
 
 
@@ -207,7 +213,7 @@ const getSeverity = (product) => {
         </div>
         <div class="row">
             <Message severity="success">New diseased zones have been added. You should check them: {{
-        newZonesNamesConcatenated }}</Message>
+                newZonesNamesConcatenated }}</Message>
         </div>
 
         <div class="row">
@@ -265,32 +271,49 @@ const getSeverity = (product) => {
                                 </div>
                             </div>
                         </div>
+                        <hr class="header-line" style="margin:20px">
                         <div class=row>
-                            <h3 class="h5" style="margin-top:20px"> Schedule treatment for this location (please select
-                                a range)</h3>
+                            <div class="col-12">
+                                <h3 class="h5" style="margin-top:20px"> Schedule treatment for this location (please
+                                    select
+                                    a range)</h3>
+                            </div>
+
                         </div>
-                        <div class=row>
+                        <div class="row">
+                            <div class="col-4">
+                                <hr class="header-line" style="margin-right:20px">
+                            </div>
+                        </div>
+
+                        <div class=row style="margin-bottom:20px">
                             <div class="col-8">
                                 <div class="card flex justify-content-center">
                                     <Calendar v-model="dates" selectionMode="range" :manualInput="false" />
                                 </div>
                             </div>
-                            <div class="col-4">
-                                <button type="button" class="btn btn-primary" @click="sheduleTreatment">Confirm</button>
+                            <div class="col-3">
+                                <div class="card flex justify-content-center submit-sub-parent">
+                                    <Button label="Confirm" icon="pi pi-check" iconPos="right" class="submit-button"
+                                        @click="sheduleTreatment" :disabled="isOwner" />
+                                </div>
                             </div>
                         </div>
-                        
-                        <div class="card row ">
-                            <DataTable :value="scheduleData" showGridlines tableStyle="min-width: 50rem"  >
-                                <Column field="Date_Scheduled" header="Date"></Column>
-                                <Column field="Done" header="Done"></Column>
-                                <!-- <Column header="Done">
-                                    <template #body="slotProps">
-                                        <Tag :value="slotProps.data.Done" :severity="getSeverity(slotProps.data)" />
-                                    </template>
-                                </Column> -->
-                                <Column field="Farmer_Finished" header="Farmer"></Column>
-                            </DataTable>
+
+                        <div class="card row " style="margin-left:1px; margin-right: 3px;">
+                            <div class="col-12">
+                                <DataTable :value="scheduleData" showGridlines tableStyle="min-width: 35rem">
+                                    <Column field="Date_Scheduled" header="Date"></Column>
+                                    <Column header="Done">
+                                        <template #body="slotProps">
+                                            <span v-if="slotProps.data.Done" class="text-success">✔</span>
+                                            <span v-else class="text-danger">❌</span>
+                                        </template>
+                                    </Column>
+                                    <Column field="Farmer_Finished" header="Farmer"></Column>
+                                </DataTable>
+                            </div>
+
                         </div>
 
                         <!-- </div> -->
@@ -302,6 +325,9 @@ const getSeverity = (product) => {
                         </div>
                         <div v-if="isShowSchedulingDone" class="row" style="margin-top: 10px; margin:10px;">
                             <Message severity="success">Treatment has been scheduled for this zone</Message>
+                        </div>
+                        <div v-if="isShowSuccessMsg" class="row" style="margin-top: 10px; margin:10px;">
+                            <Message severity="success">{{ showSuccessMsg }}</Message>
                         </div>
 
 
