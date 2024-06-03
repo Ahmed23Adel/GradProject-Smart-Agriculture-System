@@ -17,7 +17,7 @@ export class HttpRequester{
     constructor(endpoint: string, disableLogin: boolean = false) {
         this.endpoint = endpoint;
         // this.base_endpoint = "https://greadproject-backend-fastapi.onrender.com/";
-        this.base_endpoint = "http://localhost:8000/";
+        this.base_endpoint = "http://localhost:8000/api/v1/";
 
         if (this.isUserSignedIn()){
             this.bearer = this.get_cookie('token');
@@ -54,7 +54,7 @@ export class HttpRequester{
         
     }
 
-    public async callApi(method: string, queryParams?: Record<string, any>): Promise<any> {
+    public async callApi(method: string, queryParams?: Record<string, any>, jsonData?: Record<string, any>): Promise<any> {
         try {
             // Construct the URL with query parameters if provided
             const url = new URL(this.base_endpoint + this.endpoint);
@@ -64,10 +64,12 @@ export class HttpRequester{
                     url.searchParams.append(key, value.toString());
                 }
             }
+
             // Make the request based on the specified method
             const config = {
                 headers: {
                     Authorization: `Bearer ${this.bearer}`,
+                    'Content-Type': 'application/json'
                 },
             };
             let response;
@@ -76,19 +78,19 @@ export class HttpRequester{
                     response = await axios.get(url.toString(), config);
                     break;
                 case 'PUT':
-                    response = await axios.put(url.toString(), {}, config);
+                    response = await axios.put(url.toString(), jsonData || {}, config);
                     break;
                 case 'DELETE':
                     response = await axios.delete(url.toString(), config);
                     break;
                 case 'POST':
-                    response = await axios.post(url.toString(), {}, config);
+                    response = await axios.post(url.toString(), jsonData || {}, config);
                     break;
                 default:
                     console.error('Invalid HTTP method specified');
                     return false;
             }
-    
+
             // Check if the response has data and success status
             if (response.data && response.data.success) {
                 // Return the response data
@@ -98,7 +100,7 @@ export class HttpRequester{
                 return false;
             }
         } catch (error: any) {
-            if (error.response &&  error.response.status === 401 && 
+            if (error.response && error.response.status === 401 && 
                     ((error.response.data.detail === "Only expert can perform this operation") 
                     || (error.response.data.detail === "Only farmers can perform this operation") ||
                      (error.response.data.detail === "Only owner can perform this operation"))){

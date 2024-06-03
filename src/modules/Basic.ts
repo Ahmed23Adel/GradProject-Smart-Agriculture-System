@@ -26,6 +26,9 @@ export class UserType {
     public getUserType(): boolean {
         return this.is_owner;
     }
+    public getUserId(): boolean {
+        return this.getCookie("user_id")
+    }
 }
 
 

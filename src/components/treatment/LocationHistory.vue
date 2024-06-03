@@ -7,6 +7,8 @@ import { formatDate } from '@/modules/Basic.ts';
 
 
 const locations = ref([])
+const zonesActivePeriodOfDiseas = ref([])
+const selectedZonePeriodOfDiseasId = ref("")
 const zonesTreatment = ref([])
 const isLocationNewForExpert = ref([])
 const selectedLocation = ref();
@@ -46,9 +48,7 @@ async function fetchLocationHistory() {
     const yyyy = today.getFullYear();
     const formattedDate = `${dd}-${mm}-${yyyy}`;
     const queryParams = {
-        location: selectedLocation.value.name,
-        from_date: "01-01-1990",
-        to_date: formattedDate,
+        period_of_disease_id: selectedZonePeriodOfDiseasId.value
     };
     const requester_data = await requester.callApi('GET', queryParams);
     if (!requester_data) {
@@ -124,11 +124,13 @@ async function sheduleTreatment() {
 }
 function setZoneCheckedByExpert(zoneName) {
     if (!isOwner.value) {
-        const requester = new HttpRequester('set-location-checked');
+        const requester = new HttpRequester('set-zone-checked');
         const queryParams = {
-            location_name: zoneName,
+            period_of_disease_id: selectedZonePeriodOfDiseasId.value,
+            expert_id: UserType.getInstance().getUserId()
         };
-        requester.callApi('POST', queryParams);
+        console.log("queryParams"), queryParams
+        requester.callApi('PUT', queryParams);
     }
 
 
@@ -150,6 +152,8 @@ watch([selectedLocation, isThisLocationChecked], async ([newSelectedLocation, ne
         isLocationNewForExpert.value[locations.value.findIndex(location => location.name === selectedLocation.value.name)] = false;
     }
     let selectedLocationIndex = locations.value.findIndex(location => location.name === selectedLocation.value.name);
+    selectedZonePeriodOfDiseasId.value = zonesActivePeriodOfDiseas.value[selectedLocationIndex]
+    console.log("selectedZonePeriodOfDiseasId", selectedZonePeriodOfDiseasId)
     isThisLocationChecked.value = !isLocationNewForExpert.value[selectedLocationIndex]
     await fetchLocationHistory();
     treatmentValue.value = zonesTreatment.value[selectedLocationIndex]
@@ -161,7 +165,8 @@ watch([selectedLocation, isThisLocationChecked], async ([newSelectedLocation, ne
 onMounted(async () => {
     // TODO selected location is never set here correct it
     isOwner.value = UserType.getInstance().getUserType();
-    await fetchAllLocations(locations, selectedLocation, isLocationNewForExpert, zonesTreatment);
+    await fetchAllLocations(locations, selectedLocation, isLocationNewForExpert, zonesTreatment, zonesActivePeriodOfDiseas);
+    console.log("zonesActivePeriodOfDiseas", zonesActivePeriodOfDiseas)
     selectedLocation.value = locations.value[0];
     for (let i = 0; i < locations.value.length; i++) {
         if (isLocationNewForExpert.value[i])

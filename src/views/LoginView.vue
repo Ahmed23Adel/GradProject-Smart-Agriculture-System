@@ -78,6 +78,7 @@ async function login_db(){
     userType.value = requester_data.user_type
     saveCookie('token',token.value)
     saveCookie('type',userType.value)
+    saveCookie('user_id',requester_data.user_id)
     return true
 }
 

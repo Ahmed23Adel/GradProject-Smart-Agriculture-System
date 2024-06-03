@@ -12,7 +12,7 @@ import LocationHistory from '@/components/treatment/LocationHistory.vue';
         <Sidebar class="sidebar" :selected="2"/>
         <div class="main-container">
             <UpperBar/>
-            <DefaultTreatments />
+            <!-- <DefaultTreatments /> -->
             <hr class="header-line">
             <DiseasedLocations/>
             <LocationHistory/>

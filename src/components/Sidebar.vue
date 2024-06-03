@@ -62,6 +62,10 @@ onMounted(() => {
         <i class="pi pi-map"></i>
         <p>Zones</p>
       </div>
+      <div class="Settings" :class="{ selected: selected == 7 }" @click="router.push('settings')">
+        <i class="pi pi-cog"></i>
+        <p>Settings</p>
+      </div>
 
     </div>
   </div>

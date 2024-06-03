@@ -8,6 +8,7 @@ import DiseaseDefaultTreatment from   '../views/DiseaseDefaultTreatment.vue'
 import RegisterNewUser from   '../views/RegisterNewUser.vue'
 import ownerReport from "@/views/ownerReport.vue"
 import ZonesMapping from "@/views/ZonesMapping.vue"
+import Settings from "@/views/Settings.vue"
 
 import { createRouter, createWebHistory } from "vue-router"
 
@@ -64,6 +65,11 @@ const router = createRouter({
             path:"/zonesMapping",
             name:"zonesMapping",
             component: ZonesMapping
+        }, 
+        {
+            path:"/Settings",
+            name:"Settings",
+            component: Settings
         }, 
         {
             path:"/:catchall(.*)*",
