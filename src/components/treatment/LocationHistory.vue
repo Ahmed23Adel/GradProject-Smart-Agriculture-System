@@ -29,6 +29,13 @@ const scheduleData = ref()
 const showSuccessMsg = ref("")
 const isShowSuccessMsg = ref(false)
 
+const isShowTableOfTreatments = ref(false)
+const allTreatmentNames = ref()
+const allTreatmentIds = ref()
+const selectedTreatment = ref()
+const allTreatmentData = ref()
+const isShowSpinnerTreatments = ref(false)
+
 const responsiveOptions = ref([
     {
         breakpoint: '1300px',
@@ -61,22 +68,18 @@ async function fetchLocationHistory() {
 
 
 async function updateTreatment() {
-    isShowLoadingSaveUpdates.value = true;
-    isShowErrorMsg.value = false;
-    const requester = new HttpRequester('update-specific-treatment');
-    const queryParams = {
-        zone_name: selectedLocation.value.name,
-        specific_treatment: treatmentValue.value,
-    };
-    const requester_data = await requester.callApi('PUT', queryParams);
-    if (!requester_data) {
-        isShowErrorMsg.value = true;
-        errorMessage.value = "Error saving your updates. Please try again"
-    } else {
-        isShowSuccessMsg.value = true;
-        showSuccessMsg.value = "Your updates were saved"
-    }
-    isShowLoadingSaveUpdates.value = false;
+    isShowTableOfTreatments.value = true;
+    isShowSpinnerTreatments.value = true;
+    console.log("updateTreatment", updateTreatment)
+    updateTreatment.value = true;
+    const requester = new HttpRequester('list_saved_treatments');
+    const requester_data = await requester.callApi('GET');
+    allTreatmentNames.value = requester_data.saved_treatments.map(treatment => ({ name: treatment.treatmentName }));
+    allTreatmentIds.value = requester_data.saved_treatments.map(treatment => ({ id: treatment._id }));
+    selectedTreatment.value = allTreatmentNames.value[0]
+    allTreatmentData.value = requester_data.saved_treatments
+    isShowLoading.value = false;
+    isShowSpinnerTreatments.value = false;
 
 }
 
@@ -96,14 +99,6 @@ async function declareLocationTreated() {
 }
 
 
-async function fetchTreatmentValue() {
-    const requester = new HttpRequester('get_treatment_value');
-    const queryParams = {
-        location: selectedLocation.value.name,
-    };
-    const requester_data = await requester.callApi('GET', queryParams);
-    treatmentValue.value = requester_data.treatment;
-}
 function onChangeImage() {
 }
 
@@ -137,12 +132,29 @@ function setZoneCheckedByExpert(zoneName) {
 }
 
 async function fetchSceduleData() {
-    const requester = new HttpRequester('zone-scheduled');
+    const requester = new HttpRequester('get-treatment-schedule');
     const queryParams = {
-        location: selectedLocation.value.name,
+        period_of_treatment_id: selectedZonePeriodOfDiseasId.value
     };
     const requester_data = await requester.callApi('GET', queryParams);
+    console.log("requester_data", requester_data)
     scheduleData.value = requester_data.schedule;
+}
+
+async function saveNewSpecificTreatment (){
+    let selectedTreatmentIndex = allTreatmentNames.value.findIndex(treatment => treatment.name === selectedTreatment.value.name);
+    let selectedTreatmentId = allTreatmentIds.value[selectedTreatmentIndex].id
+    
+    const requester = new HttpRequester('set-period-of-disease-specific-treatment');
+    const queryParams = {
+        period_of_disease_id: selectedZonePeriodOfDiseasId.value,
+        treatment_id: selectedTreatmentId
+    };
+    console.log("queryParams", queryParams)
+    await requester.callApi('PUT', queryParams);
+    isShowTableOfTreatments.value = false;
+    isShowLoadingSaveUpdates.value = true;
+
 }
 watch([selectedLocation, isThisLocationChecked], async ([newSelectedLocation, newIsThisLocationChecked], [oldSelectedLocation, oldIsThisLocationChecked]) => {
     // same location but check is diff
@@ -157,6 +169,7 @@ watch([selectedLocation, isThisLocationChecked], async ([newSelectedLocation, ne
     isThisLocationChecked.value = !isLocationNewForExpert.value[selectedLocationIndex]
     await fetchLocationHistory();
     treatmentValue.value = zonesTreatment.value[selectedLocationIndex]
+    console.log("treatmentValue", treatmentValue)
     await fetchSceduleData();
 
 });
@@ -252,7 +265,7 @@ const getSeverity = (product) => {
                             </div>
 
                         </div>
-                        <div class="row">
+                        <div class="row" style="margin: 10px;">
                             <h1 class="h5"> Treatment (you may edit it to something special)</h1>
                         </div>
                         <div class="row">
@@ -263,8 +276,24 @@ const getSeverity = (product) => {
                         <div class="row">
                             <div class="submit-parent">
                                 <div class="card flex justify-content-center submit-sub-parent">
-                                    <Button label="Save the updates" icon="pi pi-check" iconPos="right"
+                                    <Button label="Change the specific treatment" icon="pi pi-database" iconPos="right"
                                         class="submit-button" @click="updateTreatment" :disabled="isOwner" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" v-if="isShowSpinnerTreatments">
+                            <ProgressSpinner />
+                        </div>
+                        <div class="row" style="margin: 10px; margin-left: 1px;" v-if="isShowTableOfTreatments">
+                            <CascadeSelect v-model="selectedTreatment" :options="allTreatmentNames" optionLabel="name"
+                                optionGroupLabel="name" :optionGroupChildren="['subLocations']" style="min-width: 14rem"
+                                placeholder="Select a Treatment" />
+                        </div>
+                        <div class="row" v-if="isShowTableOfTreatments">
+                            <div class="submit-parent">
+                                <div class="card flex justify-content-center submit-sub-parent">
+                                    <Button label="Save" icon="pi pi-check" iconPos="right"
+                                        class="submit-button" @click="saveNewSpecificTreatment" :disabled="isOwner" />
                                 </div>
                             </div>
                         </div>
@@ -279,9 +308,7 @@ const getSeverity = (product) => {
                         <hr class="header-line" style="margin:20px">
                         <div class=row>
                             <div class="col-12">
-                                <h3 class="h5" style="margin-top:20px"> Schedule treatment for this location (please
-                                    select
-                                    a range)</h3>
+                                <h3 class="h5" style="margin-top:20px"> Schedule treatment for this location </h3>
                             </div>
 
                         </div>
@@ -291,19 +318,7 @@ const getSeverity = (product) => {
                             </div>
                         </div>
 
-                        <div class=row style="margin-bottom:20px">
-                            <div class="col-8">
-                                <div class="card flex justify-content-center">
-                                    <Calendar v-model="dates" selectionMode="range" :manualInput="false" />
-                                </div>
-                            </div>
-                            <div class="col-3">
-                                <div class="card flex justify-content-center submit-sub-parent">
-                                    <Button label="Confirm" icon="pi pi-check" iconPos="right" class="submit-button"
-                                        @click="sheduleTreatment" :disabled="isOwner" />
-                                </div>
-                            </div>
-                        </div>
+                        
 
                         <div class="card row " style="margin-left:1px; margin-right: 3px;">
                             <div class="col-12">
