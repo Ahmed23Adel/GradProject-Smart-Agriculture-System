@@ -2,7 +2,10 @@
 import { ref, onMounted } from 'vue'
 import Sidebar from "../components/Sidebar.vue";
 import { HttpRequester } from '@/services/ApiCaller.ts';
+import { UserType } from '@/modules/Basic.ts';
 
+const firstname = ref('')
+const lastname = ref('')
 const username = ref('')
 const password = ref('')
 const confirmPassword = ref('')
@@ -32,9 +35,12 @@ async function addUser() {
     if (isValid.value) {
         const requester = new HttpRequester('register');
         const queryParams = {
+            firstname: firstname.value,
+            lastname: firstname.value,
             user_name: username.value,
             password: password.value,
-            type: userType.value
+            type: userType.value,
+            creator_owner_id: UserType.getInstance().getUserId()
         };
         const requester_data = await requester.callApi("POST", queryParams);
         console.log("requester_data", queryParams)
@@ -63,8 +69,10 @@ async function fetchAllUsers() {
 
     try {
         const requester_data = await requester.callApi("GET");
+        console.log("requester_data", requester_data)
         if (requester_data.users) {
             users.value = requester_data.users; // Set the users data to the response
+            console.log("users", users.value)
         } else {
             error.value = 'Failed to fetch users'; // Set error message if request fails
         }
@@ -97,6 +105,7 @@ async function switchActivationStatus(type, userId, activated) {
         user_id: userId,
         activated: !activated,
     };
+    console.log("queryParams", queryParams)
     await requester.callApi('PUT', queryParams);
 
 }
@@ -128,8 +137,26 @@ async function resetPassword(username, password) {
                             <select id="userType" class="form-control" v-model="userType">
                                 <option value="expert">Expert</option>
                                 <option value="owner">Owner</option>
+                                <option value="farmer">Farmer</option>
                             </select>
                         </div>
+
+                        <div class="form-group">
+                            <label for="firstname">First name:</label>
+                            <input type="text" id="username" class="form-control" v-model="firstname"
+                                @input="validateUsername">
+                            <span v-if="firstname.length < 5" class="text-danger">First name must be at least 5
+                                characters</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lastname">Last name:</label>
+                            <input type="text" id="username" class="form-control" v-model="lastname"
+                                @input="validateUsername">
+                            <span v-if="lastname.length < 5" class="text-danger">Last name must be at least 5
+                                characters</span>
+                        </div>
+
                         <div class="form-group">
                             <label for="username">Username:</label>
                             <input type="text" id="username" class="form-control" v-model="username"

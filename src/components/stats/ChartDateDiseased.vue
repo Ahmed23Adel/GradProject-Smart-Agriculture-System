@@ -10,12 +10,21 @@ const chartData = ref();
 const chartOptions = ref();
 const locations = ref([])
 const selectedLocation = ref();
+const zonesActivePeriodOfDiseas = ref([])
+const selectedZonePeriodOfDiseasId = ref("")
+const zonesTreatment = ref([])
+const isLocationNewForExpert = ref([])
+const zonesIds = ref([])
 
 async function fetchDatesDiseases() {
     console.log("fetchDatesDiseases")
+    const selectedLocationIndex = locations.value.findIndex(loc => loc.name === selectedLocation.value.name);
+    console.log("selectedLocationIndex", selectedLocationIndex)
+    const selectedZoneId = zonesIds.value[selectedLocationIndex]
+
     const requester = new HttpRequester('get-date-per-diseased-plants');
     const queryParams = {
-        location: selectedLocation.value.name,
+        zone_id: selectedZoneId,
     };
     console.log("queryParamssss", queryParams)
     const requester_data = await requester.callApi('GET', queryParams);
@@ -89,7 +98,9 @@ watch(selectedLocation, async (newSelectedLocation, oldSelectedLocation) => {
 
 onMounted(async () => {
     console.log("mounting")
-    await fetchAllLocations(locations, selectedLocation);
+    // await fetchAllLocations(locations, selectedLocation);
+    await fetchAllLocations(locations, selectedLocation, isLocationNewForExpert, zonesTreatment, zonesActivePeriodOfDiseas, zonesIds);
+
     selectedLocation.value = locations.value[0];
     
 });

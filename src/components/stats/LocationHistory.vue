@@ -7,11 +7,16 @@ import { formatDate } from '@/modules/Basic.ts';
 
 const locations = ref([])
 const selectedLocation = ref();
+const zonesIds = ref([])
 const today = new Date();
 const fromDate = ref(new Date(today.getFullYear(), 0, 1));
 const toDate = ref(today);
 const images = ref();
 const isShowLoading = ref(true)
+const isLocationNewForExpert = ref([])
+const zonesTreatment = ref([])
+const zonesActivePeriodOfDiseas = ref([])
+const selectedZoneId = ref("")
 const responsiveOptions = ref([
     {
         breakpoint: '1300px',
@@ -25,9 +30,13 @@ const responsiveOptions = ref([
 
 
 async function fetchLocationHistory(location, fromDate, toDate) {
-    const requester = new HttpRequester('location-history');
+    const selectedLocationIndex = locations.value.findIndex(loc => loc.name === selectedLocation.value.name);
+    console.log("selectedLocationIndex", selectedLocationIndex)
+    const selectedZoneId = zonesIds.value[selectedLocationIndex]
+    console.log("selectedZoneId", selectedZoneId)
+    const requester = new HttpRequester('location-history-dates');
     const queryParams = {
-        location: selectedLocation.value.name,
+        zone_id: selectedZoneId,
         from_date: fromDate,
         to_date: toDate,
     };
@@ -38,7 +47,9 @@ async function fetchLocationHistory(location, fromDate, toDate) {
 
 
 onMounted(async () => {
-    await fetchAllLocations(locations, selectedLocation);
+    // await fetchAllLocations(locations, selectedLocation);
+    await fetchAllLocations(locations, selectedLocation, isLocationNewForExpert, zonesTreatment, zonesActivePeriodOfDiseas, zonesIds);
+
     selectedLocation.value = locations.value[0];
     const formattedFromDate = formatDate(fromDate.value);
     const formattedToDate = formatDate(toDate.value);
@@ -49,7 +60,12 @@ onMounted(async () => {
 watch([selectedLocation, fromDate, toDate], async (newValues, oldValues) => {
     isShowLoading.value = true;
     const [newLocation, newFromDate, newToDate] = newValues;
-
+    // console.log("selectedLocation", selectedLocation.value)
+    // console.log("locations.value", locations.value)
+    // const selectedLocationIndex = locations.value.findIndex(loc => loc.name === selectedLocation.value.name);
+    // console.log("selectedLocationIndex", selectedLocationIndex)
+    // const selectedZoneId = zonesIds.value[selectedLocationIndex]
+    // console.log("selectedZoneId", zonesIds.value, selectedZoneId)
     // Format the new dates
     const formattedFromDate = formatDate(newFromDate);
     const formattedToDate = formatDate(newToDate);

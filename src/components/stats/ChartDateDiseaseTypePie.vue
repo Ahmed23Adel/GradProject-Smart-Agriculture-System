@@ -15,7 +15,7 @@ const isShowLoading = ref(true)
 async function fetchDiseasePercentages() {
     isShowLoading.value = true;
     isShowNoData.value = false;
-    const requester = new HttpRequester('get_disease_statistics');
+    const requester = new HttpRequester('get-blight-images-percentage');
     const queryParams = {
         date: formatDate(atDate.value)
     };
