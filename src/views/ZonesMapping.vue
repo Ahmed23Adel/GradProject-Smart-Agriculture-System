@@ -1,7 +1,8 @@
 <script setup>
-import { ref, onMounted } from 'vue'
 import Sidebar from "../components/Sidebar.vue";
 import { HttpRequester } from '@/services/ApiCaller.ts';
+import { ref, onMounted, watch } from "vue";
+import { findCoordinates, openGoogleMapsWithLatLong } from '@/modules/Basic.ts';
 
 const grid = ref([])
 const hoveredZone = ref (null)
@@ -47,15 +48,7 @@ function hideZoneName() {
     hoveredZone.value = null;
 }
 
-function findCoordinates(){
-    let [rowIndex, colIndex] = zoneNameSearch.value.split(' ')[1].split('.').map(Number);
-    if (!colIndex)
-        colIndex = 0
-    console.log("rowIndex, colIndex", rowIndex, colIndex)
-    const long = minLong + colIndex * zoneSize/111139;
-    const lat = minLat + rowIndex * zoneSize/111139;
-    calculatedCoordinates.value = { long, lat };
-}
+
 
 function openGoogleMaps(zone) {
     console.log("zone", zone)
@@ -71,11 +64,9 @@ function openGoogleMaps(zone) {
     window.open(googleMapsLink, '_blank');
 }
 
-function openGoogleMapsWithLatLong() {
-    const googleMapsLink = `https://www.google.com/maps?q=${calculatedCoordinates.value.lat},${calculatedCoordinates.value.long}`;
-    window.open(googleMapsLink, '_blank');
+function openGoogleMapsWithLatLongLocal() {
+    openGoogleMapsWithLatLong(calculatedCoordinates.value)
 }
-
 
 
 
@@ -83,6 +74,9 @@ onMounted(async () => {
     await generateGrid();
 });
 
+watch(zoneNameSearch, async (newzoneNameSearch, oldzoneNameSearch) => {
+    findCoordinates(maxLong, minLong, maxLat, minLat, zoneSize, zoneNameSearch.value, calculatedCoordinates)
+});
 
 </script>
 <template>
@@ -96,15 +90,13 @@ onMounted(async () => {
                         <label for="zonename">Zone name</label>
                     </FloatLabel>
                 </div>
-                <div class="col-3">
-                    <Button label="Calculate Coordinates" @click="findCoordinates"/>
-                </div>
-                <div class="col-3">
+                
+                <div class="col-3" style="margin-top: 10px;">
                     <div v-if="calculatedCoordinates">Longitude: {{ calculatedCoordinates.long }}, Latitude: {{ calculatedCoordinates.lat }}</div>
                 </div>
                 <div class="col-3">
                     <div v-if="calculatedCoordinates">
-                        <Button label="Go to Google Maps" @click="openGoogleMapsWithLatLong"/>
+                        <Button label="Go to Google Maps" @click="openGoogleMapsWithLatLongLocal"/>
                     </div>
                 </div>
             </div>

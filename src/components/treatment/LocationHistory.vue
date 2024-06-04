@@ -4,6 +4,7 @@ import { HttpRequester } from '@/services/ApiCaller.ts';
 import { UserType } from '@/modules/Basic.ts';
 import { fetchAllLocations } from '@/modules/CommonRequests.ts';
 import { formatDate } from '@/modules/Basic.ts';
+import { findCoordinates, openGoogleMapsWithLatLong } from '@/modules/Basic.ts';
 
 
 const locations = ref([])
@@ -36,6 +37,19 @@ const selectedTreatment = ref()
 const allTreatmentData = ref()
 const isShowSpinnerTreatments = ref(false)
 
+
+////
+const grid = ref([])
+const hoveredZone = ref (null)
+const calculatedCoordinates = ref({})
+const zoneNameSearch = ref("")
+const minLat = 40.0;
+const maxLat = 40.1;
+const minLong = 50.0;
+const maxLong = 50.1;
+const zoneSize = 500 //m;
+const maxZones = 1000;
+///
 const responsiveOptions = ref([
     {
         breakpoint: '1300px',
@@ -141,10 +155,10 @@ async function fetchSceduleData() {
     scheduleData.value = requester_data.schedule;
 }
 
-async function saveNewSpecificTreatment (){
+async function saveNewSpecificTreatment() {
     let selectedTreatmentIndex = allTreatmentNames.value.findIndex(treatment => treatment.name === selectedTreatment.value.name);
     let selectedTreatmentId = allTreatmentIds.value[selectedTreatmentIndex].id
-    
+
     const requester = new HttpRequester('set-period-of-disease-specific-treatment');
     const queryParams = {
         period_of_disease_id: selectedZonePeriodOfDiseasId.value,
@@ -196,19 +210,11 @@ onMounted(async () => {
 });
 
 
-const getSeverity = (product) => {
-    switch (product.Done) {
-        case true:
-            console.log("true")
-            return 'success';
-        case false:
-            console.log("false")
-            return 'danger';
-
-        default:
-            return null;
-    }
-};
+function openGoogleMapsWithLatLongLocal() {
+    console.log("selectedLocation", selectedLocation)
+    findCoordinates(maxLong, minLong, maxLat, minLat, zoneSize, selectedLocation.value.name, calculatedCoordinates)
+    openGoogleMapsWithLatLong(calculatedCoordinates.value)
+}
 </script>
 
 
@@ -265,6 +271,7 @@ const getSeverity = (product) => {
                             </div>
 
                         </div>
+                        
                         <div class="row" style="margin: 10px;">
                             <h1 class="h5"> Treatment (you may edit it to something special)</h1>
                         </div>
@@ -292,8 +299,8 @@ const getSeverity = (product) => {
                         <div class="row" v-if="isShowTableOfTreatments">
                             <div class="submit-parent">
                                 <div class="card flex justify-content-center submit-sub-parent">
-                                    <Button label="Save" icon="pi pi-check" iconPos="right"
-                                        class="submit-button" @click="saveNewSpecificTreatment" :disabled="isOwner" />
+                                    <Button label="Save" icon="pi pi-check" iconPos="right" class="submit-button"
+                                        @click="saveNewSpecificTreatment" :disabled="isOwner" />
                                 </div>
                             </div>
                         </div>
@@ -304,6 +311,19 @@ const getSeverity = (product) => {
                                         class="submit-button" @click="declareLocationTreated" :disabled="isOwner" />
                                 </div>
                             </div>
+                        </div>
+                        <div>
+                            <div class="row">
+                                <div class="submit-parent">
+                                    <div class="card flex justify-content-center submit-sub-parent">
+                                        <Button label="Go to Google Maps" icon="pi pi-map" iconPos="right"
+                                            class="submit-button" @click="openGoogleMapsWithLatLongLocal"
+                                            :disabled="isOwner" />
+                                    </div>
+                                </div>
+                            </div>
+
+
                         </div>
                         <hr class="header-line" style="margin:20px">
                         <div class=row>
@@ -318,7 +338,7 @@ const getSeverity = (product) => {
                             </div>
                         </div>
 
-                        
+
 
                         <div class="card row " style="margin-left:1px; margin-right: 3px;">
                             <div class="col-12">
