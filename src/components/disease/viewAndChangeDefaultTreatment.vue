@@ -121,7 +121,7 @@ onMounted(async () => {
                 </div>
             </Transition>
 
-            <div class="col-4" v-if="isShowChangeButton">
+            <div class="col-4" v-if="isShowChangeButton && !isOwner">
                 <!-- HTML !-->
                 <button class="button-74" role="button" @click="changeDefaultTreatment">Change default
                     treatment</button>

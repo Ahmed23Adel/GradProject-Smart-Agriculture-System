@@ -9,6 +9,7 @@ import RegisterNewUser from   '../views/RegisterNewUser.vue'
 import ownerReport from "@/views/ownerReport.vue"
 import ZonesMapping from "@/views/ZonesMapping.vue"
 import Settings from "@/views/Settings.vue"
+import Disease from "@/views/Disease.vue"
 
 import { createRouter, createWebHistory } from "vue-router"
 
@@ -67,9 +68,9 @@ const router = createRouter({
             component: ZonesMapping
         }, 
         {
-            path:"/Settings",
-            name:"Settings",
-            component: Settings
+            path:"/Disease",
+            name:"Disease",
+            component: Disease
         }, 
         {
             path:"/:catchall(.*)*",

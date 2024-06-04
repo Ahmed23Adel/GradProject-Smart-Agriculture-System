@@ -1,15 +1,15 @@
 <script setup>
-import Sidebar from "../components/Sidebar.vue";
-import { ref, onMounted, watch } from "vue";
-import { HttpRequester } from '@/services/ApiCaller.ts';
-import { UserType } from '@/modules/Basic.ts';
-import viewAndChangeDefaultTreatment from "../components/settings/viewAndChangeDefaultTreatment.vue"
-import addNewSavedTreatment from "../components/settings/addNewSavedTreatment.vue"
-import movingCar from "../components/settings/movingCar.vue"
+// import Sidebar from "../components/Sidebar.vue";
+// import { ref, onMounted, watch } from "vue";
+// import { HttpRequester } from '@/services/ApiCaller.ts';
+// import { UserType } from '@/modules/Basic.ts';
+// import viewAndChangeDefaultTreatment from "../components/settings/viewAndChangeDefaultTreatment.vue"
+// import addNewSavedTreatment from "../components/settings/addNewSavedTreatment.vue"
+// import movingCar from "../components/settings/movingCar.vue"
  
 </script>
 <template>
-    <div class="page-container">
+    <!-- <div class="page-container">
         <Sidebar class="sidebar" :selected="7" />
         <div class="main-container">
             <viewAndChangeDefaultTreatment/>
@@ -18,7 +18,7 @@ import movingCar from "../components/settings/movingCar.vue"
             <hr class="header-line">
             <movingCar/>
         </div>
-    </div>
+    </div> -->
 </template>
 <style lang="scss" scoped>
 .page-container {

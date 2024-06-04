@@ -62,9 +62,9 @@ onMounted(() => {
         <i class="pi pi-map"></i>
         <p>Zones</p>
       </div>
-      <div class="Settings" :class="{ selected: selected == 7 }" @click="router.push('settings')">
+      <div class="Disease" :class="{ selected: selected == 7 }" @click="router.push('disease')">
         <i class="pi pi-cog"></i>
-        <p>Settings</p>
+        <p>Disease</p>
       </div>
 
     </div>
