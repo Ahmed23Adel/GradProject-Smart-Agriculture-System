@@ -7,6 +7,8 @@ import Sidebar from "../components/Sidebar.vue";
 import TodaysSummary from '@/components/stats/TodaysSummary.vue';
 import UpperBar from '@/components/stats/UpperBar.vue';
 import PercentageDateCard from '@/components//stats/PercentageDateCard.vue';
+import Stepper from '@/components//stats/Stepper.vue';
+
 
 </script>
 <template>
@@ -14,6 +16,8 @@ import PercentageDateCard from '@/components//stats/PercentageDateCard.vue';
         <Sidebar class="sidebar" :selected="1"/>
         <div class="main-container">
             <UpperBar/>
+            <Stepper/>
+            <hr class="header-line">
             <TodaysSummary/>
             <hr class="header-line">
             <PercentageDateCard />

@@ -40,7 +40,7 @@ onMounted(() => {
       </div>
       <div class="statistics" :class="{ selected: selected == 1 }" @click="router.push('/stats')">
         <i class="pi pi-chart-bar"></i>
-        <p>statistics</p>
+        <p>Dashboard</p>
       </div>
       <div class="treatment" :class="{ selected: selected == 2 }" @click="router.push('/treatment')">
         <i class="pi pi-briefcase"></i>
@@ -88,7 +88,7 @@ onMounted(() => {
 
 .sidebar-container {
   height: 100vh;
-  width: 100px;
+  width: 120px;
   background-color: var(--secondary);
   color: var(--accenta);
   display: flex;
