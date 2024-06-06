@@ -4,6 +4,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { HttpRequester } from '@/services/ApiCaller.ts';
 import Cookies from 'js-cookie';
+import { deleteCookie, UserType } from '@/modules/Basic.ts';
 
 
 const usernameValue = ref("")
@@ -79,6 +80,7 @@ async function login_db(){
     saveCookie('token',token.value)
     saveCookie('type',userType.value)
     saveCookie('user_id',requester_data.user_id)
+    UserType.getInstance().setUserType()
     return true
 }
 

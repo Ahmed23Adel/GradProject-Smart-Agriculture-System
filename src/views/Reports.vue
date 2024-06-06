@@ -7,25 +7,35 @@ import Results from "../components/reportspage/Result.vue";
 import Title from "../components/reportspage/Title.vue";
 import ImageParagraph from "../components/reportspage/ImageParagraph.vue";
 import Paragraph from "../components/reportspage/Paragraph.vue";
-import { ref, reactive } from "vue";
+import { ref, reactive, watch } from "vue";
 import axios from "axios";
+import dailyQuestionnaire from "../modules/questions.ts";
+import RadioButton from "primevue/radiobutton";
+import { UserType } from "@/modules/Basic";
+import Dialog from "primevue/dialog";
+import { HttpRequester } from '@/services/ApiCaller.ts';
+
+const userId = UserType.getInstance().getUserId()
+const showDialog = ref(false);
+const message = ref("");
 
 const plants = ref([]);
 const days = ref();
 const locations = ref();
+let a = new Array(dailyQuestionnaire.questions.length).fill(null);
+const selectedAnswer = ref<any[]>(a);
 
-async function get_reports() {
-  await axios
-    .post("http://127.0.0.1:8000/get_summary", {}, {})
-    .then((res: any) => {
-      plants.value = res.data.data;
-    });
+async function get_images() {
+  const requester = new HttpRequester('get_summary');
+  const requester_data = await requester.callApi('GET');
+  plants.value = requester_data.summary_data
+  console.log("plants.value", plants.value)
 
-  days.value = [...new Set(plants.value.map((obj: any) => obj.Date))];
-
-  locations.value = [...new Set(plants.value.map((obj: any) => obj.Location))];
+  // await axios.post('http://127.0.0.1:8000/get_summary',{},{}).then((res:any)=>{plants.value = res.data.data})
+  days.value =  [...new Set(plants.value.map((obj:any) => obj.Date))];
+  locations.value =  [...new Set(plants.value.map((obj:any) => obj.Location))];
 }
-get_reports();
+get_images();
 
 const selectedDay = ref();
 const selectedLocation = ref();
@@ -39,7 +49,7 @@ const components = reactive([
     title: "The Report Title",
     imagePath: "",
     paragraph: "type the paragraph here",
-    info:{}
+    info: {},
   },
 ]);
 
@@ -50,7 +60,7 @@ function addImageParagraphComponent(id: string, path: string) {
     title: "The Paragraph Title",
     imagePath: path,
     paragraph: "Type the paragraph here",
-    info:{}
+    info: {},
   });
 }
 let lastOrder = 0;
@@ -62,31 +72,79 @@ function addParagraphComponent() {
     title: "The Paragraph Title",
     imagePath: "",
     paragraph: "Type the paragraph here",
-    info:{}
+    info: {},
   });
 }
 function save() {
-  let date =new Date()
-  const report = { created_at:date.toDateString(),components: [] as any[] };
+  console.log(1);
+  const hasNull = selectedAnswer.value.some((element) => element === null);
+  if (hasNull) {
+    console.log(2);
+    showDialog.value = true;
+    message.value = "Please Answer Questions First";
+  } else {
+    let date = new Date();
 
-  for (let com of components) {
-    report.components.push({
-      id: com.id,
-      order: com.order,
-      title: com.title,
-      imagePath: com.imagePath || "",
-      paragraph: com.paragraph,
+    const report = {
+      expert_id: userId,
+      created_at: date.toDateString(),
+      components: [] as any[],
+      questions_answers: [] as any[],
+    };
+
+    for (let com of components) {
+      report.components.push({
+        id: com.id,
+        order: com.order,
+        title: com.title,
+        imagePath: com.imagePath || "",
+        paragraph: com.paragraph,
+      });
+    }
+    for (let i = 0; i < selectedAnswer.value.length; i++) {
+      if (selectedAnswer.value[i]) {
+        report.questions_answers.push({
+          question_order: i,
+          question_answer: selectedAnswer.value[i],
+        });
+      }
+    }
+
+    axios.post("http://127.0.0.1:8000/api/v1/add_report", report, {}).then((res) => {
+      console.log(res);
+      message.value = "Added Succesfully";
+      showDialog.value = true;
     });
   }
-
-  axios.post("http://127.0.0.1:8000/add_report", report, {}).then((res) => {
-   
-  });
 }
 </script>
 
 <template>
   <div class="report-container">
+    <Dialog
+    style=' width:50rem'
+      v-model:visible="showDialog"
+      modal
+      :pt="{
+        root: 'border-none',
+        mask: {
+          style: 'backdrop-filter: blur(2px)',
+        },
+      }"
+    >
+      <div
+        style="
+          display: flex;
+          flex-direction: column;
+          gap: 2rem;
+          align-items: center;
+          justify-content: center;
+        "
+      >
+        <h1>{{ message }}</h1>
+        <Button label="Cancel" @click="showDialog=false"/>
+      </div>
+    </Dialog>
     <Sidebar class="sidebar" :selected="3" />
     <div class="summary-container">
       <div class="main-container">
@@ -103,7 +161,7 @@ function save() {
               v ? (selectedLocation = v) : (selectedLocation = v);
             }
           "
-           @status="
+          @status="
             (v) => {
               v ? (status = v) : (status = v);
             }
@@ -119,10 +177,38 @@ function save() {
           @data="
             (e) => {
               addImageParagraphComponent(e.id, e.path);
-             
             }
           "
         />
+      </div>
+    </div>
+
+    <div class="questions">
+      <div class="questions-wrapper">
+        <h3>Please Fill The Following Questions</h3>
+
+        <div
+          class="question"
+          v-for="(question, i) in dailyQuestionnaire.questions"
+          :key="question.key"
+        >
+          <h4>{{ question.question }}</h4>
+          <div
+            v-for="option in question.options"
+            :key="option.key"
+            class="flex align-items-center"
+          >
+            <RadioButton
+              v-model="selectedAnswer[i]"
+              :inputId="option.key"
+              name="dynamic"
+              :value="option.text"
+            />
+            <label style="margin-left: 0.5rem" :for="option.key" class="ml-2">{{
+              option.text
+            }}</label>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -170,7 +256,7 @@ function save() {
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: 100px 200px 1fr;
+  grid-template-columns: 100px 250px 1fr 2fr;
 }
 .summary-container {
   background-color: var(--primary);
@@ -189,6 +275,10 @@ function save() {
 .page-area {
   background-color: var(--primary);
 }
+
+.questions {
+  background-color: var(--primary);
+}
 .report-components-wraper {
   width: 90%;
   margin-inline: auto;
@@ -197,6 +287,28 @@ function save() {
   margin-top: 32px;
   border-radius: 8px;
   padding: 64px;
+}
+h3 {
+  text-align: center;
+  color: var(--accentb);
+  font-weight: bolder;
+}
+.question {
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+    rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+.questions-wrapper {
+  width: 95%;
+  margin-inline: auto;
+  background-color: white;
+  height: 80vh;
+  margin-top: 32px;
+  border-radius: 8px;
+  padding: 2rem 1rem;
+  overflow-y: scroll;
 }
 
 button {

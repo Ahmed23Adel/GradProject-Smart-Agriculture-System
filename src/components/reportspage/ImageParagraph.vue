@@ -8,8 +8,18 @@ const imageid = ref(props.imageid);
 const paragraph = ref(props.paragraph);
 const emit = defineEmits(["titleChange", "paragraphChange",'delete']);
 function transform(url:string){
-  url=url.replace("$export=download", "");
-  url=url.replace("/uc?", "/thumbnail?");
+  const regex = /\/d\/(.*)\/view/;
+  const match = url.match(regex);
+  
+  if (match) {
+    const imageId = match[1];
+    url= `https://drive.google.com/uc?id=${imageId}&export=download`;
+    
+  } 
+
+
+  url=url.replace("&export=download", "");
+  url=url.replace("google", "lienuc");
   return url
 }
 </script>
@@ -30,7 +40,7 @@ function transform(url:string){
           @change="emit('paragraphChange', paragraph)"
         ></textarea>
       </div>
-      <img :src="transform(imageid)" alt="" />
+      <img :src="transform(imageid)" alt=""  crossorigin="anonymous" />
     </main>
   </div>
 </template>

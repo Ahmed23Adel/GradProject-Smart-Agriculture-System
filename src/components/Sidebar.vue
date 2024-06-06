@@ -1,17 +1,18 @@
 <script lang="ts" setup>
 import "primeicons/primeicons.css";
-import { defineProps, ref, onMounted } from "vue";
+import { defineProps, ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { deleteCookie, UserType } from '@/modules/Basic.ts';
 
 
 const router = useRouter()
-const isOwner = ref()
+const isOwner = computed(()=>{ return UserType.getInstance().getUserType()})
 
 defineProps(['selected'])
 const fullWidth = ref(true)
 
 function signOut() {
+
   deleteCookie("token");
   deleteCookie("type");
   router.push('/login')
@@ -26,7 +27,7 @@ function registerOwner(): void {
 }
 
 onMounted(() => {
-    isOwner.value = UserType.getInstance().getUserType();
+    
 });
 </script>
 
@@ -46,7 +47,11 @@ onMounted(() => {
         <i class="pi pi-briefcase"></i>
         <p>treatments</p>
       </div>
-      <div class="reports" :class="{ selected: selected == 3 }" @click="router.push('reports')">
+      <div class="reports" :class="{ selected: selected == 3 }" @click="router.push('reports')" v-if="!isOwner">
+        <i class="pi pi-file"></i>
+        <p>reports</p>
+      </div>
+      <div class="reports" :class="{ selected: selected == 3 }" @click="router.push('ownerReport')" v-if="isOwner">
         <i class="pi pi-file"></i>
         <p>reports</p>
       </div>

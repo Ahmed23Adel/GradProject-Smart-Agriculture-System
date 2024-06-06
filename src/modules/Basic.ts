@@ -11,12 +11,19 @@ export class UserType {
             this.is_owner = false;
         }
     }
-
+    
     public static getInstance(): UserType {
         if (!UserType.instance) {
             UserType.instance = new UserType();
         }
         return UserType.instance;
+    }
+    public setUserType(){
+        if (this.getCookie("type") === "owner") {
+            this.is_owner = true;
+        } else {
+            this.is_owner = false;
+        }
     }
 
     private getCookie(key: string): string | undefined {
