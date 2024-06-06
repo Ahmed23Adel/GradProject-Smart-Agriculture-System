@@ -5,6 +5,7 @@ import Sidebar from "@/components/Sidebar.vue";
 import Title from "../components/ownerReport/Title.vue";
 import ImageParagraph from "../components/ownerReport/ImageParagraph.vue";
 import Paragraph from "../components/ownerReport/Paragraph.vue";
+import dailyQuestionnaire from "@/modules/questions";
 
 const reports = ref();
 axios.post("http://127.0.0.1:8000/get_all_reports", {}, {}).then((res) => {
@@ -23,9 +24,11 @@ const allComponents = [Title, ImageParagraph, Paragraph];
     <div class="summary-container">
       <div class="main-container">
         <div class="card" :class="{selected:(selectedReport==i)}" v-for="report,i in reports" @click="selectedReport=i">
-        <p>{{ report.created_at }}</p>
+        <p><strong>Date: </strong> {{ report.created_at }}</p>
             <p>
+              <strong>Title: </strong> 
         {{ report.components[0].title }}</p>
+        <p><strong>Expert:</strong>  {{report.expert_id}}</p>
         </div>
        
       </div>
@@ -41,6 +44,12 @@ const allComponents = [Title, ImageParagraph, Paragraph];
           :title="component.title"
         
         />
+        <div class="questions-answers" v-if="reports[selectedReport].questions_answers">
+          <div v-for="(question,i) in dailyQuestionnaire.questions" class="question">
+            <h4 >{{question.question}}</h4>
+            <p>{{ reports[selectedReport]?.questions_answers[i]?.question_answer }}</p>
+          </div>
+        </div>
         </div>
     </div>
   </div>
@@ -95,5 +104,14 @@ background-color: white;
 }
 .selected{
     background-color: var(--secondary);
+}
+.question{
+  display: flex;
+  flex-direction: column;
+  margin: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 18px 50px -10px;
+
 }
 </style>
