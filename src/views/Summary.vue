@@ -4,11 +4,18 @@ import Sidebar from "../components/Sidebar.vue";
 import Results from "../components/summary/Results.vue";
 import { ref,onMounted } from "vue";
 import axios from 'axios'
+import { HttpRequester } from '@/services/ApiCaller.ts';
+
 const plants=ref([])
 const days=ref()
 const locations =ref()
 async function get_reports(){
-  await axios.post('http://127.0.0.1:8000/get_summary',{},{}).then((res:any)=>{plants.value = res.data.data})
+  const requester = new HttpRequester('get_summary');
+  const requester_data = await requester.callApi('GET');
+  plants.value = requester_data.summary_data
+  console.log("plants.value", plants.value)
+
+  // await axios.post('http://127.0.0.1:8000/get_summary',{},{}).then((res:any)=>{plants.value = res.data.data})
   days.value =  [...new Set(plants.value.map((obj:any) => obj.Date))];
   locations.value =  [...new Set(plants.value.map((obj:any) => obj.Location))];
 }

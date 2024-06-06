@@ -25,6 +25,7 @@
     "pinia": "^2.1.7",
     "primeicons": "^6.0.1",
     "primevue": "^3.49.1",
+    "sweetalert2": "^11.11.0",
     "vue": "^3.4.15",
     "vue-fontawesome": "^0.0.2",
     "vue-router": "^4.3.0"

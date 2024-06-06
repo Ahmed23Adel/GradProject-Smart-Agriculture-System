@@ -36,11 +36,11 @@ const allTreatmentIds = ref()
 const selectedTreatment = ref()
 const allTreatmentData = ref()
 const isShowSpinnerTreatments = ref(false)
-
+const treatmentName = ref("")
 
 ////
 const grid = ref([])
-const hoveredZone = ref (null)
+const hoveredZone = ref(null)
 const calculatedCoordinates = ref({})
 const zoneNameSearch = ref("")
 const minLat = 40.0;
@@ -97,19 +97,36 @@ async function updateTreatment() {
 
 }
 
-async function declareLocationTreated() {
-    isShowLoadingSaveUpdates.value = true;
-    isShowErrorMsg.value = false;
-    const requester = new HttpRequester('declare_location_healthy');
-    const queryParams = {
-        location: selectedLocation.value.name,
-    };
-    const requester_data = await requester.callApi('PUT', queryParams);
-    if (!requester_data) {
-        isShowErrorMsg.value = true;
-        errorMessage.value = "Error declaring your location healthy. Please try again"
+async function endThisPeriodOfDisease() {
+    // Display a confirmation dialog using SweetAlert2
+    const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: 'Ending this period of disease is irreversible!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, end it!'
+    });
+
+    if (result.isConfirmed) {
+        // Proceed with the action as the user confirmed
+        isShowLoadingSaveUpdates.value = true;
+        isShowErrorMsg.value = false;
+        const requester = new HttpRequester('end_period_of_disease');
+        const queryParams = {
+            period_of_disease_id: selectedZonePeriodOfDiseasId.value,
+            ender_expert_id: UserType.getInstance().getUserId()
+        };
+        console.log("queryParamsend", queryParams)
+        const requester_data = await requester.callApi('PUT', queryParams);
+        if (!requester_data) {
+            isShowErrorMsg.value = true;
+            errorMessage.value = "Error ending this period of disease. Please try again"
+        }
+        isShowLoadingSaveUpdates.value = false;
+        refreshPage(true);
     }
-    isShowLoadingSaveUpdates.value = false;
 }
 
 
@@ -170,6 +187,108 @@ async function saveNewSpecificTreatment() {
     isShowLoadingSaveUpdates.value = true;
 
 }
+import Swal from 'sweetalert2';
+
+async function rejectThisPeriodOfDisease() {
+    const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: "This action is irreversible!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, reject it!'
+    });
+    console.log("result.isConfirmed", result.isConfirmed)
+    if (result.isConfirmed) {
+        console.log("zonesActivePeriodOfDiseas", zonesActivePeriodOfDiseas)
+        console.log("allTreatmentNames", allTreatmentNames)
+        let selectedLocationIndex = locations.value.findIndex(location => location.name === selectedLocation.value.name);
+        selectedZonePeriodOfDiseasId.value = zonesActivePeriodOfDiseas.value[selectedLocationIndex]
+        console.log("selectedZonePeriodOfDiseasId", selectedZonePeriodOfDiseasId)
+        const requester = new HttpRequester('reject_period_of_disease');
+        const queryParams = {
+            period_of_disease_id: selectedZonePeriodOfDiseasId.value,
+        };
+
+        // Call the API with the queryParams here
+        console.log("rejectqueryParams", queryParams)
+        await requester.callApi('DELETE', queryParams)
+            .then(response => {
+                Swal.fire(
+                    'Rejected!',
+                    'The period of disease has been rejected.',
+                    'success'
+                );
+                // Handle success response
+                console.log('Period of disease rejected successfully', response);
+                refreshPage(true)
+            })
+            .catch(error => {
+                Swal.fire(
+                    'Error!',
+                    'There was an error rejecting the period of disease.',
+                    'error'
+                );
+                // Handle error response
+                console.error('Error rejecting period of disease', error);
+            });
+    } else {
+        // If the user did not confirm, do nothing
+        console.log('Action canceled by user');
+    }
+}
+
+async function reseduleTreatmentAgain() {
+    const result = await Swal.fire({
+        title: 'Reschedule Treatment',
+        text: 'Do you want to delete existing items or keep them?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Delete Existing',
+        cancelButtonText: 'Keep Existing'
+    });
+
+    if (result.isConfirmed) {
+        // User chose to delete existing items
+        await callRescheduleZoneCheck("delete_existing");
+    } else if (result.dismiss === Swal.DismissReason.cancel) {
+        // User chose to keep existing items
+        await callRescheduleZoneCheck("keep_existing");
+    }
+    refreshPage(true);
+}
+
+async function callRescheduleZoneCheck(reschedule_option) {
+    const requester = new HttpRequester('reschedule-zone-check');
+    const queryParams = {
+        period_of_disease_id: selectedZonePeriodOfDiseasId.value,
+        expert_id: UserType.getInstance().getUserId(),
+        reschedule_option: reschedule_option
+    };
+    console.log("queryParams", queryParams);
+
+    try {
+        await requester.callApi('PUT', queryParams);
+        Swal.fire(
+            'Success!',
+            'The period of disease has been rescheduled successfully.',
+            'success'
+        );
+        refreshPage(true);
+    } catch (error) {
+        Swal.fire(
+            'Error!',
+            'There was an error rescheduling the period of disease.',
+            'error'
+        );
+        console.error('Error rescheduling period of disease', error);
+    }
+}
+
+
 watch([selectedLocation, isThisLocationChecked], async ([newSelectedLocation, newIsThisLocationChecked], [oldSelectedLocation, oldIsThisLocationChecked]) => {
     // same location but check is diff
     if (oldSelectedLocation && !oldIsThisLocationChecked && newSelectedLocation.name === oldSelectedLocation.name &&
@@ -188,12 +307,13 @@ watch([selectedLocation, isThisLocationChecked], async ([newSelectedLocation, ne
 
 });
 
-
-onMounted(async () => {
-    // TODO selected location is never set here correct it
+async function refreshPage(isSleep = false) {
+    if (isSleep) {
+        await new Promise(resolve => setTimeout(resolve, 3000)); // Sleep for 3 seconds
+    }
     isOwner.value = UserType.getInstance().getUserType();
     await fetchAllLocations(locations, selectedLocation, isLocationNewForExpert, zonesTreatment, zonesActivePeriodOfDiseas);
-    console.log("zonesActivePeriodOfDiseas", zonesActivePeriodOfDiseas)
+    console.log("refresh locations", locations.value)
     selectedLocation.value = locations.value[0];
     for (let i = 0; i < locations.value.length; i++) {
         if (isLocationNewForExpert.value[i])
@@ -206,6 +326,10 @@ onMounted(async () => {
     else newZonesNamesConcatenated.value = `${newZonesNames.value.slice(0, -1).join(', ')}, and ${newZonesNames.value[length - 1]}`;
     isThisLocationChecked.value = !isLocationNewForExpert.value[0]
     isShowLoading.value = false;
+}
+onMounted(async () => {
+    // TODO selected location is never set here correct it
+    refreshPage()
 
 });
 
@@ -271,13 +395,14 @@ function openGoogleMapsWithLatLongLocal() {
                             </div>
 
                         </div>
-                        
+
                         <div class="row" style="margin: 10px;">
                             <h1 class="h5"> Treatment (you may edit it to something special)</h1>
+                            <h2 class="h5"> {{ treatmentName }}</h2>
                         </div>
                         <div class="row">
                             <div class="card flex justify-content-center text-area-parent">
-                                <Textarea v-model="treatmentValue" rows="5" cols="30" />
+                                <Textarea v-model="treatmentValue" rows="5" cols="30" disabled />
                             </div>
                         </div>
                         <div class="row">
@@ -304,11 +429,21 @@ function openGoogleMapsWithLatLongLocal() {
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="submit-parent">
+                        <div class="row" v-if="isThisLocationChecked">
+                            <div class="submit-parent" v-if="isThisLocationChecked">
                                 <div class="card flex justify-content-center submit-sub-parent">
-                                    <Button label="Declare this location healty" icon="pi pi-check" iconPos="right"
-                                        class="submit-button" @click="declareLocationTreated" :disabled="isOwner" />
+                                    <Button label="End this period of disease" icon="pi pi-check" iconPos="right"
+                                        class="submit-button" @click="endThisPeriodOfDisease" :disabled="isOwner"
+                                        severity="warning" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="submit-parent" v-if="!isThisLocationChecked">
+                                <div class="card flex justify-content-center submit-sub-parent">
+                                    <Button label="Rejct this period of disease" icon="pi pi-times-circle"
+                                        iconPos="right" class="submit-button" @click="rejectThisPeriodOfDisease"
+                                        :disabled="isOwner" severity="danger" />
                                 </div>
                             </div>
                         </div>
@@ -318,44 +453,57 @@ function openGoogleMapsWithLatLongLocal() {
                                     <div class="card flex justify-content-center submit-sub-parent">
                                         <Button label="Go to Google Maps" icon="pi pi-map" iconPos="right"
                                             class="submit-button" @click="openGoogleMapsWithLatLongLocal"
-                                            :disabled="isOwner" />
+                                            severity="info" :disabled="isOwner" />
                                     </div>
                                 </div>
                             </div>
 
 
                         </div>
-                        <hr class="header-line" style="margin:20px">
-                        <div class=row>
-                            <div class="col-12">
-                                <h3 class="h5" style="margin-top:20px"> Schedule treatment for this location </h3>
+                        <div v-if="isThisLocationChecked">
+
+
+                            <hr class="header-line" style="margin:20px">
+                            <div class=row>
+                                <div class="col-12">
+                                    <h3 class="h5" style="margin-top:20px"> Schedule treatment for this zone </h3>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-4">
+                                    <hr class="header-line" style="margin-right:20px">
+                                </div>
+                            </div>
+
+
+
+                            <div class="card row"
+                                style="margin-left: 1px; margin-right: 3px; overflow-y: auto; max-height: 300px;">
+                                <div class="col-12">
+                                    <DataTable :value="scheduleData" showGridlines tableStyle="min-width: 35rem">
+                                        <Column field="Date_Scheduled" header="Date"></Column>
+                                        <Column header="Done">
+                                            <template #body="slotProps">
+                                                <span v-if="slotProps.data.Done" class="text-success">✔</span>
+                                                <span v-else class="text-danger">❌</span>
+                                            </template>
+                                        </Column>
+                                        <Column field="Farmer_Finished" header="Farmer"></Column>
+                                    </DataTable>
+                                </div>
                             </div>
 
                         </div>
                         <div class="row">
-                            <div class="col-4">
-                                <hr class="header-line" style="margin-right:20px">
+                            <div class="submit-parent" v-if="isThisLocationChecked">
+                                <div class="card flex justify-content-center submit-sub-parent">
+                                    <Button label="Reschedule specified treatment again" icon="pi pi-calendar-plus"
+                                        iconPos="right" class="submit-button" @click="reseduleTreatmentAgain"
+                                        :disabled="isOwner" severity="contrast" />
+                                </div>
                             </div>
                         </div>
-
-
-
-                        <div class="card row " style="margin-left:1px; margin-right: 3px;">
-                            <div class="col-12">
-                                <DataTable :value="scheduleData" showGridlines tableStyle="min-width: 35rem">
-                                    <Column field="Date_Scheduled" header="Date"></Column>
-                                    <Column header="Done">
-                                        <template #body="slotProps">
-                                            <span v-if="slotProps.data.Done" class="text-success">✔</span>
-                                            <span v-else class="text-danger">❌</span>
-                                        </template>
-                                    </Column>
-                                    <Column field="Farmer_Finished" header="Farmer"></Column>
-                                </DataTable>
-                            </div>
-
-                        </div>
-
                         <!-- </div> -->
                         <div v-if="isShowLoadingSaveUpdates" class="row">
                             <ProgressSpinner />
