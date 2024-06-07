@@ -31,8 +31,9 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue';
-  
+import { ref, watch, onMounted } from "vue";
+import { HttpRequester } from '@/services/ApiCaller.ts';
+
   // Step descriptions
   const steps = ref([
     'Car is collecting images',
@@ -40,9 +41,22 @@
     'Model is evaluating the results',
     'Results are being transferred to the database'
   ]);
+const currentStep = ref(2); // Example: the current active process is step 3
+
+async function fetchCarStatus(){
+    const requester = new HttpRequester('get_car_state');
+
+    const requester_data = await requester.callApi('GET');
+    console.log("requester_data", requester_data)
+    currentStep.value = requester_data.current_state;
+}
   
+onMounted(async () => {
+  // await fetchAllLocations(locations, selectedLocation);
+  await fetchCarStatus();
+});
+
   // Current step (0-based index)
-  const currentStep = ref(2); // Example: the current active process is step 3
   </script>
   
   <style scoped>
