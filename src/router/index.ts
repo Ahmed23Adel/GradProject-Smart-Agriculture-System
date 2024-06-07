@@ -15,7 +15,12 @@ import { createRouter, createWebHistory } from "vue-router"
 
 const router = createRouter({
     history:createWebHistory(import.meta.env.BASE_URL),
-    routes:[    
+    routes:[   
+        {
+            path: "/:catchall(.*)*",
+            name: "NotFound",
+            component: NotFound,
+        }, 
         {
             path:"/",
             name:"mainpage",
@@ -72,11 +77,7 @@ const router = createRouter({
             name:"Disease",
             component: Disease
         }, 
-        {
-            path:"/:catchall(.*)*",
-            name:"Not found",
-            component: NotFound
-        },
+        
 
     ]
 })
