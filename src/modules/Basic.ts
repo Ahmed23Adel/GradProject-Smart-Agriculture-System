@@ -37,8 +37,20 @@ export class UserType {
         return this.getCookie("user_id")
     }
 }
+type Coordinates = {
+    long: string | number,
+    lat: string | number
+};
 
-export function findCoordinates(maxLong, minLong, maxLat, minLat, zoneSize, zoneNameSearch, calculatedCoordinates){
+export function findCoordinates(
+    maxLong: number,
+    minLong: number,
+    maxLat: number,
+    minLat: number,
+    zoneSize: number,
+    zoneNameSearch: string,
+    calculatedCoordinates: { value: Coordinates }
+): void {
     const horizontalZones = Math.ceil((maxLong - minLong) * 111139 / zoneSize);
     const verticalZones = Math.ceil((maxLat - minLat) * 111139 / zoneSize);
     const maxZoneIndex = horizontalZones * verticalZones - 1; // Maximum valid zone index
@@ -85,10 +97,11 @@ export function findCoordinates(maxLong, minLong, maxLat, minLat, zoneSize, zone
     }
 }
 
-export function openGoogleMapsWithLatLong(calculatedCoordinates) {
+export function openGoogleMapsWithLatLong(calculatedCoordinates: Coordinates): void {
     const googleMapsLink = `https://www.google.com/maps?q=${calculatedCoordinates.lat},${calculatedCoordinates.long}`;
     window.open(googleMapsLink, '_blank');
 }
+
 
 export function deleteCookie (key: string){
     Cookies.remove(key);

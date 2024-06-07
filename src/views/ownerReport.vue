@@ -8,7 +8,7 @@ import Paragraph from "../components/ownerReport/Paragraph.vue";
 import dailyQuestionnaire from "@/modules/questions";
 
 const reports = ref();
-axios.get("http://localhost:8000/api/v1/get_all_reports", {}).then((res) => {
+axios.get("http://rowling-backend3.eastus.azurecontainer.io:8000/api/v1/get_all_reports", {}).then((res) => {
   console.log("res", res)
   reports.value = res.data.data;
 });
