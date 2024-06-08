@@ -109,12 +109,13 @@ function save() {
         });
       }
     }
-
-    axios.post("http://127.0.0.1:8000/api/v1/add_report", report, {}).then((res) => {
+    const addReportRequester = new HttpRequester('add_report')
+    addReportRequester.callApi('POST',report).then((res) => {
       console.log(res);
       message.value = "Added Succesfully";
       showDialog.value = true;
-    });
+    })
+  
   }
 }
 </script>

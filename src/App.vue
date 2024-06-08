@@ -1,24 +1,30 @@
 <script setup>
-  import {RouterView} from "vue-router"
+import { RouterView } from "vue-router";
 </script>
 <template>
   <RouterView />
 </template>
 
 <style>
-body{
+body {
   padding: 0;
   margin: 0;
 }
-body,#app{
-  font-family: Georgia, 'Times New Roman', Times, serif;
+body,
+#app {
+  font-family: sans-serif;
   min-width: 100vw;
   min-height: 100vh;
+  color: var(--accenta);
+
 }
-:root{
-  --primary:#d8d8d8;
-  --secondary:#28a745;
-  --accenta:#1f271a;
-  --accentb:#ef9107;
+
+:root {
+  --primary: #e5e5e5;
+  --secondary: #05a500;
+  --accenta: #1f271a;
+  --accentb: #dbce03;
+  --text: #d8ffd6;
+  --card:#fff
 }
 </style>

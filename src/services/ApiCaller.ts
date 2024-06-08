@@ -17,7 +17,7 @@ export class HttpRequester{
     constructor(endpoint: string, disableLogin: boolean = false) {
         this.endpoint = endpoint;
         // this.base_endpoint = "https://greadproject-backend-fastapi.onrender.com/";
-        this.base_endpoint = "http://localhost:8000/api/v1/";
+        this.base_endpoint = "http://0.0.0.0:8000/api/v1/";
 
         if (this.isUserSignedIn()){
             this.bearer = this.get_cookie('token');
@@ -90,7 +90,6 @@ export class HttpRequester{
                     console.error('Invalid HTTP method specified');
                     return false;
             }
-
             // Check if the response has data and success status
             if (response.data && response.data.success) {
                 // Return the response data

@@ -31,7 +31,6 @@ function test(plant: any) {
   if (props.location && plant.Location != props.location) {
     return false;
   }
-  console.log(props.status,plant.Image_Class)
   if (props.status && !props.status.includes(plant.Image_Class.toString())) {
     return false;
   }
