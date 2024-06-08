@@ -1,6 +1,6 @@
 # Rowling
 
-This template should help get you started developing with Vue 3 in Vite.
+Rowling Frontend is a Vue.js application that serves as the user interface for the Rowling Plant Disease Detection System. It provides a user-friendly interface for uploading images, visualizing detection results, and monitoring crop health in real-time.
 
 ## Recommended IDE Setup
 
