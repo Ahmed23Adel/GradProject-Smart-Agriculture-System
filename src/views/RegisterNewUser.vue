@@ -193,7 +193,7 @@ async function resetPassword(username, password) {
                 </div>
                 <div class="row justify-content-center">
                     <div class="col-md-12">
-                        <h2 class="text-center">All userss</h2>
+                        <h2 class="text-center">All users</h2>
                         <table class="table table-striped table-bordered">
                             <thead class="thead-dark">
                                 <tr>
