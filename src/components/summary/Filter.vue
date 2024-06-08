@@ -1,17 +1,29 @@
 <script lang="ts" setup>
 import Dropdown from "primevue/dropdown";
 import Button from "primevue/button";
-
+import Calendar from "primevue/calendar";
 import Checkbox from 'primevue/checkbox';
-import { ref, defineEmits } from "vue";
+import { ref, defineEmits ,computed} from "vue";
 
-const selectedDay = ref();
+const selectedPage = ref();
 const selectedLocation = ref();
-const prop =defineProps(['locations','days'])
+const selectedDay = ref()
+const prop =defineProps(['locations','range'])
 
-const emit = defineEmits(["day", "location",'status']);
+const pages = computed(()=>{
+  let r=<number[]>[]
+  if(prop.range!=-1){
+    for (let i=0;i<=prop.range;i++){
+    r.push(i)
+  }
+  }
+  return r 
+})
+
+const emit = defineEmits(['day',"page", "location",'status']);
 function emitSelections() {
   emit("day", selectedDay.value);
+  emit("page", selectedPage.value);
   emit("location", selectedLocation.value);
   emit("status", status.value);
 }
@@ -21,18 +33,21 @@ const status =ref()
 <template>
   <div class="filter-container">
     <div class="dropdown-container">
+        
+      <Calendar v-model="selectedDay" placeholder="Date"/>
+
         <Dropdown
           style="width: 100%"
           class="dropdown"
-          :options="days"
+          :options="pages"
           optionLabel=""
-          placeholder="Date"
-          v-model="selectedDay"
+          placeholder="Page Number"
+          v-model="selectedPage"
           :maxSelectedLabels="1"
           :pt="{
             wrapper: { style: { backgroundColor: 'var(--secondary)' } },
-            input: { style: { color: 'var(--accenta)' } },
-            item: { style: { color: 'var(--accenta)' } },
+            input: { style: { color: 'var(--text)' } },
+            item: { style: { color: 'var(--text)' } },
           }"
         />
         <Dropdown
@@ -44,9 +59,9 @@ const status =ref()
           v-model="selectedLocation"
           :maxSelectedLabels="1"
           :pt="{
-            wrapper: { style: { backgroundColor: 'var(--secondary)' } },
-            input: { style: { color: 'var(--accenta)' } },
-            item: { style: { color: 'var(--accenta)' } },
+             wrapper: { style: { backgroundColor: 'var(--secondary)' } },
+            input: { style: { color: 'var(--text)' } },
+            item: { style: { color: 'var(--text)' } },
           }"
         />
     </div>
@@ -79,14 +94,14 @@ const status =ref()
 }
 .dropdown {
   background-color: var(--secondary);
-  color: var(--accenta);
+  color: var(--text);
   width: 30%;
 }
 .dropdown-container {
   width: 80%;
   margin-inline: auto;
   display: grid;
-  grid-template-columns: 1fr  1fr;
+  grid-template-columns: 1fr 1fr 1fr;
 }
 button {
   width: 30%;

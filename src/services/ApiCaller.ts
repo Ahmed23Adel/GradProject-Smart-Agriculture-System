@@ -90,7 +90,6 @@ export class HttpRequester{
                     console.error('Invalid HTTP method specified');
                     return false;
             }
-
             // Check if the response has data and success status
             if (response.data && response.data.success) {
                 // Return the response data

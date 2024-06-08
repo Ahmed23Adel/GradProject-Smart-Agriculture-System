@@ -2,67 +2,103 @@
 import Fliter from "../components/summary/Filter.vue";
 import Sidebar from "../components/Sidebar.vue";
 import Results from "../components/summary/Results.vue";
-import { ref,onMounted } from "vue";
-import axios from 'axios'
-import { HttpRequester } from '@/services/ApiCaller.ts';
+import { ref } from "vue";
+import { HttpRequester } from "@/services/ApiCaller.ts";
 
-const plants=ref([])
-const days=ref()
-const locations =ref()
-async function get_reports(){
-  const requester = new HttpRequester('get_summary');
-  const requester_data = await requester.callApi('GET');
-  plants.value = requester_data.summary_data
-  console.log("plants.value", plants.value)
-
-  // await axios.post('http://127.0.0.1:8000/get_summary',{},{}).then((res:any)=>{plants.value = res.data.data})
-  days.value =  [...new Set(plants.value.map((obj:any) => obj.Date))];
-  locations.value =  [...new Set(plants.value.map((obj:any) => obj.Location))];
+const plants = ref([]);
+const locations = ref();
+const maxRange = ref();
+async function get_reports() {
+  const requester = new HttpRequester("get_summary");
+  requester.callApi("GET").then((res) => {
+    locations.value = res.all_zones;
+    plants.value = res.summary_data;
+    maxRange.value = res.max_index;
+  });
 }
-get_reports()
+get_reports();
 const selectedDay = ref();
 const selectedLocation = ref();
-const status = ref();
+const status = ref<any[]>([]);
+const selectedPage = ref();
+function formatDate(dateString: string) {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
+}
+function requestPlants() {
+  interface dataInterface{
+    selected_date:string
+    selected_location:string
+    is_healthy:boolean
+    is_eb:boolean
+    is_lb:boolean
+    index:number
+  }
+  let data =<dataInterface>{}
 
 
+  if(selectedDay.value!=undefined) { data.selected_date=formatDate(selectedDay.value)}
+  if(selectedLocation.value!=undefined) {data.selected_location=selectedLocation.value}
 
+  if(status.value!=undefined) {
+    if(status.value.includes("0")){
+      data.is_eb=status.value.includes("0")
+    }
+    if(status.value.includes("1")){
+      data.is_lb=status.value.includes("1")
+    }
+    if(status.value.includes("2")){
+      data.is_healthy=status.value.includes("2")
+    }
+  }
+  if(selectedPage.value){
+    data.index=selectedPage.value
+  }
+  console.log(data);
+  const requester = new HttpRequester("get_summary");
+  requester.callApi("GET", data).then((res) => {
+    console.log(res);
+    locations.value = res?.all_zones;
+    plants.value = res?.summary_data;
+    maxRange.value = res?.max_index;
+  });
+}
 </script>
 
-
 <template>
-
   <div class="summary-container">
-    
-    <Sidebar class="sidebar" :selected="0"/>
+    <Sidebar class="sidebar" :selected="0" />
     <div class="main-container">
       <Fliter
-      :days="days"
-      :locations="locations"
+        :range="maxRange"
+        :locations="locations"
         @day="
           (v) => {
-            (selectedDay = v) 
+            selectedDay = v;
           }
         "
         @location="
           (v) => {
-            (selectedLocation = v) 
+            selectedLocation = v;
           }
         "
-
-@status="
+        @page="
           (v) => {
-             (status = v) 
+            selectedPage = v;
+          }
+        "
+        @status="
+          (v) => {
+            status = v;
+            requestPlants();
           }
         "
         class="filter"
       />
-      <Results
-      :plants="plants"
-        :day="selectedDay"
-        :location="selectedLocation"
-        :status="status"
-        class="results"
-      />
+      <Results :plants="plants" class="results" />
     </div>
   </div>
 </template>
@@ -80,8 +116,10 @@ const status = ref();
   flex-direction: column;
   gap: 64px;
 }
-.sidebar{
-    position: sticky;
-    top: 0;
+.sidebar {
+  position: sticky;
+  top: 0;
 }
 </style>
+
+{:day="selectedDay" :location="selectedLocation" :status="status"}

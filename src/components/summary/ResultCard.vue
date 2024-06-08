@@ -25,7 +25,13 @@ const classfications = ["Early Blight", "Late Blight", "Healthy"];
 
 
 
-
+function formatDate(dateString: string) {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
+}
 
 
 </script>
@@ -34,7 +40,7 @@ const classfications = ["Early Blight", "Late Blight", "Healthy"];
  <div class="card-container">
     <img crossorigin="anonymous" :src="transform(plant.Image_Path)" alt="" />
     <p><strong>location:</strong>{{ plant.Location }}</p>
-    <p><strong>day:</strong>{{ plant.Date }}</p>
+    <p><strong>day:</strong>{{ formatDate(plant.Date)}}</p>
     <p><strong>classification:</strong>{{classfications[plant.Image_Class] }}</p>
   </div>
 </template>
@@ -45,7 +51,7 @@ const classfications = ["Early Blight", "Late Blight", "Healthy"];
   text-transform: capitalize;
   padding: 16px;
   border-radius: 8px;
-  box-shadow: 2px 2px 4px 4px #343434;
+  background-color: var(--card);
   line-height: 4px;
   cursor: pointer;
   margin: 12px;

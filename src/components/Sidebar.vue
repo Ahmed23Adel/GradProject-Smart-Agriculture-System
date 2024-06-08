@@ -33,7 +33,7 @@ onMounted(() => {
 
 <template>
   <div class="wrapper">
-    <i class="pi pi-list" @click="fullWidth = !fullWidth" style="color: var(--accenta);cursor: pointer;"></i>
+    <i class="pi pi-list" @click="fullWidth = !fullWidth" style="color: var(--text);cursor: pointer;"></i>
     <div class="sidebar-container" :class="{ small: !fullWidth }">
       <div class="today-summary" :class="{ selected: selected == 0 }" @click="router.push('summary')">
         <i class="pi pi-calendar"></i>
@@ -90,7 +90,10 @@ onMounted(() => {
   height: 100vh;
   position: sticky;
 }
-
+p,i{
+  color:var(--text);
+  font-weight: bold;
+}
 .sidebar-container {
   height: 100vh;
   width: 120px;
@@ -126,11 +129,17 @@ onMounted(() => {
 
 .selected {
   background-color: var(--primary);
-  color: var(--accenta);
+  color: var(--accentb);
   border-bottom-left-radius: 32px;
   border-top-left-radius: 32px;
 }
 
+.selected>p {
+  background-color: var(--primary);
+  color: var(--secondary);
+  border-bottom-left-radius: 32px;
+  border-top-left-radius: 32px;
+}
 .selected::after {
   content: "";
   width: 16px;
