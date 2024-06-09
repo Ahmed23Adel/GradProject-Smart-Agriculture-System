@@ -187,6 +187,11 @@ async function saveNewSpecificTreatment() {
     isShowLoadingSaveUpdates.value = true;
 
 }
+
+function cancelSaveSpecificTreatment(){
+    isShowTableOfTreatments.value = false;
+    isShowLoadingSaveUpdates.value = false;
+}
 import Swal from 'sweetalert2';
 
 async function rejectThisPeriodOfDisease() {
@@ -389,7 +394,7 @@ function openGoogleMapsWithLatLongLocal() {
 
                     <div class="col-6">
                         <div class="row">
-                            <div class="col-6" style="margin-bottom: 20px" v-if="!isThisLocationChecked">
+                            <div class="col-6" style="margin-bottom: 20px" v-if="!isThisLocationChecked && !isOwner">
                                 <Checkbox v-model="isThisLocationChecked" :binary="true" />
                                 Declare this location checked
                             </div>
@@ -422,10 +427,20 @@ function openGoogleMapsWithLatLongLocal() {
                                 placeholder="Select a Treatment" />
                         </div>
                         <div class="row" v-if="isShowTableOfTreatments">
-                            <div class="submit-parent">
-                                <div class="card flex justify-content-center submit-sub-parent">
-                                    <Button label="Save" icon="pi pi-check" iconPos="right" class="submit-button"
-                                        @click="saveNewSpecificTreatment" :disabled="isOwner" />
+                            <div class="col-6">
+                                <div class="submit-parent">
+                                    <div class="card flex justify-content-center submit-sub-parent">
+                                        <Button label="Save" icon="pi pi-check" iconPos="right" class="submit-button"
+                                            @click="saveNewSpecificTreatment" :disabled="isOwner" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="submit-parent">
+                                    <div class="card flex justify-content-center submit-sub-parent">
+                                        <Button label="Cancel" icon="pi pi-times" iconPos="right" class="submit-button"
+                                            @click="cancelSaveSpecificTreatment" :disabled="isOwner"   severity="danger"/>
+                                    </div>
                                 </div>
                             </div>
                         </div>
