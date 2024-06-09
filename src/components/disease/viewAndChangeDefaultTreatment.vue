@@ -58,6 +58,10 @@ function changeDefaultTreatment() {
     isInChangeMode.value = true;
 }
 
+function cancelChangeDefaultTreatment() {
+    isInChangeMode.value = false;
+}
+
 watch(selectedTreatment, (newSelectedTreatment, oldSelectedTreatment) => {
     treatmentItems.value = allTreatmentData.value
         .filter(treatment => {
@@ -164,6 +168,13 @@ onMounted(async () => {
                 <div class="card flex justify-content-center submit-sub-parent">
                     <Button label="Save the updates" icon="pi pi-check" iconPos="right" class="submit-button"
                         @click="saveNewDefaultTreatment" :disabled="isOwner" />
+                </div>
+            </div>
+
+            <div class="col-3">
+                <div class="card flex justify-content-center submit-sub-parent">
+                    <Button label="Cancel" icon="pi pi-check" iconPos="right" class="submit-button"
+                        @click="cancelChangeDefaultTreatment" :disabled="isOwner"  severity="danger"/>
                 </div>
             </div>
         </div>
