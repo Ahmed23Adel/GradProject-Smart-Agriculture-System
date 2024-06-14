@@ -110,7 +110,8 @@ function save() {
       }
     }
     const addReportRequester = new HttpRequester('add_report')
-    addReportRequester.callApi('POST',report).then((res) => {
+    console.log(report);
+    addReportRequester.callApi('POST',null, report).then((res) => {
       console.log(res);
       message.value = "Added Succesfully";
       showDialog.value = true;

@@ -120,6 +120,36 @@ const drawRectangle = (
   const textWidth = ctx.measureText(label).width; // Get text width
   ctx.fillText(label, x + (width - textWidth) / 2, y + 15); // Position text
 };
+function getDate(allDateTime: string){
+    const dateObj = new Date(allDateTime);
+    const year = dateObj.getFullYear();
+    const month = (dateObj.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based
+    const day = dateObj.getDate().toString().padStart(2, '0');
+    const hours = dateObj.getHours().toString().padStart(2, '0');
+    const minutes = dateObj.getMinutes().toString().padStart(2, '0');
+    const seconds = dateObj.getSeconds().toString().padStart(2, '0');
+
+    // Format the date and time as desired
+    const formattedDate = `${year}-${month}-${day}`;
+    return formattedDate
+    // const formattedTime = `${hours}:${minutes}:${seconds}`;
+
+}
+
+function getTime(allDateTime: string){
+    const dateObj = new Date(allDateTime);
+    const year = dateObj.getFullYear();
+    const month = (dateObj.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based
+    const day = dateObj.getDate().toString().padStart(2, '0');
+    const hours = dateObj.getHours().toString().padStart(2, '0');
+    const minutes = dateObj.getMinutes().toString().padStart(2, '0');
+    const seconds = dateObj.getSeconds().toString().padStart(2, '0');
+
+    // Format the date and time as desired
+    const formattedTime = `${hours}:${minutes}:${seconds}`;
+    return formattedTime;
+
+}
 </script>
 
 <template>
@@ -145,8 +175,8 @@ const drawRectangle = (
     <div class="dialog-container">
       <div class="description">
         <p><strong>Location:</strong> {{ selectedPlant.Location }}</p>
-        <p><strong>Date:</strong> {{ selectedPlant.Date }}</p>
-        <p><strong>Time:</strong> {{ selectedPlant.Time }}</p>
+        <p><strong>Date:</strong> {{ getDate( selectedPlant.Date) }}</p>
+        <p><strong>Time:</strong> {{ getTime(selectedPlant.Date) }}</p>
         <p>
           <strong>Edited:</strong> {{ editedTreated[selectedPlant.Edited] }}
         </p>
